@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     //캐릭터 걷기 이동속도            
     [SerializeField] float WalkSpeed = 2f;    
     [SerializeField] float RunSpeed = 6f; 
+    [SerializeField] float JumpForce = 10f; 
 
 //------------------------- 마우스 -------------------------
     //마우스 상하좌우
@@ -59,14 +60,30 @@ public class PlayerController : MonoBehaviour
         } else {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+            MouseMove();
             Moving();
         }
+    }
+
+    void MouseMove()
+    {
+        //마우스 상하좌우 반응
+        mouseX += Input.GetAxis("Mouse X") * mouseSpeed;
+        mouseY += Input.GetAxis("Mouse Y") * mouseSpeed;
+
+        //마우스 위아래 최대각도 적용
+        mouseY = Mathf.Clamp(mouseY, -80f, 80f);
+
+        //마우스 상하좌우 각도값 변경
+        PlayerModel.transform.localEulerAngles = new Vector3 (0, mouseX, 0);
+        PlayerCamera.transform.localEulerAngles = new Vector3 (-mouseY, 0, 0);
     }
 
     void Moving()
     {
         float speed = 0f;
-
+        
+        //달리기 조작 여부
         if(Input.GetKey(KeyCode.LeftShift))
         {
             speed = RunSpeed;
@@ -76,24 +93,23 @@ public class PlayerController : MonoBehaviour
             speed = WalkSpeed;
         }
 
-        //마우스 상하좌우 반응
-        mouseX += Input.GetAxis("Mouse X") * mouseSpeed;
-        mouseY += Input.GetAxis("Mouse Y") * mouseSpeed;
-        mouseY = Mathf.Clamp(mouseY, -80f, 80f);
-        PlayerModel.transform.localEulerAngles = new Vector3 (0, mouseX, 0);
-        PlayerCamera.transform.localEulerAngles = new Vector3 (-mouseY, 0, 0);
-
         //중력 및 키보드 조작 반응
         if (cc.isGrounded)
         {
             mov = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            mov = cc.transform.TransformDirection(mov);  
+            mov = cc.transform.TransformDirection(mov);
+            mov *= speed;
+
+            //Space바 입력시 점프
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                mov.y += JumpForce;
+            }
         }
         else
         {
             mov.y -= gravity * Time.deltaTime;
         }
-
-        cc.Move(mov * Time.deltaTime * speed);
+        cc.Move(mov * Time.deltaTime);
     }
 }

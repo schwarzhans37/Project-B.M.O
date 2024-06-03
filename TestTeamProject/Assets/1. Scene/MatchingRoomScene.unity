@@ -3694,7 +3694,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &810749863
 MonoBehaviour:
@@ -5923,7 +5923,7 @@ GameObject:
   - component: {fileID: 1509305652}
   - component: {fileID: 1509305651}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: GameUICanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6899,7 +6899,7 @@ GameObject:
   - component: {fileID: 2058445269}
   - component: {fileID: 2058445268}
   m_Layer: 5
-  m_Name: Image
+  m_Name: CrossHair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

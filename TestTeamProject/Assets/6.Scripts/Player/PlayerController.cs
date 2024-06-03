@@ -12,7 +12,8 @@ public class PlayerController : MonoBehaviour
     private CharacterController cc;
 
     //캐릭터 걷기 이동속도            
-    [SerializeField] float speed = 2f;    
+    [SerializeField] float WalkSpeed = 2f;    
+    [SerializeField] float RunSpeed = 6f; 
 
 //------------------------- 마우스 -------------------------
     //마우스 상하좌우
@@ -64,6 +65,17 @@ public class PlayerController : MonoBehaviour
 
     void Moving()
     {
+        float speed = 0f;
+
+        if(Input.GetKey(KeyCode.LeftShift))
+        {
+            speed = RunSpeed;
+        }
+        else
+        {
+            speed = WalkSpeed;
+        }
+
         //마우스 상하좌우 반응
         mouseX += Input.GetAxis("Mouse X") * mouseSpeed;
         mouseY += Input.GetAxis("Mouse Y") * mouseSpeed;
@@ -75,7 +87,7 @@ public class PlayerController : MonoBehaviour
         if (cc.isGrounded)
         {
             mov = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            mov = cc.transform.TransformDirection(mov);
+            mov = cc.transform.TransformDirection(mov);  
         }
         else
         {

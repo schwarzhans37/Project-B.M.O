@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     //캐릭터 걷기 이동속도            
     [SerializeField] float WalkSpeed = 2f;    
     [SerializeField] float RunSpeed = 6f; 
-    [SerializeField] float JumpForce = 10f; 
+    [SerializeField] float JumpForce = 5f; 
 
 //------------------------- 마우스 -------------------------
     //마우스 상하좌우

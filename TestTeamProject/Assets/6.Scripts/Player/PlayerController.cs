@@ -16,7 +16,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float RunSpeed = 6f; 
     [SerializeField] float JumpForce = 5f; 
 
-//------------------------- 마우스 -------------------------
+    //캐릭터 애니메이션 컴포넌트
+    public Animator animator;
+
+    //------------------------- 마우스 -------------------------
     //마우스 상하좌우
     private float mouseX;       
     private float mouseY;
@@ -44,6 +47,8 @@ public class PlayerController : MonoBehaviour
     {
         //캐릭터 컨트롤러 컴포넌트 불러오기
         cc = GetComponent<CharacterController>();
+        //캐릭터 애니메이터 컴포넌트 불러오기
+        animator = GetComponent<Animator>();
         //벡터 초기화
         mov = Vector3.zero;
         //중력강도
@@ -63,6 +68,7 @@ public class PlayerController : MonoBehaviour
             MouseMove();
             Moving();
         }
+        AnimationUpdate();
     }
 
     void MouseMove()
@@ -104,6 +110,7 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 mov.y += JumpForce;
+                animator.SetTrigger("jump");
             }
         }
         else
@@ -111,5 +118,16 @@ public class PlayerController : MonoBehaviour
             mov.y -= gravity * Time.deltaTime;
         }
         cc.Move(mov * Time.deltaTime);
+    }
+    void AnimationUpdate()
+    {
+        animator.SetBool("isRun", false);
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            animator.SetBool("isRun", true);
+        }
+        animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+        animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+
     }
 }

@@ -1,16 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEditor;
 
 public class LogInUI : MonoBehaviour
 {
-    [SerializeField]
-    private InputField UserID_Field;
-    [SerializeField]
-    private InputField UserPW_Field;
-    public GameObject LogInButton;
+    public TMP_InputField emailInput;
+    public TMP_InputField passwordInput;
+    public Button loginButton;
+    private LoginController loginController;
+
+    void Start()
+    {
+        loginController = GetComponent<LoginController>();
+        loginButton.onClick.AddListener(OnLoginButtonClick);
+    }
+
+    void OnLoginButtonClick()
+    {
+        string email = emailInput.text;
+        string password = passwordInput.text;
+
+        StartCoroutine(loginController.Login(email, password));
+    }
 
 }

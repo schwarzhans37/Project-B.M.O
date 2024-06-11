@@ -16,6 +16,7 @@ public class LoginController : MonoBehaviour
 
         // 요청 생성 및 설정
         UnityWebRequest request = RequestManager.Instance.CreateRequest("/login", "POST", jsonData);
+        request.certificateHandler = new BypassCertificate();
 
         // 요청 보내기
         yield return request.SendWebRequest();
@@ -35,6 +36,15 @@ public class LoginController : MonoBehaviour
         else
         {
             Debug.Log("error: " + response.message);
+        }
+    }
+
+    private class BypassCertificate : CertificateHandler
+    {
+        protected override bool ValidateCertificate(byte[] certificateData)
+        {
+            // 무조건 true 반환
+            return true;
         }
     }
 }

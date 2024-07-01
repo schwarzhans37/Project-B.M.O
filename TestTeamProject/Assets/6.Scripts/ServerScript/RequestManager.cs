@@ -6,7 +6,7 @@ public class RequestManager : MonoBehaviour
     public static RequestManager Instance { get; private set; }
     public string SessionCookie { get; private set; }
     public ApiResponse LastResponse { get; private set; }
-    private string ServerUrl { get; set; } = "http://bmo-game-828537001.us-east-1.elb.amazonaws.com:8080/game";
+    private string ServerUrl { get; set; } = "http://localhost:8080/game";
 
     private void Awake()
     {

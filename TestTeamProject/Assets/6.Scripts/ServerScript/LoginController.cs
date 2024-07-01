@@ -6,6 +6,11 @@ public class LoginController : MonoBehaviour
 {
     public IEnumerator Login(string email, string password)
     {
+        yield return null;
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
+
+        /**
         // LoginData 객체 생성 및 값 설정
         LoginData loginData = new LoginData();
         loginData.email = email;
@@ -37,8 +42,10 @@ public class LoginController : MonoBehaviour
         {
             Debug.Log("error: " + response.message);
         }
+        **/
     }
 
+    /**
     private class BypassCertificate : CertificateHandler
     {
         protected override bool ValidateCertificate(byte[] certificateData)
@@ -47,6 +54,7 @@ public class LoginController : MonoBehaviour
             return true;
         }
     }
+    **/
 }
 
 [System.Serializable]

@@ -6,11 +6,6 @@ public class LoginController : MonoBehaviour
 {
     public IEnumerator Login(string email, string password)
     {
-        yield return null;
-
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
-
-        /**
         // LoginData 객체 생성 및 값 설정
         LoginData loginData = new LoginData();
         loginData.email = email;
@@ -21,7 +16,7 @@ public class LoginController : MonoBehaviour
 
         // 요청 생성 및 설정
         UnityWebRequest request = RequestManager.Instance.CreateRequest("/login", "POST", jsonData);
-        request.certificateHandler = new BypassCertificate();
+        // request.certificateHandler = new BypassCertificate();
 
         // 요청 보내기
         yield return request.SendWebRequest();
@@ -42,7 +37,6 @@ public class LoginController : MonoBehaviour
         {
             Debug.Log("error: " + response.message);
         }
-        **/
     }
 
     /**

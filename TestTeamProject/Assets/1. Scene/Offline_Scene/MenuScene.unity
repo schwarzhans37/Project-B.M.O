@@ -888,7 +888,7 @@ MonoBehaviour:
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1
-  roomPlayerPrefab: {fileID: 4373217627410373760, guid: 05bcc3a4b33e088408f7a66f29b4887e, type: 3}
+  roomPlayerPrefab: {fileID: 3534518473753166348, guid: 5988e1bdec804b8418d0b8bf2503f1c9, type: 3}
   RoomScene: Assets/1. Scene/MatchingRoomScene.unity
   GameplayScene: Assets/1. Scene/MainGameScene.unity
   _allPlayersReady: 0

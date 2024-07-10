@@ -20,7 +20,7 @@ public class LogInUI : MonoBehaviour
         string email = emailInput.text;
         string password = passwordInput.text;
 
-        StartCoroutine(loginController.Login(email, password));
+        loginController.Login(email, password);
     }
 
 }

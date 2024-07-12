@@ -6,10 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/LoginScene.unity
+    path: Assets/1. Scene/LoginScene.unity
     guid: a054b269f2d628241a6109129dc30ae0
   - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/MenuScene.unity
+    path: Assets/1. Scene/MainMenuScene.unity
     guid: 1c861edad95734a40a9f639ea499584a
   - enabled: 1
     path: Assets/1. Scene/Offline_Scene/MakingHostScene.unity

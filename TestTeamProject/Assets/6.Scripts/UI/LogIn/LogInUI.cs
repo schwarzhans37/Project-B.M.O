@@ -7,12 +7,14 @@ public class LogInUI : MonoBehaviour
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
     public Button loginButton;
+    public Button webLinkButton;
     private LoginController loginController;
 
     void Start()
     {
         loginController = GetComponent<LoginController>();
         loginButton.onClick.AddListener(OnLoginButtonClick);
+        webLinkButton.onClick.AddListener(OpenLink);
     }
 
     void OnLoginButtonClick()
@@ -21,6 +23,11 @@ public class LogInUI : MonoBehaviour
         string password = passwordInput.text;
 
         loginController.Login(email, password);
+    }
+
+    public void OpenLink()
+    {
+        Application.OpenURL("http://localhost");
     }
 
 }

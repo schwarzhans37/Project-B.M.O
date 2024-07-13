@@ -17,7 +17,7 @@ public class LoginController : MonoBehaviour
             Debug.Log($"success: {response.message}");
 
             // 로그인 성공 시 메인 메뉴 씬으로 이동
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MenuScene");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
         }
         else
         {

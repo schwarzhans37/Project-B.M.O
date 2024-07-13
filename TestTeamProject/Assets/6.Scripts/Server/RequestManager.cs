@@ -21,9 +21,19 @@ public class RequestManager : MonoBehaviour
         }
     }
 
-    private async Task<string> SendRequest(string url, string method, string jsonData = null)
+    private async Task<string> SendRequest(string requestUrl, string method, string jsonData = null)
     {
-        using (UnityWebRequest request = new UnityWebRequest(ServerUrl + url, method))
+        string url;
+        if (requestUrl.StartsWith("http"))
+        {
+            url = requestUrl;
+        }
+        else
+        {
+            url = ServerUrl + requestUrl;
+        }
+
+        using (UnityWebRequest request = new UnityWebRequest(url, method))
         {
             if (jsonData != null)
             {

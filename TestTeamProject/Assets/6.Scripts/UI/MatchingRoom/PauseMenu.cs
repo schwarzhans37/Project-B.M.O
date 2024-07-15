@@ -32,7 +32,6 @@ public class PauseMenu : MonoBehaviour
         //Pause메뉴 상태
         GameIsPaused = false;
 
-
     }
 
     public void Pause() {
@@ -46,7 +45,7 @@ public class PauseMenu : MonoBehaviour
 
     public void ToSettingMenu()
     {
-        SceneManager.LoadScene("SettingScene");
+        
     }
 
     public void BackTotheLobby()

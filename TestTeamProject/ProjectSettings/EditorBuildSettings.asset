@@ -6,20 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/LoginScene.unity
+    path: Assets/1. Scene/LoginScene.unity
     guid: a054b269f2d628241a6109129dc30ae0
   - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/MenuScene.unity
+    path: Assets/1. Scene/MainMenuScene.unity
     guid: 1c861edad95734a40a9f639ea499584a
-  - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/MakingHostScene.unity
-    guid: a15011435418a264cb3f378f9bee924d
-  - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/JoinRoomScene.unity
-    guid: 6cea95e04c0db3d4fb0ce52e3aebc17f
-  - enabled: 1
-    path: Assets/1. Scene/Offline_Scene/SettingScene.unity
-    guid: a8834dd119c51e249922cfff48392331
   - enabled: 1
     path: Assets/1. Scene/MatchingRoomScene.unity
     guid: 58205e8b701999e42b53b0f3fd1c838f

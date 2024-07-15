@@ -4,6 +4,8 @@ public class LoginController : MonoBehaviour
 {
     public async void Login(string email, string password)
     {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
+        /*
         // LoginData 객체 생성 및 값 설정
         LoginData loginData = new LoginData();
         loginData.email = email;
@@ -23,6 +25,7 @@ public class LoginController : MonoBehaviour
         {
             Debug.Log($"error: {response.message}");
         }
+        */
     }
 }
 

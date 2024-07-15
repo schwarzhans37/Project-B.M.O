@@ -16,6 +16,13 @@ public class HostController : MonoBehaviour
 
     public async void CreateHost(string name, string password, int maxPlayerCount)
     {
+        manager.maxPlayers = maxPlayerCount;
+        manager.maxConnections = manager.maxPlayers;
+
+        // 호스트 서버 생성
+        manager.StartHost();
+
+        /*
         // HostData 객체 생성 및 값 설정
         HostData hostData = new HostData();
         hostData.name = name;
@@ -43,10 +50,14 @@ public class HostController : MonoBehaviour
         {
             Debug.LogError($"Error: {response.message}");
         }
+        */
     }
 
     public async void JoinHost(HostData hostData)
     {
+        manager.StartClient();
+
+        /*
         // 요청 생성 및 보내기
         ApiResponse response = await RequestManager.Instance.Post<HostData, ApiResponse>("/host/join", hostData);
 
@@ -60,10 +71,13 @@ public class HostController : MonoBehaviour
         {
             Debug.LogError($"Error: {response.message}");
         }
+        */
     }
 
     public async Task<List<HostData>> GetHostList()
     {
+        return null;
+        /*
         // 요청 생성 및 보내기
         ApiResponse response = await RequestManager.Instance.Get<ApiResponse>("/host");
 
@@ -77,6 +91,7 @@ public class HostController : MonoBehaviour
             Debug.LogError($"Error: {response.message}");
             return new List<HostData>();
         }
+        */
     }
 }
 

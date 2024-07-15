@@ -13,14 +13,25 @@ public class JoinRoomUI : MonoBehaviour
     private HostController hostController;
     public GameObject roomItemPrefab;
     public Transform contentTransform;
-    private List<HostData> hostDatas;
+    private List<HostData> hostDatas = new List<HostData>{
+        new HostData{ name = "Room 1", nickname = "1", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 2", nickname = "2", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 3", nickname = "3", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 4", nickname = "4", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 5", nickname = "5", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 6", nickname = "6", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 7", nickname = "7", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 8", nickname = "8", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 9", nickname = "9", currentPlayers = 0, maxPlayers = 0},
+        new HostData{ name = "Room 10", nickname = "10", currentPlayers = 0, maxPlayers = 0},
+    };
     private HostData targetHost;
 
     private async void Start()
     {
         hostController = GetComponent<HostController>();
         confirmPasswordButton.onClick.AddListener(OnConfirmPasswordButtonClick);
-        await UpdateHosts();
+        // await UpdateHosts();
         DisplayRoomItems();
     }
 

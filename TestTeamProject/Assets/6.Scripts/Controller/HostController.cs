@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 public class HostController : MonoBehaviour
 {
@@ -30,6 +32,7 @@ public class HostController : MonoBehaviour
             Debug.Log($"Success: {response.message}");
 
             // 최대 플레이어 수 설정
+            // manager.networkAddress = hostData.ipAddress;
             manager.maxPlayers = maxPlayerCount;
             manager.maxConnections = manager.maxPlayers;
 
@@ -39,6 +42,40 @@ public class HostController : MonoBehaviour
         else
         {
             Debug.LogError($"Error: {response.message}");
+        }
+    }
+
+    public async void JoinHost(HostData hostData)
+    {
+        // 요청 생성 및 보내기
+        ApiResponse response = await RequestManager.Instance.Post<HostData, ApiResponse>("/host/join", hostData);
+
+        if (response.status == 200)
+        {
+            Debug.Log($"Success: {response.message}");
+            manager.networkAddress = (string) response.date;
+            manager.StartClient();
+        }
+        else
+        {
+            Debug.LogError($"Error: {response.message}");
+        }
+    }
+
+    public async Task<List<HostData>> GetHostList()
+    {
+        // 요청 생성 및 보내기
+        ApiResponse response = await RequestManager.Instance.Get<ApiResponse>("/host");
+
+        if (response.status == 200)
+        {
+            Debug.Log($"Success: {response.message}");
+            return JsonConvert.DeserializeObject<List<HostData>>(response.date.ToString());
+        }
+        else
+        {
+            Debug.LogError($"Error: {response.message}");
+            return new List<HostData>();
         }
     }
 }

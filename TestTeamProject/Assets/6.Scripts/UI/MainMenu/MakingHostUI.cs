@@ -34,11 +34,11 @@ public class MakingHostUI : MonoBehaviour
         {
             if (i == count - 1)
             {
-                maxPlayerCountButtons[i].image.color = new Color(255f, 255f, 255f, 255f);
+                maxPlayerCountButtons[i].image.color = new Color(1f, 1f, 1f, 1f);
             }
             else
             {
-                maxPlayerCountButtons[i].image.color = new Color(255f, 255f, 255f, 0f);
+                maxPlayerCountButtons[i].image.color = new Color(1f, 1f, 1f, 0f);
             }
         }
     }

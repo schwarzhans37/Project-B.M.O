@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 public class RequestManager : MonoBehaviour
 {
@@ -77,33 +78,33 @@ public class RequestManager : MonoBehaviour
     {
         string jsonData = JsonUtility.ToJson(data);
         string response = await SendRequest(url, UnityWebRequest.kHttpVerbPOST, jsonData);
-        return response != null ? JsonUtility.FromJson<TResponse>(response) : default;
+        return response != null ? JsonConvert.DeserializeObject<TResponse>(response) : default;
     }
 
     public async Task<TResponse> Get<TResponse>(string url)
     {
         string response = await SendRequest(url, UnityWebRequest.kHttpVerbGET);
-        return response != null ? JsonUtility.FromJson<TResponse>(response) : default;
+        return response != null ? JsonConvert.DeserializeObject<TResponse>(response) : default;
     }
 
     public async Task<TResponse> Patch<TRequest, TResponse>(string url, TRequest data)
     {
         string jsonData = JsonUtility.ToJson(data);
         string response = await SendRequest(url, "PATCH", jsonData);
-        return response != null ? JsonUtility.FromJson<TResponse>(response) : default;
+        return response != null ? JsonConvert.DeserializeObject<TResponse>(response) : default;
     }
 
     public async Task<TResponse> Put<TRequest, TResponse>(string url, TRequest data)
     {
         string jsonData = JsonUtility.ToJson(data);
         string response = await SendRequest(url, UnityWebRequest.kHttpVerbPUT, jsonData);
-        return response != null ? JsonUtility.FromJson<TResponse>(response) : default;
+        return response != null ? JsonConvert.DeserializeObject<TResponse>(response) : default;
     }
 
     public async Task<TResponse> Delete<TResponse>(string url)
     {
         string response = await SendRequest(url, UnityWebRequest.kHttpVerbDELETE);
-        return response != null ? JsonUtility.FromJson<TResponse>(response) : default;
+        return response != null ? JsonConvert.DeserializeObject<TResponse>(response) : default;
     }
 
     /*

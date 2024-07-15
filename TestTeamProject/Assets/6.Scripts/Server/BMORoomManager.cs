@@ -8,16 +8,22 @@ public class BMORoomManager : NetworkRoomManager
     [Header("Custom Settings")]
     public int maxPlayers = 1;
 
-    public override void Awake()
+    public override void Start()
     {
-        base.Awake();
-        maxConnections = maxPlayers; // 최대 플레이어 수 설정
+        base.Start();
     }
 
-    // 서버가 시작될 때 호출되는 메서드
-    public override void OnStartHost()
+    public override void OnStartServer()
     {
-        Debug.Log("Server started on");
-        base.OnStartHost();
+        base.OnStartServer();
+
+        // 서버 시작 시 최대 플레이어 수 설정
+        maxConnections = maxPlayers;
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        // 서버 종료 시 처리할 내용 작성
     }
 }

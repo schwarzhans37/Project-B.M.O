@@ -112,14 +112,6 @@ public class PlayerController : MonoBehaviour
                 mov.y += JumpForce;
                 animator.SetTrigger("jump");
             }
-            if (Input.GetKey(KeyCode.LeftControl))
-            {
-                animator.SetBool("isCrouch", true);
-            }
-            else
-            {
-                animator.SetBool("isCrouch", false);
-            }
         }
         else
         {
@@ -136,7 +128,6 @@ public class PlayerController : MonoBehaviour
         }
         animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
         animator.SetFloat("speedY", Input.GetAxis("Vertical"));
-        // 피격시 피격모션 추가
-        // animator.SetTrigger("damaged");
+
     }
 }

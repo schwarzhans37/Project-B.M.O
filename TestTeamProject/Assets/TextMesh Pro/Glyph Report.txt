@@ -1,0 +1,24 @@
+Font: NanumGothic  Style: Regular
+Point Size: 30   SP/PD Ratio: 16.7%
+
+Characters included: 11267/11279
+Missing characters: 12
+Excluded characters: 0
+
+Characters missing from font file:
+----------------------------------------
+ID: 55204	Hex: D7A4	Char [힤]
+ID: 55205	Hex: D7A5	Char [힥]
+ID: 55206	Hex: D7A6	Char [힦]
+ID: 55207	Hex: D7A7	Char [힧]
+ID: 55208	Hex: D7A8	Char [힨]
+ID: 55209	Hex: D7A9	Char [힩]
+ID: 55210	Hex: D7AA	Char [힪]
+ID: 55211	Hex: D7AB	Char [힫]
+ID: 55212	Hex: D7AC	Char [힬]
+ID: 55213	Hex: D7AD	Char [힭]
+ID: 55214	Hex: D7AE	Char [힮]
+ID: 55215	Hex: D7AF	Char [힯]
+
+Characters excluded from packing:
+----------------------------------------

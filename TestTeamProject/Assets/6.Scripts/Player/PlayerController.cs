@@ -13,11 +13,14 @@ public class PlayerController : MonoBehaviour
 
     //캐릭터 걷기 이동속도            
     [SerializeField] float WalkSpeed = 2f;    
-    [SerializeField] float RunSpeed = 6f; 
-    [SerializeField] float JumpForce = 5f; 
+    [SerializeField] float RunSpeed = 4f; 
+    [SerializeField] float JumpForce = 5f;
 
     //캐릭터 애니메이션 컴포넌트
     public Animator animator;
+    bool isFalling;
+    bool isJump;
+    bool isCrouch;
 
     //------------------------- 마우스 -------------------------
     //마우스 상하좌우
@@ -52,7 +55,7 @@ public class PlayerController : MonoBehaviour
         //벡터 초기화
         mov = Vector3.zero;
         //중력강도
-        gravity = 9.8f;    
+        gravity = 9.8f;
     }
 
     // Update is called once per frame
@@ -88,9 +91,9 @@ public class PlayerController : MonoBehaviour
     void Moving()
     {
         float speed = 0f;
-        
+
         //달리기 조작 여부
-        if(Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && isCrouch == false)
         {
             speed = RunSpeed;
         }
@@ -111,6 +114,7 @@ public class PlayerController : MonoBehaviour
             {
                 mov.y += JumpForce;
                 animator.SetTrigger("jump");
+                isJump = true;
             }
         }
         else
@@ -122,10 +126,38 @@ public class PlayerController : MonoBehaviour
     void AnimationUpdate()
     {
         animator.SetBool("isRun", false);
+        animator.SetBool("isCrouch", false);
         if (Input.GetKey(KeyCode.LeftShift))
         {
             animator.SetBool("isRun", true);
         }
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            animator.SetBool("isCrouch", true);
+            isCrouch = true;
+        }
+        else
+            isCrouch = false;
+        if (isJump == true && mov.y < 0)
+        {
+            animator.SetBool("isFalling",true);
+            isFalling = true;
+        }
+        if (isFalling == true && mov.y == 0)
+        {
+            animator.SetTrigger("isLanding");
+            animator.SetBool("isFalling", false);
+            isFalling = false;
+            isJump = false;
+        }
+
+        
+        // 피격 조건 추가
+        /* if ( 피격 시 )
+        {
+            animator.SetTrigger("isHitted");
+        }
+        */
         animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
         animator.SetFloat("speedY", Input.GetAxis("Vertical"));
 

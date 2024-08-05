@@ -10,6 +10,7 @@ public class LoginView : MonoBehaviour
     public Button webLinkButton;
 
     public event System.Action<string, string> OnLoginAttempt;
+    public event System.Action OnWebLinkAttempt;
 
     void Start()
     {
@@ -19,7 +20,7 @@ public class LoginView : MonoBehaviour
         });
         webLinkButton.onClick.AddListener(() =>
         {
-            Application.OpenURL("http://localhost");
+            OnWebLinkAttempt?.Invoke();
         });
     }
 
@@ -27,5 +28,4 @@ public class LoginView : MonoBehaviour
     {
         Debug.Log($"message: {message}");
     }
-
 }

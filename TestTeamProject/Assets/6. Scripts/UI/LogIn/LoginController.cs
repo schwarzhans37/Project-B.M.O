@@ -7,10 +7,13 @@ public class LoginController : MonoBehaviour
     void Start()
     {
         loginView.OnLoginAttempt += HandleLoginAttempt;
+        loginView.OnWebLinkAttempt += HandleWebLinkAttempt;
     }
 
     async void HandleLoginAttempt(string email, string password)
     {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
+        /**
         UserModel userModel = new(email, password);
         ApiResponse response = await userModel.Login();
 
@@ -24,6 +27,12 @@ public class LoginController : MonoBehaviour
         {
             loginView.ShowMessage(response.message);
         }
+        **/
+    }
+
+    void HandleWebLinkAttempt()
+    {
+        Application.OpenURL("http://localhost");
     }
 
 }

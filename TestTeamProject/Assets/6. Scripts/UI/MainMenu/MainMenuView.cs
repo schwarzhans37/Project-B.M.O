@@ -11,10 +11,7 @@ public class MainMenuView : MonoBehaviour
     public Button settingButton;
     public Button exitButton;
     public Button webLinkButton;
-
-    public event System.Action OnCreateHostAttempt;
-    public event System.Action OnJoinHostAttempt;
-    public event System.Action OnSettingAttempt;
+    
     public event System.Action OnExitAttempt;
     public event System.Action OnWebLinkAttempt;
 
@@ -22,7 +19,6 @@ public class MainMenuView : MonoBehaviour
     {
         createHostButton.onClick.AddListener(() =>
         {
-            OnCreateHostAttempt?.Invoke();
             if (createHostUI != null)
             {
                 createHostUI.SetActive(true);
@@ -30,7 +26,6 @@ public class MainMenuView : MonoBehaviour
         });
         joinHostButton.onClick.AddListener(() =>
         {
-            OnJoinHostAttempt?.Invoke();
             if (joinHostUI != null)
             {
                 joinHostUI.SetActive(true);
@@ -38,7 +33,6 @@ public class MainMenuView : MonoBehaviour
         });
         settingButton.onClick.AddListener(() =>
         {
-            OnSettingAttempt?.Invoke();
             if (settingUI != null)
             {
                 settingUI.SetActive(true);

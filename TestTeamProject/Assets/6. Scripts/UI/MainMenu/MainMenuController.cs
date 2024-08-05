@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MainMenuController : MonoBehaviour
@@ -8,26 +6,8 @@ public class MainMenuController : MonoBehaviour
 
     void Start()
     {
-        mainMenuView.OnCreateHostAttempt += HandleCreateHostAttempt;
-        mainMenuView.OnJoinHostAttempt += HandleJoinHostAttempt;
-        mainMenuView.OnSettingAttempt += HandleSettingAttempt;
         mainMenuView.OnExitAttempt += HandleExitAttempt;
         mainMenuView.OnWebLinkAttempt += HandleWebLinkAttempt;
-    }
-
-    void HandleCreateHostAttempt()
-    {
-
-    }
-
-    void HandleJoinHostAttempt()
-    {
-        
-    }
-
-    void HandleSettingAttempt()
-    {
-        
     }
 
     void HandleExitAttempt()

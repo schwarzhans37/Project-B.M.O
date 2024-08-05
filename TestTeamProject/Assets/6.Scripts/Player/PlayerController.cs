@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     //캐릭터 걷기 이동속도            
     [SerializeField] float WalkSpeed = 2f;    
-    [SerializeField] float RunSpeed = 4f; 
+    [SerializeField] float RunSpeed = 3f; 
     [SerializeField] float JumpForce = 5f;
 
     //캐릭터 애니메이션 컴포넌트

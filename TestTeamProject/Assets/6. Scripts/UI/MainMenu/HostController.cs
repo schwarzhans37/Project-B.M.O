@@ -7,17 +7,16 @@ using Newtonsoft.Json;
 
 public class HostController : MonoBehaviour
 {
-    private BMORoomManager manager;
+    private CustomNetworkRoomManager manager;
 
     private void Start()
     {
-        manager = (BMORoomManager) BMORoomManager.singleton;
+        manager = (CustomNetworkRoomManager) CustomNetworkRoomManager.singleton;
     }
 
     public async void CreateHost(string name, string password, int maxPlayerCount)
     {
-        manager.maxPlayers = maxPlayerCount;
-        manager.maxConnections = manager.maxPlayers;
+        manager.maxConnections = maxPlayerCount;
 
         // 호스트 서버 생성
         manager.StartHost();
@@ -93,16 +92,4 @@ public class HostController : MonoBehaviour
         }
         */
     }
-}
-
-[System.Serializable]
-public class HostData
-{
-    public string id;
-    public string name;
-    public string nickname;
-    public string password;
-    public string ipAddress;
-    public int currentPlayers;
-    public int maxPlayers;
 }

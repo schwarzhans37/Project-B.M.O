@@ -1,17 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class JoinHostController : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public JoinHostView joinHostView;
+    private CustomNetworkRoomManager manager;
+
     void Start()
+    {
+        joinHostView.OnFindHostAttempt += HandleFindHostAttempt;
+        joinHostView.OnJoinHostAttempt += HandleJoinHostAttempt;
+
+        manager = (CustomNetworkRoomManager) CustomNetworkRoomManager.singleton;
+    }
+
+    void HandleFindHostAttempt(string text)
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    void HandleJoinHostAttempt(HostData hostData)
     {
         
     }

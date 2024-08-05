@@ -13,9 +13,9 @@ public class LoginController : MonoBehaviour
     async void HandleLoginAttempt(string email, string password)
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
-        /**
-        UserModel userModel = new(email, password);
-        ApiResponse response = await userModel.Login();
+
+        /*
+        ApiResponse response = await UserModel.Instance.Login(email, password);
 
         if (response.status == 200)
         {
@@ -27,7 +27,7 @@ public class LoginController : MonoBehaviour
         {
             loginView.ShowMessage(response.message);
         }
-        **/
+        */
     }
 
     void HandleWebLinkAttempt()

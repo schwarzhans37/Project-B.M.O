@@ -1,23 +1,30 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class UserModel
+public class UserModel: MonoBehaviour
 {
-    public string Email { get; private set; }
-    public string Password { get; private set; }
+    public static UserModel Instance { get; private set; }
+    public string Nickname { get; private set; }
 
-    public UserModel(string email, string password)
+    private void Awake()
     {
-        Email = email;
-        Password = password;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    public async Task<ApiResponse> Login()
+    public async Task<ApiResponse> Login(string email, string password)
     {
         LoginData loginData = new()
         {
-            email = Email,
-            password = Password
+            email = email,
+            password = password
         };
 
         ApiResponse response = await RequestManager.Instance.Post<LoginData, ApiResponse>("/login", loginData);

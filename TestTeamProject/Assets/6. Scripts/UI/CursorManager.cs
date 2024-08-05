@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public class GlobalCursorManager : MonoBehaviour
+public class CursorManager : MonoBehaviour
 {
+    public static CursorManager Instance;
+        
     public Texture2D defaultCursorTexture;
     public Texture2D hoverCursorTexture;
     public Vector2 hotSpot = Vector2.zero;
@@ -9,7 +11,20 @@ public class GlobalCursorManager : MonoBehaviour
 
     void Awake()
     {
-        DontDestroyOnLoad(gameObject); // 씬 전환 시 오브젝트가 파괴되지 않도록 설정
+        // 싱글톤 패턴 구현
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 씬 전환 시 오브젝트가 파괴되지 않도록 설정
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    void Start()
+    {
         SetDefaultCursor();
     }
 

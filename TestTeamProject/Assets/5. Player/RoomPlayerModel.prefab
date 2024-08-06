@@ -6668,8 +6668,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2781572294228024325}
   - component: {fileID: 1269800856542302154}
-  - component: {fileID: 786557156852907777}
   - component: {fileID: 5392903352943029229}
+  - component: {fileID: 786557156852907777}
   - component: {fileID: 8569085855841070812}
   - component: {fileID: 7882166496542667802}
   m_Layer: 0
@@ -6721,24 +6721,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &786557156852907777
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8077336143757972396}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39a6b26cd42dc91429b3d86b06b9b9d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  showRoomGUI: 1
-  readyToBegin: 0
-  index: 0
 --- !u!143 &5392903352943029229
 CharacterController:
   m_ObjectHideFlags: 0
@@ -6765,6 +6747,24 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &786557156852907777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8077336143757972396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39a6b26cd42dc91429b3d86b06b9b9d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  showRoomGUI: 1
+  readyToBegin: 0
+  index: 0
 --- !u!114 &8569085855841070812
 MonoBehaviour:
   m_ObjectHideFlags: 0

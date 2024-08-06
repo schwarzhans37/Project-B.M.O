@@ -14,6 +14,6 @@ public class CreateHostController : MonoBehaviour
 
     void HandleCreateHostAttempt(string name, string password, int maxPlayerCount)
     {
-        manager.StartServer();
+        manager.StartHost();
     }
 }

@@ -3,17 +3,17 @@ using UnityEngine;
 public class CreateHostController : MonoBehaviour
 {
     public CreateHostView createHostView;
-    private CustomNetworkRoomManager manager;
+    public GameObject networkManager;
 
     void Start()
     {
         createHostView.OnCreateHostAttempt += HandleCreateHostAttempt;
-
-        manager = (CustomNetworkRoomManager) CustomNetworkRoomManager.singleton;
+       
     }
 
     void HandleCreateHostAttempt(string name, string password, int maxPlayerCount)
     {
-        manager.StartHost();
+        networkManager.GetComponent<CustomNetworkRoomManager>().StartHost();
+        networkManager.GetComponent<CustomNetworkDiscovery>().AdvertiseServer();
     }
 }

@@ -10,9 +10,8 @@ public class CreateHostView : MonoBehaviour
     public Button createHostButton;
     public Button cancelButton;
 
-    private int maxPlayerCount = 1;
-
-    public event System.Action<string, string, int> OnCreateHostAttempt;
+    public event System.Action<string, string> OnCreateHostAttempt;
+    public event System.Action<int> OnSelectedMaxPlayerCountAttempt;
     
     void Start()
     {
@@ -21,22 +20,26 @@ public class CreateHostView : MonoBehaviour
             int index = i;
             maxPlayerButtons[i].onClick.AddListener(() => 
             {
-                maxPlayerCount = index + 1;
+                OnSelectedMaxPlayerCountAttempt?.Invoke(index + 1);
+                Debug.Log("Max player count " + (index + 1));
             });
         }
         createHostButton.onClick.AddListener(() =>
         {
-            OnCreateHostAttempt?.Invoke(hostNameInput.text, hostPasswordInput.text, maxPlayerCount);
+            OnCreateHostAttempt?.Invoke(hostNameInput.text, hostPasswordInput.text);
         });
         cancelButton.onClick.AddListener(OnCancelButton);
         gameObject.GetComponent<Button>().onClick.AddListener(OnCancelButton);
     }
 
-    void OnCancelButton()
+    void OnDisable()
     {
         hostNameInput.text = "";
         hostPasswordInput.text = "";
+    }
 
+    void OnCancelButton()
+    {
         gameObject.SetActive(false);
     }
 }

@@ -2,74 +2,102 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 
+[RequireComponent(typeof(JoinHostView))]
 public class JoinHostController : MonoBehaviour
 {
-    public JoinHostView joinHostView;
-    public GameObject networkManager;
+    readonly Dictionary<long, DiscoveryResponse> discoveredServers = new Dictionary<long, DiscoveryResponse>();
 
     private CancellationTokenSource cancellationTokenSource;
     private string findHostInput = "";
+    private float doubleClickTime = 0.25f; // 두 번 클릭 사이의 최대 시간
+    private float lastClickTime = 0f;
+    private DiscoveryResponse selectedHostInfo;
 
-    readonly Dictionary<long, DiscoveryResponse> discoveredServers = new Dictionary<long, DiscoveryResponse>();
+    public JoinHostView joinHostView;
+    public CustomNetworkDiscovery networkDiscovery;
+
+#if UNITY_EDITOR
+        void OnValidate()
+        {
+            if (joinHostView == null)
+                joinHostView = GetComponent<JoinHostView>();
+        }
+#endif
 
     void Start()
     {
         joinHostView.OnFindHostAttempt += HandleFindHostAttempt;
+        joinHostView.OnSelectedHostAttempt += HandleSelectedHostAttempt;
         joinHostView.OnJoinHostAttempt += HandleJoinHostAttempt;
+    }
+
+    void OnEnable()
+    {
+        discoveredServers.Clear();
+        networkDiscovery.StartDiscovery();
+    }
+
+    void OnDisable()
+    {
+        discoveredServers.Clear();
+        networkDiscovery.StopDiscovery();
     }
 
     async void HandleFindHostAttempt(string text)
     {
-        Debug.Log("FindHostAttempt: " + text);
-
         // 이전 작업 취소
         cancellationTokenSource?.Cancel();
         cancellationTokenSource = new CancellationTokenSource();
 
         try
         {
-            await Task.Delay(1000, cancellationTokenSource.Token); // 1초 대기
+            await Task.Delay(500, cancellationTokenSource.Token);
             findHostInput = text;
+            Debug.Log("FindHostAttempt " + text);
             joinHostView.ClearHosts();
             discoveredServers.Clear();
         }
         catch (TaskCanceledException)
         {
-            // 작업이 취소된 경우 예외 처리
+            // 작업이 취소된 경우
         }
     }
 
-    void HandleJoinHostAttempt(DiscoveryResponse info)
+    void HandleSelectedHostAttempt(DiscoveryResponse info)
     {
-        Debug.Log("JoinHostAttempt: " + info.uri);
-        networkManager.GetComponent<CustomNetworkRoomManager>().StartClient(info.uri);
+        if (Time.time - lastClickTime < doubleClickTime)
+        {
+            if (selectedHostInfo == info)
+            {
+                joinHostView.ShowConfirmPassword();
+                return;
+            }
+        }
+
+        selectedHostInfo = info;
+        lastClickTime = Time.time;
+        Debug.Log("Selected Host" + info.uri);
+    }
+
+    void HandleJoinHostAttempt()
+    {
+        CustomNetworkRoomManager.singleton.StartClient(selectedHostInfo.uri);
+        networkDiscovery.StopDiscovery();
     }
 
     public void OnDiscoveredServer(DiscoveryResponse info)
     {
-        Debug.Log("DiscoveredServer: " + info.uri);
-
-        if (!discoveredServers.ContainsKey(info.serverId))
+        if (discoveredServers.ContainsKey(info.serverId))
         {
-            discoveredServers[info.serverId] = info;
-            if (info.EndPoint.Address.ToString().Contains(findHostInput))
-            {
-                joinHostView.AddHost(info);
-            }
+            return;
         }
-    }
 
-    void OnEnable()
-    {
-        discoveredServers.Clear();
-        networkManager.GetComponent<CustomNetworkDiscovery>().StartDiscovery();
-    }
-
-    void OnDisable()
-    {
-        discoveredServers.Clear();
-        networkManager.GetComponent<CustomNetworkDiscovery>().StopDiscovery();
+        discoveredServers[info.serverId] = info;
+        Debug.Log("Discovered server " + info.uri);
+        if (info.roomName.Contains(findHostInput))
+        {
+            joinHostView.AddHost(info);
+        }
     }
 }

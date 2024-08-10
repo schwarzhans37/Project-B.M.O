@@ -3,7 +3,6 @@ using Mirror.Discovery;
 using System;
 using System.Net;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse>
 {
@@ -16,7 +15,11 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
             return new DiscoveryResponse
             {
                 serverId = ServerId,
-                uri = transport.ServerUri()
+                uri = transport.ServerUri(),
+                nickname = UserModel.Instance.Nickname,
+                roomName = HostModel.Instance.RoomName,
+                currentPlayerCount = CustomNetworkRoomManager.singleton.numPlayers,
+                maxPlayerCount = CustomNetworkRoomManager.singleton.maxConnections,
             };
         }
         catch (NotImplementedException)
@@ -67,4 +70,9 @@ public class DiscoveryResponse : NetworkMessage
 
     // LAN에서 여러 NIC를 통해 연결할 수 있을 때 중복 서버가 나타나는 것을 방지
     public long serverId;
+
+    public string nickname;
+    public string roomName;
+    public int currentPlayerCount;
+    public int maxPlayerCount;
 }

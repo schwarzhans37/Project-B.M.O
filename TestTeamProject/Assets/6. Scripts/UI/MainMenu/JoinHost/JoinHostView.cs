@@ -13,13 +13,9 @@ public class JoinHostView : MonoBehaviour
     public Button joinHostButton;
     public Button cancelButton;
 
-    private DiscoveryResponse selectedHost;
-
-    private Dictionary<Button, float> buttonLastClickThreshold = new Dictionary<Button, float>();
-    private const float doubleClickThreshold = 0.3f; // 더블 클릭으로 인식할 시간 간격 (초)
-
     public event System.Action<string> OnFindHostAttempt;
-    public event System.Action<DiscoveryResponse> OnJoinHostAttempt;
+    public event System.Action<DiscoveryResponse> OnSelectedHostAttempt;
+    public event System.Action OnJoinHostAttempt;
 
     void Start()
     {
@@ -29,11 +25,17 @@ public class JoinHostView : MonoBehaviour
         });
         joinHostButton.onClick.AddListener(() =>
         {
-            OnJoinHostAttempt?.Invoke(selectedHost);
+            OnJoinHostAttempt?.Invoke();
         });
         cancelButton.onClick.AddListener(OnCancelButton);
         confirmPassword.GetComponent<Button>().onClick.AddListener(OnCancelButton);
         gameObject.GetComponent<Button>().onClick.AddListener(OnMainBackgroundButton);
+    }
+
+    void OnDisable()
+    {
+        findHostInput.text = "";
+        ClearHosts();
     }
 
     void OnMainBackgroundButton()
@@ -44,56 +46,43 @@ public class JoinHostView : MonoBehaviour
     void OnCancelButton()
     {
         hostPasswordInput.text = "";
-
         confirmPassword.SetActive(false);
+    }
+
+    public void ShowConfirmPassword()
+    {
+        confirmPassword.SetActive(true);
     }
 
     public void AddHost(DiscoveryResponse info)
     {
         GameObject hostItem = Instantiate(hostItemPrefab, contentTransform);
-        hostItem.transform.Find("Title").GetComponent<TMP_Text>().text = info.EndPoint.Address.ToString();
-        hostItem.transform.Find("Nickname").GetComponent<TMP_Text>().text = info.serverId.ToString();
+
+        if (info.roomName != null && info.roomName != "")
+        {
+            hostItem.transform.Find("Title").GetComponent<TMP_Text>().text = info.roomName;
+        }
+        if (info.nickname != null && info.nickname != "")
+        {
+            hostItem.transform.Find("Nickname").GetComponent<TMP_Text>().text = info.nickname;
+        }
+        hostItem.transform.Find("CurrentPlayers").GetComponent<TMP_Text>().text = $"{info.currentPlayerCount}  /  {info.maxPlayerCount}";
 
         if (hostItem.TryGetComponent<Button>(out var button))
         {
             button.onClick.RemoveAllListeners(); // 중복 방지
-            button.onClick.AddListener(() => SelectHost(button, info));
+            button.onClick.AddListener(() =>
+            {
+                OnSelectedHostAttempt?.Invoke(info);
+            });
         }
     }
 
     public void ClearHosts()
     {
-        buttonLastClickThreshold.Clear();
         foreach (Transform item in contentTransform)
         {
             Destroy(item.gameObject);
         }
-    }
-
-    void SelectHost(Button button, DiscoveryResponse info)
-    {
-        selectedHost = info;
-
-        if (buttonLastClickThreshold.ContainsKey(button))
-        {
-            if (Time.time - buttonLastClickThreshold[button] < doubleClickThreshold)
-            {
-                confirmPassword.SetActive(true);
-            }
-        }
-
-        buttonLastClickThreshold[button] = Time.time;
-    }
-
-    void OnEnable()
-    {
-        findHostInput.text = "ALL";
-        findHostInput.text = "";
-    }
-
-    void OnDisable()
-    {
-        findHostInput.text = "";
-        ClearHosts();
     }
 }

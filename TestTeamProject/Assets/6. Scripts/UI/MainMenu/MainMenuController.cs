@@ -1,8 +1,17 @@
 using UnityEngine;
 
+[RequireComponent(typeof(MainMenuView))]
 public class MainMenuController : MonoBehaviour
 {
     public MainMenuView mainMenuView;
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (mainMenuView == null)
+            mainMenuView = GetComponent<MainMenuView>();
+    }
+#endif
 
     void Start()
     {
@@ -12,11 +21,11 @@ public class MainMenuController : MonoBehaviour
 
     void HandleExitAttempt()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#else
             Application.Quit();
-        #endif
+#endif
     }
 
     void HandleWebLinkAttempt()

@@ -4385,7 +4385,7 @@ GameObject:
   - component: {fileID: 1273339011}
   - component: {fileID: 1273339010}
   - component: {fileID: 1273339012}
-  - component: {fileID: 1273339014}
+  - component: {fileID: 1273339015}
   - component: {fileID: 1273339013}
   m_Layer: 5
   m_Name: JoinHostUI
@@ -4516,7 +4516,7 @@ MonoBehaviour:
   contentTransform: {fileID: 138624019}
   joinHostButton: {fileID: 428700327}
   cancelButton: {fileID: 1555199209}
---- !u!114 &1273339014
+--- !u!114 &1273339015
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4529,7 +4529,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   joinHostView: {fileID: 1273339013}
-  networkManager: {fileID: 1598124221}
+  networkDiscovery: {fileID: 1598124226}
 --- !u!1 &1300467491
 GameObject:
   m_ObjectHideFlags: 0
@@ -6393,19 +6393,19 @@ MonoBehaviour:
   OnServerFound:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1273339014}
+      - m_Target: {fileID: 1273339015}
         m_TargetAssemblyTypeName: JoinHostController, Assembly-CSharp
         m_MethodName: OnDiscoveredServer
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  secretHandshake: -6163089346658989568
+  secretHandshake: -7547513908364164838
 --- !u!1 &1651621833
 GameObject:
   m_ObjectHideFlags: 0
@@ -6418,7 +6418,7 @@ GameObject:
   - component: {fileID: 1651621836}
   - component: {fileID: 1651621835}
   - component: {fileID: 1651621837}
-  - component: {fileID: 1651621839}
+  - component: {fileID: 1651621840}
   - component: {fileID: 1651621838}
   m_Layer: 5
   m_Name: CreateHostUI
@@ -6550,7 +6550,7 @@ MonoBehaviour:
   - {fileID: 687314798}
   createHostButton: {fileID: 1302879612}
   cancelButton: {fileID: 787786917}
---- !u!114 &1651621839
+--- !u!114 &1651621840
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6563,7 +6563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   createHostView: {fileID: 1651621838}
-  networkManager: {fileID: 1598124221}
+  networkDiscovery: {fileID: 1598124226}
 --- !u!1 &1659562970
 GameObject:
   m_ObjectHideFlags: 0

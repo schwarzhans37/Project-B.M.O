@@ -17,13 +17,11 @@ public class JoinHostController : MonoBehaviour
     public JoinHostView joinHostView;
     public CustomNetworkDiscovery networkDiscovery;
 
-#if UNITY_EDITOR
-        void OnValidate()
-        {
-            if (joinHostView == null)
-                joinHostView = GetComponent<JoinHostView>();
-        }
-#endif
+    void OnValidate()
+    {
+        if (joinHostView == null)
+            joinHostView = GetComponent<JoinHostView>();
+    }
 
     void Start()
     {

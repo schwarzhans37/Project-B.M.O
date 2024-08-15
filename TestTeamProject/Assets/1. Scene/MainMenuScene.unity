@@ -6305,7 +6305,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 6699942862432109240, guid: cdeb9ae957fbb7440a7eb99f94d47572, type: 3}
+  playerPrefab: {fileID: 4521791129677515521, guid: 7a14eaafe2ffe2940b18c8a334b94d04, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs: []
@@ -6326,7 +6326,7 @@ MonoBehaviour:
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1
-  roomPlayerPrefab: {fileID: 786557156852907777, guid: 05bcc3a4b33e088408f7a66f29b4887e, type: 3}
+  roomPlayerPrefab: {fileID: 6156153773084615786, guid: 6e2f78ae1e942e2408e9e12a483cec5d, type: 3}
   RoomScene: Assets/1. Scene/MatchingRoomScene.unity
   GameplayScene: Assets/1. Scene/MainGameScene.unity
   _allPlayersReady: 0

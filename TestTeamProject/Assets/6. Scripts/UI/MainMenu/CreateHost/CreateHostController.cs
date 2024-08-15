@@ -8,13 +8,11 @@ public class CreateHostController : MonoBehaviour
     public CreateHostView createHostView;
     public CustomNetworkDiscovery networkDiscovery;
 
-#if UNITY_EDITOR
-        void OnValidate()
-        {
-            if (createHostView == null)
-                createHostView = GetComponent<CreateHostView>();
-        }
-#endif
+    void OnValidate()
+    {
+        if (createHostView == null)
+            createHostView = GetComponent<CreateHostView>();
+    }
 
     void Start()
     {

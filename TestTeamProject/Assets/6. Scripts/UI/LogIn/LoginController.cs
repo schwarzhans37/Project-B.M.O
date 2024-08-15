@@ -1,8 +1,16 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(LoginView))]
 public class LoginController : MonoBehaviour
 {
     public LoginView loginView;
+
+    void OnValidate()
+    {
+        if (loginView == null)
+            loginView = GetComponent<LoginView>();
+    }
 
     void Start()
     {
@@ -12,7 +20,7 @@ public class LoginController : MonoBehaviour
 
     async void HandleLoginAttempt(string email, string password)
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
+        SceneManager.LoadScene("MainMenuScene");
 
         /*
         ApiResponse response = await UserModel.Instance.Login(email, password);

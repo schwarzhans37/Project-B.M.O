@@ -5,13 +5,11 @@ public class MainMenuController : MonoBehaviour
 {
     public MainMenuView mainMenuView;
 
-#if UNITY_EDITOR
     void OnValidate()
     {
         if (mainMenuView == null)
             mainMenuView = GetComponent<MainMenuView>();
     }
-#endif
 
     void Start()
     {

@@ -38,13 +38,17 @@ public class PlayerCamera : NetworkBehaviour
     void Start()
     {
         // 커서를 중앙에 고정하고 숨김
-        Cursor.lockState = CursorLockMode.Locked; 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
         // 로컬 플레이어 인지 확인
         if (!isLocalPlayer)
+            return;
+        // 커서가 잠겨있지 않으면 함수 종료
+        if (GameUIController.IsPaused)
             return;
 
         // 마우스 입력 값 받아오기

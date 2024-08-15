@@ -1,6 +1,5 @@
 using Mirror;
 using UnityEngine;
-using UnityEngine.XR;
 
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(CharacterController))]
@@ -79,6 +78,8 @@ public class PlayerControllerTest : NetworkBehaviour
             return;
         // CharacterController가 활성화 되어있지 않으면 리턴
         if (!characterController.enabled)
+            return;
+        if (GameUIController.IsPaused)
             return;
 
         HandleJumping();

@@ -4,16 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 public class CreateHostView : MonoBehaviour
 {   
-    public Button mainButton;
     public TMP_InputField hostNameInput;
     public TMP_InputField hostPasswordInput; 
     public List<Button> maxPlayerButtons;
     public Button createHostButton;
     public Button cancelButton;
 
-    private int maxPlayerCount = 1;
-
-    public event System.Action<string, string, int> OnCreateHostAttempt;
+    public event System.Action<string, string> OnCreateHostAttempt;
+    public event System.Action<int> OnSelectedMaxPlayerCountAttempt;
     
     void Start()
     {
@@ -22,22 +20,26 @@ public class CreateHostView : MonoBehaviour
             int index = i;
             maxPlayerButtons[i].onClick.AddListener(() => 
             {
-                maxPlayerCount = index + 1;
+                OnSelectedMaxPlayerCountAttempt?.Invoke(index + 1);
+                Debug.Log("Max player count " + (index + 1));
             });
         }
         createHostButton.onClick.AddListener(() =>
         {
-            OnCreateHostAttempt?.Invoke(hostNameInput.text, hostPasswordInput.text, maxPlayerCount);
+            OnCreateHostAttempt?.Invoke(hostNameInput.text, hostPasswordInput.text);
         });
         cancelButton.onClick.AddListener(OnCancelButton);
-        mainButton.onClick.AddListener(OnCancelButton);
+        gameObject.GetComponent<Button>().onClick.AddListener(OnCancelButton);
+    }
+
+    void OnDisable()
+    {
+        hostNameInput.text = "";
+        hostPasswordInput.text = "";
     }
 
     void OnCancelButton()
     {
-        hostNameInput.text = "";
-        hostPasswordInput.text = "";
-
         gameObject.SetActive(false);
     }
 }

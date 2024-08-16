@@ -50,7 +50,7 @@ public class PauseMenu : MonoBehaviour
 
     public void BackTotheLobby()
     {
-        var manager = BMORoomManager.singleton;
+        var manager = CustomNetworkRoomManager.singleton;
         if (manager.mode == Mirror.NetworkManagerMode.Host)
         {
             manager.StopHost();

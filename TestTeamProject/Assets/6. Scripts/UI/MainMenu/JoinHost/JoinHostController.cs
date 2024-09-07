@@ -52,7 +52,6 @@ public class JoinHostController : MonoBehaviour
         {
             await Task.Delay(500, cancellationTokenSource.Token);
             findHostInput = text;
-            Debug.Log("FindHostAttempt " + text);
             joinHostView.ClearHosts();
             discoveredServers.Clear();
         }
@@ -75,7 +74,6 @@ public class JoinHostController : MonoBehaviour
 
         selectedHostInfo = info;
         lastClickTime = Time.time;
-        Debug.Log("Selected Host" + info.uri);
     }
 
     void HandleJoinHostAttempt()
@@ -92,7 +90,6 @@ public class JoinHostController : MonoBehaviour
         }
 
         discoveredServers[info.serverId] = info;
-        Debug.Log("Discovered server " + info.uri);
         if (info.roomName.Contains(findHostInput))
         {
             joinHostView.AddHost(info);

@@ -21,7 +21,6 @@ public class CreateHostView : MonoBehaviour
             maxPlayerButtons[i].onClick.AddListener(() => 
             {
                 OnSelectedMaxPlayerCountAttempt?.Invoke(index + 1);
-                Debug.Log("Max player count " + (index + 1));
             });
         }
         createHostButton.onClick.AddListener(() =>

@@ -10,6 +10,9 @@ public class CreateHostView : MonoBehaviour
     public Button createHostButton;
     public Button cancelButton;
 
+    public Sprite normalSprite;
+    public Sprite seletedSprite;
+
     public event System.Action<string, string> OnCreateHostAttempt;
     public event System.Action<int> OnSelectedMaxPlayerCountAttempt;
     
@@ -21,6 +24,7 @@ public class CreateHostView : MonoBehaviour
             maxPlayerButtons[i].onClick.AddListener(() => 
             {
                 OnSelectedMaxPlayerCountAttempt?.Invoke(index + 1);
+                OnMaxPlayerButton(index);
             });
         }
         createHostButton.onClick.AddListener(() =>
@@ -35,6 +39,15 @@ public class CreateHostView : MonoBehaviour
     {
         hostNameInput.text = "";
         hostPasswordInput.text = "";
+    }
+
+    void OnMaxPlayerButton(int index)
+    {
+        for (int i = 0; i < maxPlayerButtons.Count; i++)
+        {
+            maxPlayerButtons[i].image.sprite = normalSprite;
+        }
+        maxPlayerButtons[index].image.sprite = seletedSprite;
     }
 
     void OnCancelButton()

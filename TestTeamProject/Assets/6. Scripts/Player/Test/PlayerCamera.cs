@@ -7,7 +7,7 @@ public class PlayerCamera : NetworkBehaviour
     // 마우스 감도 설정
     [Header("Sensitivity")]
     [Range(1f, 200f)]
-    public float mouseSensitivity = 50f;
+    public float mouseSensitivity = 30f;
 
     // 수직 회전을 제한하기 위한 변수
     private float xRotation = 0f;
@@ -15,23 +15,12 @@ public class PlayerCamera : NetworkBehaviour
     // 카메라 참조를 위한 변수
     public Camera playerCamera;
 
-    public override void OnStartLocalPlayer()
-    {
-        // 로컬 플레이어의 경우에만 실행
-        if (playerCamera != null)
-        {
-            // configure and make camera a child of player with 3rd person offset
-            playerCamera.orthographic = false;
-            playerCamera.transform.SetParent(transform);
-            playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.2f);
-            playerCamera.transform.localEulerAngles = new Vector3(10f, 0f, 0f);
-        }
-        else
-            Debug.LogError("PlayerCamera: playerCamera not assigned!");
-    }
-
     void Start()
     {
+        if (playerCamera == null)
+            Debug.LogError("PlayerCamera: playerCamera not assigned!");
+
+        // 로컬 플레이어인지 확인
         if (isLocalPlayer)
         {
             // 로컬 플레이어의 카메라만 활성화
@@ -42,6 +31,12 @@ public class PlayerCamera : NetworkBehaviour
             // 다른 플레이어의 카메라는 비활성화
             playerCamera.gameObject.SetActive(false);
         }
+
+        // 카메라 설정
+        playerCamera.orthographic = false;
+        playerCamera.transform.SetParent(transform);
+        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.2f);
+        playerCamera.transform.localEulerAngles = new Vector3(10f, 0f, 0f);
     }
 
     void Update()

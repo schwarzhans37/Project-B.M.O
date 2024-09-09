@@ -10,7 +10,7 @@ public class JoinHostController : MonoBehaviour
 
     private CancellationTokenSource cancellationTokenSource;
     private string findHostInput = "";
-    private float doubleClickTime = 0.25f; // 두 번 클릭 사이의 최대 시간
+    private float doubleClickTime = 0.3f; // 두 번 클릭 사이의 최대 시간
     private float lastClickTime = 0f;
     private DiscoveryResponse selectedHostInfo;
 
@@ -50,9 +50,8 @@ public class JoinHostController : MonoBehaviour
 
         try
         {
-            await Task.Delay(500, cancellationTokenSource.Token);
+            await Task.Delay(300, cancellationTokenSource.Token);
             findHostInput = text;
-            Debug.Log("FindHostAttempt " + text);
             joinHostView.ClearHosts();
             discoveredServers.Clear();
         }
@@ -75,7 +74,6 @@ public class JoinHostController : MonoBehaviour
 
         selectedHostInfo = info;
         lastClickTime = Time.time;
-        Debug.Log("Selected Host" + info.uri);
     }
 
     void HandleJoinHostAttempt()
@@ -92,7 +90,6 @@ public class JoinHostController : MonoBehaviour
         }
 
         discoveredServers[info.serverId] = info;
-        Debug.Log("Discovered server " + info.uri);
         if (info.roomName.Contains(findHostInput))
         {
             joinHostView.AddHost(info);

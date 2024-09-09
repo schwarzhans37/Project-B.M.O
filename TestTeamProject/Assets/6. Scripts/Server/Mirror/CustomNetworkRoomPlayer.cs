@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class CustomNetworkRoomPlayer : NetworkRoomPlayer
 {
+    [SyncVar]
+    public string nickname;
+
     // 플레이어의 인덱스가 변경될 때 호출
     // oldIndex: 이전 인덱스
     // newIndex: 새로운 인덱스
@@ -32,6 +35,6 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
     public override void OnClientExitRoom()
     {
         base.OnClientExitRoom();
-        
+
     }
 }

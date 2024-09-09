@@ -6672,6 +6672,7 @@ GameObject:
   - component: {fileID: 786557156852907777}
   - component: {fileID: 8569085855841070812}
   - component: {fileID: 7882166496542667802}
+  - component: {fileID: -6730806086923482525}
   m_Layer: 0
   m_Name: RoomPlayerModel
   m_TagString: Player
@@ -6801,6 +6802,23 @@ MonoBehaviour:
   mouseSpeed: 3
   PlayerModel: {fileID: 8077336143757972396}
   PlayerCamera: {fileID: 989972412439543848}
+--- !u!114 &-6730806086923482525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8077336143757972396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 0}
 --- !u!1 &8156430832451973586
 GameObject:
   m_ObjectHideFlags: 0

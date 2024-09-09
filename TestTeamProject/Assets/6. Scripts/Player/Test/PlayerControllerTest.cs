@@ -9,6 +9,7 @@ public class PlayerControllerTest : NetworkBehaviour
 {
     [Header("Avatar Components")]
     public CharacterController characterController;
+    public NetworkAnimator networkAnimator;
     public Animator animator;
 
     [Header("Movement")]
@@ -61,14 +62,25 @@ public class PlayerControllerTest : NetworkBehaviour
 
     public override void OnStartAuthority()
     {
+        base.OnStartAuthority();
         characterController.enabled = true;
         this.enabled = true;
     }
 
     public override void OnStopAuthority()
     {
+        base.OnStopAuthority();
         this.enabled = false;
         characterController.enabled = false;
+    }
+
+    void Start()
+    {
+        if (!isLocalPlayer)
+            return;
+
+        if (networkAnimator == null)
+            networkAnimator = GetComponent<NetworkAnimator>();
     }
 
     void Update()
@@ -79,12 +91,23 @@ public class PlayerControllerTest : NetworkBehaviour
         // CharacterController가 활성화 되어있지 않으면 리턴
         if (!characterController.enabled)
             return;
-        if (GameUIController.IsPaused)
-            return;
+        
+        // 일시정지 상태가 아니면 이동, 점프, 애니메이션 업데이트
+        if (!GameUIController.IsPaused)
+        {
+            HandleMove();
+            HandleJumping();
+            AnimationUpdate();
+        }
 
-        HandleJumping();
-        HandleMove();
-        AnimationUpdate();
+        // 중력 적용
+        jumpSpeed += Physics.gravity.y * Time.deltaTime;
+
+        // 방향에 점프 속도를 추가
+        direction.y = Mathf.Clamp(jumpSpeed, -10f, 10f);
+        
+        // 캐릭터를 이동
+        characterController.Move(direction * Time.deltaTime);
 
         // 진단을 위한 속도... FloorToInt를 사용하여 표시 목적
         velocity = Vector3Int.FloorToInt(characterController.velocity);
@@ -95,10 +118,8 @@ public class PlayerControllerTest : NetworkBehaviour
         if (characterController.isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             jumpSpeed = jumpForce;
-            animator.SetTrigger("jump");
+            networkAnimator.animator.SetTrigger("jump");
         }
-        else
-            jumpSpeed += Physics.gravity.y * Time.deltaTime;
     }
 
     void HandleMove()
@@ -121,21 +142,15 @@ public class PlayerControllerTest : NetworkBehaviour
 
         // 원하는 지상 속도로 곱셈
         direction *= moveSpeedMultiplier;
-
-        // 마지막 단계에서 방향에 점프 속도를 추가
-        direction.y = Mathf.Clamp(jumpSpeed, -10f, 10f);
-        
-        // 마지막으로 캐릭터를 이동
-        characterController.Move(direction * Time.deltaTime);
     }
 
     void AnimationUpdate()
     {
         // 애니메이터 설정: 달리기 여부
-        animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
+        networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
         // 애니메이터 설정: 수평 속도
-        animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+        networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
         // 애니메이터 설정: 수직 속도
-        animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+        networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(GameUIView))]
 public class GameUIController : MonoBehaviour
 {
-    public static bool IsPaused { get; private set; }
+    public static bool IsPaused { get; private set; } = false;
 
     public GameUIView gameUIView;
 
@@ -16,8 +16,10 @@ public class GameUIController : MonoBehaviour
     void Start()
     {
         IsPaused = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
-
+    
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))

@@ -12,12 +12,17 @@ public class PlayerController : MonoBehaviour
     private CharacterController cc;
 
     //캐릭터 걷기 이동속도            
-    [SerializeField] float WalkSpeed = 2f;    
-    [SerializeField] float RunSpeed = 6f; 
+    [SerializeField] float WalkSpeed = 2f;
+    [SerializeField] float CrouchSpeed = 1.5f;
+    [SerializeField] float RunSpeed = 4f; 
     [SerializeField] float JumpForce = 5f; 
 
     //캐릭터 애니메이션 컴포넌트
     public Animator animator;
+    public bool isCrouch = false;
+    public bool isLand = true;
+    public bool isFall = false;
+    public bool isJump = false;
 
     //------------------------- 마우스 -------------------------
     //마우스 상하좌우
@@ -88,9 +93,9 @@ public class PlayerController : MonoBehaviour
     void Moving()
     {
         float speed = 0f;
-        
+
         //달리기 조작 여부
-        if(Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && isCrouch == false && isLand == true)
         {
             speed = RunSpeed;
         }
@@ -98,10 +103,25 @@ public class PlayerController : MonoBehaviour
         {
             speed = WalkSpeed;
         }
-
+        // 앉기 조작 여부
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            isCrouch = true;
+            animator.SetBool("isCrouch", true);
+            speed = CrouchSpeed;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            isCrouch = false;
+            animator.SetBool("isCrouch", false);
+        }
         //중력 및 키보드 조작 반응
         if (cc.isGrounded)
         {
+
+            isLand = true;
+            isFall = false;
+            isJump = false;
             mov = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             mov = cc.transform.TransformDirection(mov);
             mov *= speed;
@@ -110,17 +130,26 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 mov.y += JumpForce;
-                animator.SetTrigger("jump");
+                isJump = true;
+                isLand = false;
             }
+            //체공 시
+            if (mov.y == 0 && isLand == false)
+            {
+                isFall = true;
+            }
+                
         }
         else
         {
             mov.y -= gravity * Time.deltaTime;
         }
         cc.Move(mov * Time.deltaTime);
+        
     }
     void AnimationUpdate()
     {
+        
         animator.SetBool("isRun", false);
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -128,6 +157,31 @@ public class PlayerController : MonoBehaviour
         }
         animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
         animator.SetFloat("speedY", Input.GetAxis("Vertical"));
-
+        if (isLand == true)
+        {
+            animator.SetTrigger("isLand");
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            animator.SetTrigger("Jump");   
+        }
+        if (isJump == true)
+        {
+            animator.SetBool("isJump", true);
+        }
+        if (isFall == true)
+        {
+            animator.SetBool("isFall", true);
+        }
+        //피격시
+        /* if (피격 조건){
+         * animator.SetTrigger("Hitted");
+         * }
+         */
+        //사망시
+        /* if (사망 조건){
+         * animator.SetBool("isDie",true);
+         * }
+         */
     }
 }

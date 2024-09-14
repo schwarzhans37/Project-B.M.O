@@ -16,6 +16,15 @@ public class MenuController : MonoBehaviour
     void Start()
     {
         menuView.OnExitAttempt += HandleExitAttempt;
+        menuView.OnPlayAttempt += HandlePlayAttempt;
+    }
+
+    void HandlePlayAttempt()
+    {
+        // 게임 일시 정지 해제
+        GameUIController.IsPaused = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void HandleExitAttempt()

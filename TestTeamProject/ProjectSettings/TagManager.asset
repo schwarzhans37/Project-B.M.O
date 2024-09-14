@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PasswordField
   - TeleportTest
+  - Transform
   layers:
   - Default
   - TransparentFX

@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
     public static CursorManager Instance;
         
     public Texture2D defaultCursorTexture;
-    public Texture2D hoverCursorTexture;
+    public Texture2D pressedCursorTexture;
     public Vector2 hotSpot = Vector2.zero;
     public CursorMode cursorMode = CursorMode.Auto;
 
@@ -23,9 +24,28 @@ public class CursorManager : MonoBehaviour
         }
     }
 
-    void Start()
+    private void OnEnable()
     {
-        SetDefaultCursor();
+        // 씬이 로드될 때마다 호출되는 이벤트 등록
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // 이벤트 해제
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            SetPressedCursor();
+        }
+        else
+        {
+            SetDefaultCursor();
+        }
     }
 
     public void SetCursor(Texture2D cursorTexture)
@@ -38,8 +58,14 @@ public class CursorManager : MonoBehaviour
         SetCursor(defaultCursorTexture);
     }
 
-    public void SetHoverCursor()
+    public void SetPressedCursor()
     {
-        SetCursor(hoverCursorTexture);
+        SetCursor(pressedCursorTexture);
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }

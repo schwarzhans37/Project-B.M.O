@@ -23,12 +23,14 @@ public class PlayerCamera : NetworkBehaviour
         // 로컬 플레이어인지 확인
         if (isLocalPlayer)
         {
-            // 로컬 플레이어의 카메라만 활성화
+            // 로컬 플레이어의 카메라는 활성화
+            gameObject.GetComponent<PlayerCamera>().enabled = true;
             playerCamera.gameObject.SetActive(true);
         }
         else
         {
-            // 다른 플레이어의 카메라는 비활성화
+            // 로컬 플레이어가 아닌 경우 카메라 비활성화
+            gameObject.GetComponent<PlayerCamera>().enabled = false;
             playerCamera.gameObject.SetActive(false);
         }
 

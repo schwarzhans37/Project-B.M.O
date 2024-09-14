@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(GameUIView))]
 public class GameUIController : MonoBehaviour
 {
-    public static bool IsPaused { get; private set; } = false;
+    public static bool IsPaused { get; set; } = false;
 
     public GameUIView gameUIView;
 

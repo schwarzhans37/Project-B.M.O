@@ -18,7 +18,16 @@ public class PlayerControllerTest : NetworkBehaviour
     [SerializeField]
     float walkSpeed = 2f;
     [SerializeField]
-    float runSpeed = 4f; 
+    float runSpeed = 4f;
+    //앉기 속도 추가
+    [SerializeField]
+    float crouchSpeed = 1f;
+    //애니메이터 플래그
+    public bool isJump = false;
+    public bool isCrouch = false;
+    public bool isFall = false;
+    public bool isLand = true;
+    public bool isTorch = false;
 
     [Header("Jumping")]
     [Range(-10f, 10f)]
@@ -104,6 +113,7 @@ public class PlayerControllerTest : NetworkBehaviour
         {
             HandleMove();
             HandleJumping();
+            HandlerItem();
             AnimationUpdate();
         }
 
@@ -122,18 +132,50 @@ public class PlayerControllerTest : NetworkBehaviour
 
     void HandleJumping()
     {
-        if (characterController.isGrounded && Input.GetKeyDown(KeyCode.Space))
+        // 점프상태 판단하기위한 플래그변수
+        if (characterController.isGrounded)
         {
-            jumpSpeed = jumpForce;
-            networkAnimator.animator.SetTrigger("jump");
+            isJump = false;
+            isFall = false;
+            isLand = true;
         }
+        // 점프기능
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            isLand = false;
+            // 공중에서 점프가 되지 않도록
+            if (!isJump)
+            {
+                
+                isJump = true;
+                jumpSpeed = jumpForce;
+                networkAnimator.animator.SetTrigger("Jump");
+            }
+        }
+        
+        if (isJump)
+        {
+            if(jumpSpeed < 0)
+            {
+                isFall = true;
+            }
+        }
+        
     }
 
     void HandleMove()
     {
         // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용
-        moveSpeedMultiplier = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
-
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            moveSpeedMultiplier = crouchSpeed;
+        }
+        else
+        {
+            moveSpeedMultiplier = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+        }
+        
+        
         // 입력 캡처
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
@@ -159,5 +201,32 @@ public class PlayerControllerTest : NetworkBehaviour
         networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
         // 애니메이터 설정: 수직 속도
         networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+        // 애니메이터 설정 : 앉기 여부
+        networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
+        // 애니메이터 설정 : 점프 여부
+        networkAnimator.animator.SetBool("isJump", isJump);
+        // 애니메이터 설정 : 추락 여부
+        networkAnimator.animator.SetBool("isFall", isFall);
+        // 애니메이터 설정 : 착지 여부
+        networkAnimator.animator.SetBool("isLand",isLand);
+        // 애니메이터 설정 : 횃불 여부
+        networkAnimator.animator.SetBool("isTorch", isTorch);
+        
     }
+
+    void HandlerItem()
+    {
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (isTorch)
+            {
+                isTorch = false;
+            }
+            else
+            {
+                isTorch = true;
+            }
+        }
+    }
+   
 }

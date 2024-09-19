@@ -85,8 +85,15 @@ public class PlayerControllerTest : NetworkBehaviour
 
     void Start()
     {
-        if (!isLocalPlayer)
-            return;
+        // 로컬 플레이어인지 확인
+        if (isLocalPlayer)
+        {
+            gameObject.GetComponent<PlayerControllerTest>().enabled = true;
+        }
+        else
+        {
+            gameObject.GetComponent<PlayerControllerTest>().enabled = false;
+        }
 
         if (networkAnimator == null)
             networkAnimator = GetComponent<NetworkAnimator>();

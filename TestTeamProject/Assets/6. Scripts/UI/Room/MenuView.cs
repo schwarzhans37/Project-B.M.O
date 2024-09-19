@@ -17,6 +17,7 @@ public class MenuView : MonoBehaviour
     {
         playButton.onClick.AddListener(() =>
         {
+            gameObject.SetActive(false);
             OnPlayAttempt?.Invoke();
         });
         hostButton.onClick.AddListener(() =>

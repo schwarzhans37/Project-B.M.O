@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using TMPro;
@@ -8,8 +9,16 @@ using UnityEngine.UI;
 public class CustomNetworkRoomPlayer : NetworkRoomPlayer
 {
     public GameObject RoomPlayerStatusPrefab;
-    public Transform contentTransform; 
+    public Transform contentTransform;
 
+    // 필수적으로 유지할 컴포넌트들을 리스트로 저장
+    private List<System.Type> essentialComponents = new List<System.Type>
+    {
+        typeof(CustomNetworkRoomPlayer),    // CustomNetworkRoomPlayer 컴포넌트
+        typeof(NetworkIdentity),            // Mirror 필수 컴포넌트
+        typeof(NetworkTransformReliable),   // (선택 사항) 네트워크 동기화를 위한 컴포넌트
+        typeof(Transform)                   // Transform 컴포넌트는 Unity의 모든 오브젝트에 필수
+    };
 
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string nickname;
@@ -159,16 +168,44 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
         {
             DrawPlayerStatus();
         }));
+
+        DisableUnnecessaryComponents();
+        DisableChildObjects();
     }
 
-    void DisableRoomPlayer()
+    private void DisableUnnecessaryComponents()
     {
-        foreach (Transform child in gameObject.transform)
+        // 현재 오브젝트의 모든 컴포넌트를 가져옴
+        Component[] components = GetComponents<Component>();
+
+        foreach (Component component in components)
+        {
+            if (!essentialComponents.Contains(component.GetType()))
+            {
+                // Behaviour 컴포넌트 비활성화
+                if (component is Behaviour behaviour)
+                {
+                    behaviour.enabled = false;
+                }
+                // Collider 및 CharacterController 비활성화
+                else if (component is Collider collider)
+                {
+                    collider.enabled = false;
+                }
+                else if (component is CharacterController characterController)
+                {
+                    characterController.enabled = false;
+                }
+            }
+        }
+    }
+
+    private void DisableChildObjects()
+    {
+        // 모든 자식 오브젝트들을 비활성화
+        foreach (Transform child in transform)
         {
             child.gameObject.SetActive(false);
         }
-
-        gameObject.GetComponent<CapsuleCollider>().enabled = false;
-        gameObject.GetComponent<CharacterController>().enabled = false;
     }
 }

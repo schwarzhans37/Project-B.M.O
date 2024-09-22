@@ -1,20 +1,18 @@
 using UnityEngine;
 
-[RequireComponent(typeof(GameUIView))]
 public class GameUIController : MonoBehaviour
 {
     public static bool IsPaused { get; set; } = false;
 
-    public GameUIView gameUIView;
-
-    void OnValidate()
-    {
-        if (gameUIView == null)
-            gameUIView = GetComponent<GameUIView>();
-    }
+    public GameObject menuUI;
 
     void Start()
     {
+        if (menuUI == null)
+        {
+            menuUI = GameObject.Find("MenuUI");
+        }
+
         IsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -27,7 +25,7 @@ public class GameUIController : MonoBehaviour
             IsPaused = !IsPaused;
             Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = !Cursor.visible;
-            gameUIView.SetActiveMenuUI();
+            menuUI.SetActive(!menuUI.activeSelf);
         }
     }
 }

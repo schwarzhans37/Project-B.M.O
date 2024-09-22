@@ -7,6 +7,9 @@ TagManager:
   - PasswordField
   - TeleportTest
   - Ground
+  - Transform
+  - InnerDoor
+  - OutsideDoor
   layers:
   - Default
   - TransparentFX

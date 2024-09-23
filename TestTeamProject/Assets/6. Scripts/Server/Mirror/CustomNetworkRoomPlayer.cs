@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using TMPro;
@@ -11,39 +10,8 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
     public GameObject RoomPlayerStatusPrefab;
     public Transform contentTransform;
 
-    // 필수적으로 유지할 컴포넌트들을 리스트로 저장
-    private List<System.Type> essentialComponents = new List<System.Type>
-    {
-        typeof(CustomNetworkRoomPlayer),    // CustomNetworkRoomPlayer 컴포넌트
-        typeof(NetworkIdentity),            // Mirror 필수 컴포넌트
-        typeof(NetworkTransformReliable),   // (선택 사항) 네트워크 동기화를 위한 컴포넌트
-        typeof(Transform)                   // Transform 컴포넌트는 Unity의 모든 오브젝트에 필수
-    };
-
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string nickname;
-
-    // UI 요소를 찾고 상태를 그리는 코루틴
-    IEnumerator WaitForPanelUI()
-    {
-        while (contentTransform == null)
-        {
-            GameObject content = GameObject.FindWithTag("Transform");
-            if (content != null)
-            {
-                contentTransform = content.GetComponent<RectTransform>();
-            }
-            yield return null; // 다음 프레임 대기
-        }
-        DrawPlayerStatus();
-    }
-
-    // 일정 시간을 기다렸다가 실행하는 코루틴
-    IEnumerator WaitAndExecute(float waitTime, System.Action action)
-    {
-        yield return new WaitForSeconds(waitTime);
-        action();
-    }
 
     public override void Start()
     {
@@ -55,7 +23,19 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
             CmdSetNickname(playerNickname); // 서버에 닉네임 전송
         }
 
+        if (contentTransform == null)
+        {
+            contentTransform = GameObject.Find("GridLayout").transform;
+        }
+
         base.Start();
+    }
+
+    // 일정 시간을 기다렸다가 실행하는 코루틴
+    IEnumerator WaitAndExecute(float waitTime, System.Action action)
+    {
+        yield return new WaitForSeconds(waitTime);
+        action();
     }
 
     // 서버에 닉네임을 전송하는 커맨드 함수
@@ -88,6 +68,26 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
         base.ReadyStateChanged(oldReadyState, newReadyState);
+        StartCoroutine(WaitAndExecute(0.1f, () =>
+        {
+            DrawPlayerStatus();
+        }));
+    }
+
+    // 클라이언트가 룸에 입장할 때 호출
+    public override void OnClientEnterRoom()
+    {
+        base.OnClientEnterRoom();
+        StartCoroutine(WaitAndExecute(0.1f, () =>
+        {
+            DrawPlayerStatus();
+        }));
+    }
+
+    // 클라이언트가 룸에서 나갈 때 호출
+    public override void OnClientExitRoom()
+    {
+        base.OnClientExitRoom();
         StartCoroutine(WaitAndExecute(0.1f, () =>
         {
             DrawPlayerStatus();
@@ -150,62 +150,6 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
                     });
                 }
             }
-        }
-    }
-
-    // 클라이언트가 룸에 입장할 때 호출
-    public override void OnClientEnterRoom()
-    {
-        base.OnClientEnterRoom();
-        StartCoroutine(WaitForPanelUI());
-    }
-
-    // 클라이언트가 룸에서 나갈 때 호출
-    public override void OnClientExitRoom()
-    {
-        base.OnClientExitRoom();
-        StartCoroutine(WaitAndExecute(0.1f, () =>
-        {
-            DrawPlayerStatus();
-        }));
-
-        DisableUnnecessaryComponents();
-        DisableChildObjects();
-    }
-
-    private void DisableUnnecessaryComponents()
-    {
-        // 현재 오브젝트의 모든 컴포넌트를 가져옴
-        Component[] components = GetComponents<Component>();
-
-        foreach (Component component in components)
-        {
-            if (!essentialComponents.Contains(component.GetType()))
-            {
-                // Behaviour 컴포넌트 비활성화
-                if (component is Behaviour behaviour)
-                {
-                    behaviour.enabled = false;
-                }
-                // Collider 및 CharacterController 비활성화
-                else if (component is Collider collider)
-                {
-                    collider.enabled = false;
-                }
-                else if (component is CharacterController characterController)
-                {
-                    characterController.enabled = false;
-                }
-            }
-        }
-    }
-
-    private void DisableChildObjects()
-    {
-        // 모든 자식 오브젝트들을 비활성화
-        foreach (Transform child in transform)
-        {
-            child.gameObject.SetActive(false);
         }
     }
 }

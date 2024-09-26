@@ -28,6 +28,14 @@ public class PlayerControllerTest : NetworkBehaviour
     public bool isFall = false;
     public bool isLand = true;
     public bool isTorch = false;
+    //사운드 테스트
+    public AudioClip footstep;
+    public AudioClip equiptorch;
+    public AudioClip landing;
+    public AudioClip jumping;
+    public AudioClip burning;
+    private float torchSoundTimer = 0f;
+    [SerializeField] private float torchSoundInterval = 4f;
 
     [Header("Jumping")]
     [Range(-10f, 10f)]
@@ -114,6 +122,7 @@ public class PlayerControllerTest : NetworkBehaviour
             HandleMove();
             HandleJumping();
             HandlerItem();
+            HandlerSound();
             AnimationUpdate();
         }
 
@@ -135,9 +144,14 @@ public class PlayerControllerTest : NetworkBehaviour
         // 점프상태 판단하기위한 플래그변수
         if (characterController.isGrounded)
         {
-            isJump = false;
-            isFall = false;
-            isLand = true;
+            if (isJump)
+            {
+                isJump = false;
+                isFall = false;
+                isLand = true;
+                AudioSource.PlayClipAtPoint(landing, transform.position);
+            }
+            
         }
         // 점프기능
         if (Input.GetKeyDown(KeyCode.Space))
@@ -150,6 +164,7 @@ public class PlayerControllerTest : NetworkBehaviour
                 isJump = true;
                 jumpSpeed = jumpForce;
                 networkAnimator.animator.SetTrigger("Jump");
+                
             }
         }
         
@@ -213,20 +228,41 @@ public class PlayerControllerTest : NetworkBehaviour
         networkAnimator.animator.SetBool("isTorch", isTorch);
         
     }
-
+    
     void HandlerItem()
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (isTorch)
-            {
-                isTorch = false;
-            }
-            else
-            {
-                isTorch = true;
-            }
+            isTorch = !isTorch;
         }
     }
-   
+    void HandlerSound()
+    {
+        if (isTorch)
+        {
+            torchSoundTimer += Time.deltaTime;
+            if(torchSoundTimer >= torchSoundInterval)
+            {
+                torchSoundTimer = 0f;
+                Debug.Log("Torch burning sound played");
+                AudioSource.PlayClipAtPoint(burning, transform.position);
+            }
+            
+        }
+    }
+    public void FootStep()
+    {
+        AudioSource.PlayClipAtPoint(footstep, transform.position);
+    }
+    public void SETorch()
+    {
+        Debug.Log("Torch equipped sound played");
+        AudioSource.PlayClipAtPoint(equiptorch, transform.position);
+    }
+    public void SEJump()
+    {
+        Debug.Log("Jump sound played");
+        AudioSource.PlayClipAtPoint(jumping, transform.position);
+    }
+
 }

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InnerDoorController : InteractionObject
+public class InnerDoorController : InteractableObject
 {
-    private void OnValidate()
+    protected override void OnValidate()
     {
+        base.OnValidate();
+        
         objectName = "InnerDoor";
-        guideText = "들어가기 [F]";
+        guideText = "문 열기 : [F]";
         holdTime = 0.5f;
     }
 

@@ -1,10 +1,9 @@
 using Mirror;
 using UnityEngine;
 
-[RequireComponent(typeof(CapsuleCollider))]
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(NetworkIdentity))]
 [RequireComponent(typeof(NetworkTransformReliable))]
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerControllerTest : NetworkBehaviour
 {
     [Header("Avatar Components")]
@@ -60,11 +59,12 @@ public class PlayerControllerTest : NetworkBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (networkAnimator == null)
+            networkAnimator = GetComponent<NetworkAnimator>();
+
         characterController.enabled = false;
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
-
-        GetComponent<Rigidbody>().isKinematic = true;
 
         this.enabled = false;
     }
@@ -72,6 +72,8 @@ public class PlayerControllerTest : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
+
+        // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
         characterController.enabled = true;
         this.enabled = true;
     }
@@ -79,24 +81,10 @@ public class PlayerControllerTest : NetworkBehaviour
     public override void OnStopAuthority()
     {
         base.OnStopAuthority();
-        this.enabled = false;
+
+        // 로컬 플레이어가 아닌 경우 캐릭터 컨트롤러 비활성화
         characterController.enabled = false;
-    }
-
-    void Start()
-    {
-        // 로컬 플레이어인지 확인
-        if (isLocalPlayer)
-        {
-            gameObject.GetComponent<PlayerControllerTest>().enabled = true;
-        }
-        else
-        {
-            gameObject.GetComponent<PlayerControllerTest>().enabled = false;
-        }
-
-        if (networkAnimator == null)
-            networkAnimator = GetComponent<NetworkAnimator>();
+        this.enabled = false;
     }
 
     void Update()

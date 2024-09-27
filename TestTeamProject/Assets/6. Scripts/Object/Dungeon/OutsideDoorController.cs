@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OutsideDoorController : InteractionObject
+public class OutsideDoorController : InteractableObject
 {
-    private void OnValidate()
+    protected override void OnValidate()
     {
+        base.OnValidate();
+        
         objectName = "OutsideDoor";
-        guideText = "들어가기 [F]";
+        guideText = "들어가기 : [F]";
         holdTime = 1.0f;
     }
 

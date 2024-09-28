@@ -38,8 +38,6 @@ public class PlayerCamera : NetworkBehaviour
         // 카메라 설정
         playerCamera.orthographic = false;
         playerCamera.transform.SetParent(transform);
-        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.2f);
-        playerCamera.transform.localEulerAngles = new Vector3(10f, 0f, 0f);
     }
 
     void Update()

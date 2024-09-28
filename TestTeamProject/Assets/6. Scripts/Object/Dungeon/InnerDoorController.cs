@@ -13,7 +13,7 @@ public class InnerDoorController : InteractableObject
         holdTime = 0.5f;
     }
 
-    public override void InteractWithObject()
+    public override void InteractWithObject(GameObject player)
     {
         Debug.Log("InnerDoorController.InteractWithObject()");
     }

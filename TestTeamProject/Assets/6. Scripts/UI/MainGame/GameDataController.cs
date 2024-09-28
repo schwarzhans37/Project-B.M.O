@@ -34,6 +34,16 @@ public class GameDataController : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsPausedChanged))]
     public bool isPaused; // 게임 일시정지 여부
 
+    public void AddMoney(int amount)
+    {
+        money += amount;
+    }
+
+    public void SubtractMoney(int amount)
+    {
+        money -= amount;
+    }
+
     public void OnMoneyChanged(int oldMoney, int newMoney)
     {
         gameDataView.OnMoneyChanged(oldMoney, newMoney);

@@ -13,7 +13,7 @@ public class InteractableObject : NetworkBehaviour
     [SyncVar(hook = nameof(OnHoldTimeChanged))]
     public float holdTime; // 누르고 있어야 하는 시간
 
-    public virtual void InteractWithObject() {}
+    public virtual void InteractWithObject(GameObject player) {}
     public virtual void OnObjectNameChanged(string oldName, string newName) {}
     public virtual void OnGuideTextChanged(string oldText, string newText) {}
     public virtual void OnHoldTimeChanged(float oldTime, float newTime) {}

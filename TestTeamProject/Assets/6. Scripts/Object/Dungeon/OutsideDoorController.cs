@@ -13,7 +13,7 @@ public class OutsideDoorController : InteractableObject
         holdTime = 1.0f;
     }
 
-    public override void InteractWithObject()
+    public override void InteractWithObject(GameObject player)
     {
         Debug.Log("OutsideDoorController.InteractWithObject()");
     }

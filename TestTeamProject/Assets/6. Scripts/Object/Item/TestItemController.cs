@@ -9,6 +9,5 @@ public class TestItemController : ItemObject
         base.OnValidate();
         
         itemName = "Test Item";
-        itemPrice = 100;
     }
 }

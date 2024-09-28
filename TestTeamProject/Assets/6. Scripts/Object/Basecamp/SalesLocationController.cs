@@ -13,7 +13,7 @@ public class SalesLocationController : InteractableObject
         holdTime = 3f;
     }
 
-    public override void InteractWithObject()
+    public override void InteractWithObject(GameObject player)
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f);
 
@@ -21,6 +21,8 @@ public class SalesLocationController : InteractableObject
         {
             if (collider.CompareTag("ItemObject"))
             {
+                // 아이템을 판매
+                GameObject.Find("GameDataManager").GetComponent<GameDataController>().AddMoney(collider.gameObject.GetComponent<ItemObject>().itemPrice);
                 Destroy(collider.gameObject);
             }
         }

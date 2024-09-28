@@ -77,7 +77,7 @@ public class InteractionController : NetworkBehaviour
                     if (holdTime == 0)
                     {
                         // 행동을 트리거
-                        InteractWithObject(hit.collider.gameObject);
+                        InteractWithObject(hit.collider.gameObject, this.gameObject);
                         return;
                     }
 
@@ -87,7 +87,7 @@ public class InteractionController : NetworkBehaviour
                     if (holdProgress >= holdTime)
                     {
                         // 행동을 트리거
-                        InteractWithObject(hit.collider.gameObject);
+                        InteractWithObject(hit.collider.gameObject, this.gameObject);
                         holdProgress = 0;
                     }
                 }
@@ -110,10 +110,11 @@ public class InteractionController : NetworkBehaviour
         }
     }
 
-    void InteractWithObject(GameObject obj)
+    [Command]
+    void InteractWithObject(GameObject obj, GameObject player)
     {
         // 상호작용 로직
-        obj.GetComponent<InteractableObject>().InteractWithObject();
+        obj.GetComponent<InteractableObject>().InteractWithObject(player);
     }
 
     void UpdateProgressBar(float progress)

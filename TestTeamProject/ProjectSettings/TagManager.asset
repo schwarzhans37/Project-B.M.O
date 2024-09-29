@@ -7,14 +7,17 @@ TagManager:
   - PasswordField
   - TeleportTest
   - Ground
+  - MinoWeapon
+  - PlayerCam
+  - DogHearSound
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - PostProcessing
   - Water
   - UI
-  - 
+  - LocalPlayer
   - 
   - 
   - 

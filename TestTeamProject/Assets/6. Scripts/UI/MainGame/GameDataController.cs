@@ -8,8 +8,9 @@ public class GameDataController : NetworkBehaviour
 {
     public GameDataView gameDataView;
 
-    void Start()
+    protected override void OnValidate()
     {
+        base.OnValidate();
         gameDataView = GetComponent<GameDataView>();
     }
 

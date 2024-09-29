@@ -120,8 +120,18 @@ public class PlayerMovementController : NetworkBehaviour
     void HandleMove()
     {
         // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용]
-        moveSpeedMultiplier = Input.GetKey(KeyCode.LeftControl) ? crouchSpeed :
-                            Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+        if (Input.GetKey(KeyCode.LeftShift) && gameObject.GetComponent<PlayerDataController>().stamina > 0)
+        {
+            gameObject.GetComponent<PlayerDataController>().SubtractStamina();
+            moveSpeedMultiplier = walkSpeed * 2;
+        }
+        else
+        {
+            gameObject.GetComponent<PlayerDataController>().AddStamina();
+            moveSpeedMultiplier = walkSpeed;
+        }
+
+        moveSpeedMultiplier = Input.GetKey(KeyCode.LeftControl) ? moveSpeedMultiplier / 2 : moveSpeedMultiplier;
     
         // 입력 캡처
         horizontal = Input.GetAxis("Horizontal");

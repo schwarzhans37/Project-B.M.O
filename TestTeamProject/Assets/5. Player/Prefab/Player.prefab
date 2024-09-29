@@ -6033,6 +6033,7 @@ GameObject:
   - component: {fileID: 5146277639297086889}
   - component: {fileID: 743512169860230015}
   - component: {fileID: -8260837994122704188}
+  - component: {fileID: -8542265887876409592}
   - component: {fileID: 6400632713505107134}
   m_Layer: 0
   m_Name: Player
@@ -6238,10 +6239,6 @@ MonoBehaviour:
   walkSpeed: 2
   runSpeed: 4
   crouchSpeed: 1
-  isJump: 0
-  isCrouch: 0
-  isFall: 0
-  isLand: 1
   isTorch: 0
   jumpForce: 5
   horizontal: 0
@@ -6251,6 +6248,25 @@ MonoBehaviour:
   animRotation: 0
   velocity: {x: 0, y: 0, z: 0}
   direction: {x: 0, y: 0, z: 0}
+--- !u!114 &-8542265887876409592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7796121778486782373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af2eae05e3897704db2562fb558d90fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  hp: 1000
+  stamina: 1000
+  hpBar: {fileID: 0}
+  staminaBar: {fileID: 0}
 --- !u!114 &6400632713505107134
 MonoBehaviour:
   m_ObjectHideFlags: 0

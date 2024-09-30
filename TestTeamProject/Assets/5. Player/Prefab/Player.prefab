@@ -6075,7 +6075,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneId: 0
-  _assetId: 2410969329
+  _assetId: 2090609390
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
@@ -6240,6 +6240,12 @@ MonoBehaviour:
   runSpeed: 4
   crouchSpeed: 1
   isTorch: 0
+  footstep: {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
+  equiptorch: {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
+  landing: {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
+  jumping: {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
+  burning: {fileID: 8300000, guid: 7131d701ae015a54aa3d856feccd513f, type: 3}
+  torchSoundInterval: 4
   jumpForce: 5
   horizontal: 0
   vertical: 0

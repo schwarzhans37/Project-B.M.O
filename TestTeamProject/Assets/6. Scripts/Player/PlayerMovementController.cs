@@ -23,6 +23,15 @@ public class PlayerMovementController : NetworkBehaviour
     //애니메이터 플래그
     public bool isTorch = false;
 
+    //사운드 테스트
+    public AudioClip footstep;
+    public AudioClip equiptorch;
+    public AudioClip landing;
+    public AudioClip jumping;
+    public AudioClip burning;
+    private float torchSoundTimer = 0f;
+    [SerializeField] private float torchSoundInterval = 4f;
+
     [Header("Jumping")]
     [Range(-10f, 10f)]
     public float jumpForce = 5f;
@@ -109,6 +118,9 @@ public class PlayerMovementController : NetworkBehaviour
         
         // 애니메이션 업데이트
         AnimationUpdate();
+        
+        // 사운드 업데이트
+        HandlerSound();
 
         // 캐릭터를 이동
         characterController.Move(direction * Time.deltaTime);
@@ -171,24 +183,56 @@ public class PlayerMovementController : NetworkBehaviour
 
     void AnimationUpdate()
     {
-    if (!GameUIController.IsPaused)
-    {
-        networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
-        networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
-        networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
-        networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+        if (!GameUIController.IsPaused)
+        {
+            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
+            networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
+            networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+            networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+        }
+        else
+        {
+            networkAnimator.animator.SetBool("isRun", false);
+            networkAnimator.animator.SetBool("isCrouch", false);
+            networkAnimator.animator.SetFloat("speedX", 0);
+            networkAnimator.animator.SetFloat("speedY", 0);
+        }
+        
+        networkAnimator.animator.SetBool("isLand", characterController.isGrounded);
+        networkAnimator.animator.SetBool("isJump", !characterController.isGrounded);
+        networkAnimator.animator.SetBool("isFall", !characterController.isGrounded && jumpSpeed < 0);
+        networkAnimator.animator.SetBool("isTorch", isTorch);
     }
-    else
+
+    void HandlerSound()
     {
-        networkAnimator.animator.SetBool("isRun", false);
-        networkAnimator.animator.SetBool("isCrouch", false);
-        networkAnimator.animator.SetFloat("speedX", 0);
-        networkAnimator.animator.SetFloat("speedY", 0);
+        if (isTorch)
+        {
+            torchSoundTimer += Time.deltaTime;
+            if(torchSoundTimer >= torchSoundInterval)
+            {
+                torchSoundTimer = 0f;
+                Debug.Log("Torch burning sound played");
+                AudioSource.PlayClipAtPoint(burning, transform.position);
+            }
+            
+        }
     }
-    
-    networkAnimator.animator.SetBool("isLand", characterController.isGrounded);
-    networkAnimator.animator.SetBool("isJump", !characterController.isGrounded);
-    networkAnimator.animator.SetBool("isFall", !characterController.isGrounded && jumpSpeed < 0);
-    networkAnimator.animator.SetBool("isTorch", isTorch);
+
+    public void FootStep()
+    {
+        AudioSource.PlayClipAtPoint(footstep, transform.position);
+    }
+
+    public void SETorch()
+    {
+        Debug.Log("Torch equipped sound played");
+        AudioSource.PlayClipAtPoint(equiptorch, transform.position);
+    }
+
+    public void SEJump()
+    {
+        Debug.Log("Jump sound played");
+        AudioSource.PlayClipAtPoint(jumping, transform.position);
     }
 }

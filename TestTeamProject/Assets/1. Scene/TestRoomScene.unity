@@ -16628,7 +16628,7 @@ GameObject:
   - component: {fileID: 1337202158}
   - component: {fileID: 1337202159}
   - component: {fileID: 4937508480872328833}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: PlayerCam
   m_TagString: PlayerCam
   m_Icon: {fileID: 0}
@@ -18715,30 +18715,6 @@ Transform:
   - {fileID: 374160631521514335}
   m_Father: {fileID: 740110408217178320}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6177414700905961367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6680902805016173892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a3a133aa05dc4543b5672f6792afc95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  WalkSpeed: 2
-  CrouchSpeed: 1.5
-  RunSpeed: 6
-  JumpForce: 5
-  animator: {fileID: 366443913879474163}
-  isCrouch: 0
-  isLand: 1
-  isFall: 0
-  isJump: 0
-  mouseSpeed: 3
-  PlayerModel: {fileID: 6680902805016173892}
-  PlayerCamera: {fileID: 4937508480872328832}
 --- !u!4 &6178543197445906944
 Transform:
   m_ObjectHideFlags: 0
@@ -19499,7 +19475,6 @@ GameObject:
   - component: {fileID: 366443913879474163}
   - component: {fileID: 7853303555326775267}
   - component: {fileID: 324658166687650161}
-  - component: {fileID: 6177414700905961367}
   - component: {fileID: 8702348302464286968}
   m_Layer: 0
   m_Name: TestPlayerModel
@@ -20750,7 +20725,7 @@ Transform:
   m_GameObject: {fileID: 7485179762660207830}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.96, y: 1.263, z: 63.64159}
+  m_LocalPosition: {x: 1.87, y: 1.263, z: 63.64159}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class CustomNetworkRoomManager : NetworkRoomManager
 {
+    public override void Start()
+    {
+        base.Start();
+
+        showRoomGUI = false; // 기본 UI 비활성화
+    }
+
     // 호스트에서 Start()가 호출될 때 실행
     public override void OnRoomStartHost()
     {
@@ -49,7 +56,7 @@ public class CustomNetworkRoomManager : NetworkRoomManager
     public override void OnRoomServerSceneChanged(string sceneName)
     {
         base.OnRoomServerSceneChanged(sceneName);
-        
+
     }
 
     // 새로운 룸 플레이어가 생성될 때 서버에서 호출
@@ -86,7 +93,6 @@ public class CustomNetworkRoomManager : NetworkRoomManager
     // 모든 플레이어가 준비되었을 때 서버에서 호출
     public override void OnRoomServerPlayersReady()
     {
-        base.OnRoomServerPlayersReady();
         
     }
 
@@ -150,13 +156,6 @@ public class CustomNetworkRoomManager : NetworkRoomManager
     public override void OnRoomClientSceneChanged()
     {
         base.OnRoomClientSceneChanged();
-        
-    }
-
-    // GUI를 그릴 때 호출
-    public override void OnGUI()
-    {
-        base.OnGUI();
         
     }
 }

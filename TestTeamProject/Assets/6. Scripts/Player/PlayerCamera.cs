@@ -1,7 +1,7 @@
 using Mirror;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(NetworkIdentity))]
 public class PlayerCamera : NetworkBehaviour
 {
     // 마우스 감도 설정
@@ -15,36 +15,37 @@ public class PlayerCamera : NetworkBehaviour
     // 카메라 참조를 위한 변수
     public Camera playerCamera;
 
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+
+        // 로컬 플레이어인 경우 카메라 활성화
+        playerCamera.gameObject.SetActive(true);
+        this.enabled = true;
+    }
+
+    public override void OnStopAuthority()
+    {
+        base.OnStopAuthority();
+
+        // 로컬 플레이어가 아닌 경우 카메라 비활성화
+        playerCamera.gameObject.SetActive(false);
+        this.enabled = false;
+    }
+
     void Start()
     {
-        if (playerCamera == null)
-            Debug.LogError("PlayerCamera: playerCamera not assigned!");
-
-        // 로컬 플레이어인지 확인
-        if (isLocalPlayer)
-        {
-            // 로컬 플레이어의 카메라는 활성화
-            gameObject.GetComponent<PlayerCamera>().enabled = true;
-            playerCamera.gameObject.SetActive(true);
-        }
-        else
-        {
-            // 로컬 플레이어가 아닌 경우 카메라 비활성화
-            gameObject.GetComponent<PlayerCamera>().enabled = false;
-            playerCamera.gameObject.SetActive(false);
-        }
-
         // 카메라 설정
         playerCamera.orthographic = false;
         playerCamera.transform.SetParent(transform);
-        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.2f);
-        playerCamera.transform.localEulerAngles = new Vector3(10f, 0f, 0f);
     }
 
     void Update()
     {
         // 로컬 플레이어 인지 확인
         if (!isLocalPlayer)
+            return;
+        if (playerCamera == null)
             return;
         // 커서가 잠겨있지 않으면 함수 종료
         if (GameUIController.IsPaused)

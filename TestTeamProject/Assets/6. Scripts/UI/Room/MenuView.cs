@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MenuView : MonoBehaviour
@@ -15,6 +16,11 @@ public class MenuView : MonoBehaviour
 
     void Start()
     {
+        if (SceneManager.GetActiveScene().name == "RoomScene")
+        {
+            playButton.enabled = false;
+        }
+
         playButton.onClick.AddListener(() =>
         {
             gameObject.SetActive(false);

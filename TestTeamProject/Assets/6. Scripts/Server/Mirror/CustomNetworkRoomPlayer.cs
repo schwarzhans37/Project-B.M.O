@@ -8,33 +8,10 @@ using UnityEngine.UI;
 public class CustomNetworkRoomPlayer : NetworkRoomPlayer
 {
     public GameObject RoomPlayerStatusPrefab;
-    public Transform contentTransform; 
-
+    public Transform contentTransform;
 
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string nickname;
-
-    // UI 요소를 찾고 상태를 그리는 코루틴
-    IEnumerator WaitForPanelUI()
-    {
-        while (contentTransform == null)
-        {
-            GameObject content = GameObject.FindWithTag("Transform");
-            if (content != null)
-            {
-                contentTransform = content.GetComponent<RectTransform>();
-            }
-            yield return null; // 다음 프레임 대기
-        }
-        DrawPlayerStatus();
-    }
-
-    // 일정 시간을 기다렸다가 실행하는 코루틴
-    IEnumerator WaitAndExecute(float waitTime, System.Action action)
-    {
-        yield return new WaitForSeconds(waitTime);
-        action();
-    }
 
     public override void Start()
     {
@@ -46,7 +23,19 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
             CmdSetNickname(playerNickname); // 서버에 닉네임 전송
         }
 
+        if (contentTransform == null)
+        {
+            contentTransform = GameObject.Find("GridLayout").transform;
+        }
+
         base.Start();
+    }
+
+    // 일정 시간을 기다렸다가 실행하는 코루틴
+    IEnumerator WaitAndExecute(float waitTime, System.Action action)
+    {
+        yield return new WaitForSeconds(waitTime);
+        action();
     }
 
     // 서버에 닉네임을 전송하는 커맨드 함수
@@ -79,6 +68,26 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
         base.ReadyStateChanged(oldReadyState, newReadyState);
+        StartCoroutine(WaitAndExecute(0.1f, () =>
+        {
+            DrawPlayerStatus();
+        }));
+    }
+
+    // 클라이언트가 룸에 입장할 때 호출
+    public override void OnClientEnterRoom()
+    {
+        base.OnClientEnterRoom();
+        StartCoroutine(WaitAndExecute(0.1f, () =>
+        {
+            DrawPlayerStatus();
+        }));
+    }
+
+    // 클라이언트가 룸에서 나갈 때 호출
+    public override void OnClientExitRoom()
+    {
+        base.OnClientExitRoom();
         StartCoroutine(WaitAndExecute(0.1f, () =>
         {
             DrawPlayerStatus();
@@ -142,33 +151,5 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
                 }
             }
         }
-    }
-
-    // 클라이언트가 룸에 입장할 때 호출
-    public override void OnClientEnterRoom()
-    {
-        base.OnClientEnterRoom();
-        StartCoroutine(WaitForPanelUI());
-    }
-
-    // 클라이언트가 룸에서 나갈 때 호출
-    public override void OnClientExitRoom()
-    {
-        base.OnClientExitRoom();
-        StartCoroutine(WaitAndExecute(0.1f, () =>
-        {
-            DrawPlayerStatus();
-        }));
-    }
-
-    void DisableRoomPlayer()
-    {
-        foreach (Transform child in gameObject.transform)
-        {
-            child.gameObject.SetActive(false);
-        }
-
-        gameObject.GetComponent<CapsuleCollider>().enabled = false;
-        gameObject.GetComponent<CharacterController>().enabled = false;
     }
 }

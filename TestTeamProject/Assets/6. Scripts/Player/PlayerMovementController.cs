@@ -1,33 +1,28 @@
 using Mirror;
 using UnityEngine;
 
-[RequireComponent(typeof(CapsuleCollider))]
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(NetworkIdentity))]
 [RequireComponent(typeof(NetworkTransformReliable))]
-[RequireComponent(typeof(Rigidbody))]
-public class PlayerControllerTest : NetworkBehaviour
+[RequireComponent(typeof(CharacterController))]
+public class PlayerMovementController : NetworkBehaviour
 {
-    [Header("Avatar Components")]
     public CharacterController characterController;
     public NetworkAnimator networkAnimator;
     public Animator animator;
 
     [Header("Movement")]
     [Range(1, 20)]
-    public float moveSpeedMultiplier;
+    public float moveSpeedMultiplier; // 이동 속도 배율
     [SerializeField]
-    float walkSpeed = 2f;
+    float walkSpeed = 2f; // 걷기 속도
     [SerializeField]
-    float runSpeed = 4f;
-    //앉기 속도 추가
+    float runSpeed = 4f; // 달리기 속도
     [SerializeField]
-    float crouchSpeed = 1f;
+    float crouchSpeed = 1f; // 앉기 속도
+
     //애니메이터 플래그
-    public bool isJump = false;
-    public bool isCrouch = false;
-    public bool isFall = false;
-    public bool isLand = true;
     public bool isTorch = false;
+
     //사운드 테스트
     public AudioClip footstep;
     public AudioClip equiptorch;
@@ -68,11 +63,12 @@ public class PlayerControllerTest : NetworkBehaviour
         if (animator == null)
             animator = GetComponent<Animator>();
 
+        if (networkAnimator == null)
+            networkAnimator = GetComponent<NetworkAnimator>();
+
         characterController.enabled = false;
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
-
-        GetComponent<Rigidbody>().isKinematic = true;
 
         this.enabled = false;
     }
@@ -80,6 +76,8 @@ public class PlayerControllerTest : NetworkBehaviour
     public override void OnStartAuthority()
     {
         base.OnStartAuthority();
+
+        // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
         characterController.enabled = true;
         this.enabled = true;
     }
@@ -87,24 +85,10 @@ public class PlayerControllerTest : NetworkBehaviour
     public override void OnStopAuthority()
     {
         base.OnStopAuthority();
-        this.enabled = false;
+
+        // 로컬 플레이어가 아닌 경우 캐릭터 컨트롤러 비활성화
         characterController.enabled = false;
-    }
-
-    void Start()
-    {
-        // 로컬 플레이어인지 확인
-        if (isLocalPlayer)
-        {
-            gameObject.GetComponent<PlayerControllerTest>().enabled = true;
-        }
-        else
-        {
-            gameObject.GetComponent<PlayerControllerTest>().enabled = false;
-        }
-
-        if (networkAnimator == null)
-            networkAnimator = GetComponent<NetworkAnimator>();
+        this.enabled = false;
     }
 
     void Update()
@@ -112,26 +96,32 @@ public class PlayerControllerTest : NetworkBehaviour
         // 로컬 플레이어 인지 확인
         if (!isLocalPlayer)
             return;
-        // CharacterController가 활성화 되어있지 않으면 리턴
-        if (!characterController.enabled)
-            return;
         
-        // 일시정지 상태가 아니면 이동, 점프, 애니메이션 업데이트
+        // 일시정지 상태가 아니면 이동, 점프, 업데이트
         if (!GameUIController.IsPaused)
         {
             HandleMove();
             HandleJumping();
             HandlerItem();
-            HandlerSound();
-            AnimationUpdate();
+        }
+        else
+        {
+            // 일시정지 상태이면 속도를 0으로 설정
+            direction = Vector3.zero;
         }
 
         // 중력 적용
         jumpSpeed += Physics.gravity.y * Time.deltaTime;
 
-        // 방향에 점프 속도를 추가
+        // 방향에 y축 속도를 추가
         direction.y = Mathf.Clamp(jumpSpeed, -10f, 10f);
         
+        // 애니메이션 업데이트
+        AnimationUpdate();
+        
+        // 사운드 업데이트
+        HandlerSound();
+
         // 캐릭터를 이동
         characterController.Move(direction * Time.deltaTime);
 
@@ -139,58 +129,22 @@ public class PlayerControllerTest : NetworkBehaviour
         velocity = Vector3Int.FloorToInt(characterController.velocity);
     }
 
-    void HandleJumping()
-    {
-        // 점프상태 판단하기위한 플래그변수
-        if (characterController.isGrounded)
-        {
-            if (isJump)
-            {
-                isJump = false;
-                isFall = false;
-                isLand = true;
-                AudioSource.PlayClipAtPoint(landing, transform.position);
-            }
-            
-        }
-        // 점프기능
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            isLand = false;
-            // 공중에서 점프가 되지 않도록
-            if (!isJump)
-            {
-                
-                isJump = true;
-                jumpSpeed = jumpForce;
-                networkAnimator.animator.SetTrigger("Jump");
-                
-            }
-        }
-        
-        if (isJump)
-        {
-            if(jumpSpeed < 0)
-            {
-                isFall = true;
-            }
-        }
-        
-    }
-
     void HandleMove()
     {
-        // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용
-        if (Input.GetKey(KeyCode.LeftControl))
+        // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용]
+        if (Input.GetKey(KeyCode.LeftShift) && gameObject.GetComponent<PlayerDataController>().stamina > 0)
         {
-            moveSpeedMultiplier = crouchSpeed;
+            gameObject.GetComponent<PlayerDataController>().SubtractStamina();
+            moveSpeedMultiplier = walkSpeed * 2;
         }
         else
         {
-            moveSpeedMultiplier = Input.GetKey(KeyCode.LeftShift) ? runSpeed : walkSpeed;
+            gameObject.GetComponent<PlayerDataController>().AddStamina();
+            moveSpeedMultiplier = walkSpeed;
         }
-        
-        
+
+        moveSpeedMultiplier = Input.GetKey(KeyCode.LeftControl) ? moveSpeedMultiplier / 2 : moveSpeedMultiplier;
+    
         // 입력 캡처
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
@@ -208,27 +162,17 @@ public class PlayerControllerTest : NetworkBehaviour
         direction *= moveSpeedMultiplier;
     }
 
-    void AnimationUpdate()
+    void HandleJumping()
     {
-        // 애니메이터 설정: 달리기 여부
-        networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
-        // 애니메이터 설정: 수평 속도
-        networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
-        // 애니메이터 설정: 수직 속도
-        networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
-        // 애니메이터 설정 : 앉기 여부
-        networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
-        // 애니메이터 설정 : 점프 여부
-        networkAnimator.animator.SetBool("isJump", isJump);
-        // 애니메이터 설정 : 추락 여부
-        networkAnimator.animator.SetBool("isFall", isFall);
-        // 애니메이터 설정 : 착지 여부
-        networkAnimator.animator.SetBool("isLand",isLand);
-        // 애니메이터 설정 : 횃불 여부
-        networkAnimator.animator.SetBool("isTorch", isTorch);
+        // 점프기능
+        if (Input.GetKeyDown(KeyCode.Space) && characterController.isGrounded)
+        {
+            jumpSpeed = jumpForce;
+            networkAnimator.SetTrigger("Jump");
+        }
         
     }
-    
+
     void HandlerItem()
     {
         if (Input.GetKeyDown(KeyCode.F))
@@ -236,6 +180,30 @@ public class PlayerControllerTest : NetworkBehaviour
             isTorch = !isTorch;
         }
     }
+
+    void AnimationUpdate()
+    {
+        if (!GameUIController.IsPaused)
+        {
+            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
+            networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
+            networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+            networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+        }
+        else
+        {
+            networkAnimator.animator.SetBool("isRun", false);
+            networkAnimator.animator.SetBool("isCrouch", false);
+            networkAnimator.animator.SetFloat("speedX", 0);
+            networkAnimator.animator.SetFloat("speedY", 0);
+        }
+        
+        networkAnimator.animator.SetBool("isLand", characterController.isGrounded);
+        networkAnimator.animator.SetBool("isJump", !characterController.isGrounded);
+        networkAnimator.animator.SetBool("isFall", !characterController.isGrounded && jumpSpeed < 0);
+        networkAnimator.animator.SetBool("isTorch", isTorch);
+    }
+
     void HandlerSound()
     {
         if (isTorch)
@@ -250,19 +218,21 @@ public class PlayerControllerTest : NetworkBehaviour
             
         }
     }
+
     public void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position);
     }
+
     public void SETorch()
     {
         Debug.Log("Torch equipped sound played");
         AudioSource.PlayClipAtPoint(equiptorch, transform.position);
     }
+
     public void SEJump()
     {
         Debug.Log("Jump sound played");
         AudioSource.PlayClipAtPoint(jumping, transform.position);
     }
-
 }

@@ -1,28 +1,26 @@
 using UnityEngine;
 
-[RequireComponent(typeof(GameUIView))]
-[RequireComponent(typeof(AudioSource))] // AudioSource ÄÄÆ÷³ÍÆ® Ãß°¡
+[RequireComponent(typeof(AudioSource))] // AudioSource ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ß°ï¿½
 public class GameUIController : MonoBehaviour
 {
     public static bool IsPaused { get; set; } = false;
 
-    public GameUIView gameUIView;
+    public GameObject menuUI;
     public AudioClip click;
-    private AudioSource audioSource; // AudioSource º¯¼ö Ãß°¡
-
-    void OnValidate()
-    {
-        if (gameUIView == null)
-            gameUIView = GetComponent<GameUIView>();
-    }
+    private AudioSource audioSource; // AudioSource ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 
     void Start()
     {
+        if (menuUI == null)
+        {
+            menuUI = GameObject.Find("MenuUI");
+        }
+
         IsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        audioSource = GetComponent<AudioSource>(); // AudioSource ÄÄÆ÷³ÍÆ® ÃÊ±âÈ­
+        audioSource = GetComponent<AudioSource>(); // AudioSource ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ê±ï¿½È­
     }
     
     void Update()
@@ -32,9 +30,9 @@ public class GameUIController : MonoBehaviour
             IsPaused = !IsPaused;
             Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = !Cursor.visible;
-            gameUIView.SetActiveMenuUI();
+            menuUI.SetActive(!menuUI.activeSelf);
 
-            audioSource.PlayOneShot(click); // Å¬¸¯ ¼Ò¸® Àç»ý
+            audioSource.PlayOneShot(click); // Å¬ï¿½ï¿½ ï¿½Ò¸ï¿½ ï¿½ï¿½ï¿½
         }
     }
 }

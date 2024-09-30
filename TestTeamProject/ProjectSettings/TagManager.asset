@@ -9,14 +9,17 @@ TagManager:
   - Ground
   - InteractableObject
   - ItemObject
+  - MinoWeapon
+  - PlayerCam
+  - DogHearSound
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - PostProcessing
   - Water
   - UI
-  - 
+  - LocalPlayer
   - 
   - 
   - 

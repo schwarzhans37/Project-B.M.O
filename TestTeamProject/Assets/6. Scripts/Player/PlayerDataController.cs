@@ -8,7 +8,6 @@ public class PlayerDataController : NetworkBehaviour
     
     [SyncVar(hook = nameof(OnHpChanged))]
     public int hp = 1000;
-    [SyncVar(hook = nameof(OnStaminaChanged))]
     public int stamina = 1000;
 
     public GameObject hpBar;
@@ -21,27 +20,31 @@ public class PlayerDataController : NetworkBehaviour
     }
 
     [Command]
-    public void AddHp(int amount)
+    public void CmdChangeHp(int amount)
     {
-        hp += hp < 1000 ? amount : 1000 - hp;
+        hp += amount;
+
+        if (hp > 1000)
+            hp = 1000;
+
+        if (hp < 0)
+            hp = 0;
     }
 
-    [Command]
-    public void SubtractHp(int amount)
+    public void AdjustStaminaOverTime(float time)
     {
-        hp -= hp > 0 ? amount : hp;
-    }
+        if (time == 0)
+            return;
 
-    [Command]
-    public void AddStamina()
-    {
-        stamina += stamina < 1000 ? (int)(Time.deltaTime * 1000 / 5) : 1000 - stamina;
-    }
+        stamina += (int)(Time.deltaTime * 1000 / time);
 
-    [Command]
-    public void SubtractStamina()
-    {
-        stamina -= stamina > 0 ? (int)(Time.deltaTime * 1000 / 5) : stamina + 500;
+        if (stamina > 1000)
+            stamina = 1000;
+
+        if (stamina < 0 && time < 0)
+            stamina = -300;
+
+        staminaBar.GetComponent<Image>().fillAmount = (float)stamina / 1000;
     }
 
     public void OnHpChanged(int oldHp, int newHp)
@@ -51,13 +54,4 @@ public class PlayerDataController : NetworkBehaviour
 
         hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
     }
-
-    public void OnStaminaChanged(int oldStamina, int newStamina)
-    {
-        if (!isLocalPlayer)
-            return;
-
-        staminaBar.GetComponent<Image>().fillAmount = (float)newStamina / 1000;
-    }
-
 }

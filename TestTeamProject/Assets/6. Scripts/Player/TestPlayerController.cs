@@ -1,24 +1,27 @@
-using Mirror;
 using UnityEngine;
 
-[RequireComponent(typeof(NetworkIdentity))]
-[RequireComponent(typeof(NetworkTransformReliable))]
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovementController : NetworkBehaviour
+public class TestPlayerController : MonoBehaviour
 {
     public CharacterController characterController;
-    public NetworkAnimator networkAnimator;
     public Animator animator;
+
+    // 카메라 참조를 위한 변수
+    public Camera playerCamera;
+
+    // 마우스 감도 설정
+    [Header("Sensitivity")]
+    [Range(1f, 200f)]
+    public float mouseSensitivity = 30f;
+
+    // 수직 회전을 제한하기 위한 변수
+    private float xRotation = 0f;
 
     [Header("Movement")]
     [Range(1, 20)]
     public float moveSpeedMultiplier; // 이동 속도 배율
     [SerializeField]
     float walkSpeed = 2f; // 걷기 속도
-    [SerializeField]
-    float runSpeed = 4f; // 달리기 속도
-    [SerializeField]
-    float crouchSpeed = 1f; // 앉기 속도
 
     //애니메이터 플래그
     public bool isTorch = false;
@@ -53,62 +56,34 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] Vector3Int velocity;
     [SerializeField] Vector3 direction;
 
-    protected override void OnValidate()
+    void OnValidate()
     {
-        base.OnValidate();
-
         if (characterController == null)
             characterController = GetComponent<CharacterController>();
 
         if (animator == null)
             animator = GetComponent<Animator>();
 
-        if (networkAnimator == null)
-            networkAnimator = GetComponent<NetworkAnimator>();
-
-        characterController.enabled = false;
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
-
-        this.enabled = false;
     }
 
-    public override void OnStartAuthority()
+    void Start()
     {
-        base.OnStartAuthority();
-
-        // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
-        characterController.enabled = true;
-        this.enabled = true;
-    }
-
-    public override void OnStopAuthority()
-    {
-        base.OnStopAuthority();
-
-        // 로컬 플레이어가 아닌 경우 캐릭터 컨트롤러 비활성화
-        characterController.enabled = false;
-        this.enabled = false;
+        // 카메라 설정
+        playerCamera.orthographic = false;
+        playerCamera.transform.SetParent(transform);
     }
 
     void Update()
     {
-        // 로컬 플레이어 인지 확인
-        if (!isLocalPlayer)
+        if (playerCamera == null)
             return;
-        
-        // 일시정지 상태가 아니면 이동, 점프, 업데이트
-        if (!GameUIController.IsPaused)
-        {
-            HandleMove();
-            HandleJumping();
-            HandlerItem();
-        }
-        else
-        {
-            // 일시정지 상태이면 속도를 0으로 설정
-            direction = Vector3.zero;
-        }
+
+        HandleCamera();
+        HandleMove();
+        HandleJumping();
+        HandlerItem();
 
         // 중력 적용
         jumpSpeed += Physics.gravity.y * Time.deltaTime;
@@ -129,17 +104,32 @@ public class PlayerMovementController : NetworkBehaviour
         velocity = Vector3Int.FloorToInt(characterController.velocity);
     }
 
+    void HandleCamera()
+    {
+        // 마우스 입력 값 받아오기
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        // 카메라의 수직 회전 값 변경
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -60f, 60f); // 수직 회전 각도 제한
+
+        // 카메라 회전 적용
+        playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+        // 플레이어의 수평 회전 적용
+        transform.Rotate(Vector3.up * mouseX);
+    }
+
     void HandleMove()
     {
         // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용]
-        if (Input.GetKey(KeyCode.LeftShift) && gameObject.GetComponent<PlayerDataController>().stamina > 0)
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-5);
             moveSpeedMultiplier = walkSpeed * 2;
         }
         else
         {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(5);
             moveSpeedMultiplier = walkSpeed;
         }
 
@@ -168,7 +158,7 @@ public class PlayerMovementController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && characterController.isGrounded)
         {
             jumpSpeed = jumpForce;
-            networkAnimator.SetTrigger("Jump");
+            animator.SetTrigger("Jump");
         }
         
     }
@@ -183,25 +173,16 @@ public class PlayerMovementController : NetworkBehaviour
 
     void AnimationUpdate()
     {
-        if (!GameUIController.IsPaused)
-        {
-            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
-            networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
-            networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
-            networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
-        }
-        else
-        {
-            networkAnimator.animator.SetBool("isRun", false);
-            networkAnimator.animator.SetBool("isCrouch", false);
-            networkAnimator.animator.SetFloat("speedX", 0);
-            networkAnimator.animator.SetFloat("speedY", 0);
-        }
-        
-        networkAnimator.animator.SetBool("isLand", characterController.isGrounded);
-        networkAnimator.animator.SetBool("isJump", !characterController.isGrounded);
-        networkAnimator.animator.SetBool("isFall", !characterController.isGrounded && jumpSpeed < 0);
-        networkAnimator.animator.SetBool("isTorch", isTorch);
+
+        animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
+        animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
+        animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
+        animator.SetFloat("speedY", Input.GetAxis("Vertical"));
+
+        animator.SetBool("isLand", characterController.isGrounded);
+        animator.SetBool("isJump", !characterController.isGrounded);
+        animator.SetBool("isFall", !characterController.isGrounded && jumpSpeed < 0);
+        animator.SetBool("isTorch", isTorch);
     }
 
     void HandlerSound()

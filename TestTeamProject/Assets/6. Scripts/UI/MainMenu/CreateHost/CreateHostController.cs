@@ -10,8 +10,7 @@ public class CreateHostController : MonoBehaviour
 
     void OnValidate()
     {
-        if (createHostView == null)
-            createHostView = GetComponent<CreateHostView>();
+        createHostView = GetComponent<CreateHostView>();
     }
 
     void Start()
@@ -21,9 +20,11 @@ public class CreateHostController : MonoBehaviour
        
     }
 
-    void HandleCreateHostAttempt(string name, string password)
+    void HandleCreateHostAttempt(string title, string nickname)
     {
-        HostModel.Instance.SetHost(name, password);
+        HostModel.Instance.SetHost(title, nickname);
+        CustomNetworkRoomManager.RoomTitle = title;
+        CustomNetworkRoomManager.Nickname = nickname;
         CustomNetworkRoomManager.singleton.maxConnections = maxPlayerCount;
         CustomNetworkRoomManager.singleton.StartHost();
         networkDiscovery.AdvertiseServer();

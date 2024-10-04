@@ -13,6 +13,8 @@ TagManager:
   - PlayerCam
   - DogHearSound
   - Fire
+  - InteractableDoor
+  - EntranceDoor
   layers:
   - Default
   - TransparentFX

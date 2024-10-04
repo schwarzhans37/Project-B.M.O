@@ -50,6 +50,8 @@ public class MinotaurAI : MonoBehaviour
         // MinoWeapon 스크립트 참조 설정
         minoWeapon = GetComponentInChildren<MinoWeapon>();
 
+        //
+        animator = GetComponent<Animator>();
         SetRandomPatrolTarget();
     }
 
@@ -77,6 +79,7 @@ public class MinotaurAI : MonoBehaviour
         // 감지 체크 (시각 및 소리 감지)
         CheckForVisualDetection();
         CheckForSoundDetection();
+        AnimationUpdate();
     }
 
     void Patrol()
@@ -303,6 +306,7 @@ public class MinotaurAI : MonoBehaviour
         // AI 동작 정지
         agent.isStopped = true;
         enabled = false;
+        animator.SetBool("isDead", true);
         
         // 죽는 애니메이션 및 3600초 후 비활성화 처리
         StartCoroutine(DisableAfterTime(3600f));
@@ -312,5 +316,18 @@ public class MinotaurAI : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         gameObject.SetActive(false);
+    }
+
+    void AnimationUpdate()
+    {
+        float speed = agent.velocity.magnitude;
+        if (speed > 0)
+        {
+            animator.SetBool("isMove", true);
+        }
+        else
+        {
+            animator.SetBool("isMove", false);
+        }
     }
 }

@@ -22,12 +22,42 @@ public class AIDemonDog : MonoBehaviour
     private float timeSincePlayerOutOfRange; // 플레이어가 감지 범위에서 벗어난 시간
     private float lastAttackTime; // 마지막 공격 시간
 
+    
+    private Animator animator;
+    private Animator animatorlod;
     void Start()
     {
         // 에이전트 및 플레이어 참조 설정
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject creepMesh = transform.Find("Creep_mesh")?.gameObject;
+        GameObject creepMesh_lod = transform.Find("Creep_mesh_lod1")?.gameObject;
 
+        if (creepMesh != null)
+        {
+            animator = creepMesh.GetComponent<Animator>();
+        }
+        else
+        {
+            Debug.LogError("Creep_mesh not found.");
+        }
+
+        if (creepMesh_lod != null)
+        {
+            animatorlod = creepMesh_lod.GetComponent<Animator>();
+            if (animatorlod == null)
+            {
+                Debug.LogError("Animator component not found in Creep_mesh_lod1.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Creep_mesh_lod1 not found.");
+        }
+        if (animator == null)
+        {
+            Debug.LogError("Animator component not found in Creep_Mesh.");
+        }
         // 초기 배회 타겟 설정
         SetRandomPatrolTarget();
     }
@@ -51,6 +81,7 @@ public class AIDemonDog : MonoBehaviour
                 agent.isStopped = true;
                 break;
         }
+        AnimationUpdate();
     }
 
     void Patrol()
@@ -107,6 +138,8 @@ public class AIDemonDog : MonoBehaviour
         if (Vector3.Distance(transform.position, player.position) <= attackRange && Time.time >= lastAttackTime + attackCooldown)
         {
             currentState = DogState.Attacking;
+            animator.SetTrigger("Attack");
+            animatorlod.SetTrigger("Attack");
         }
     }
 
@@ -162,7 +195,8 @@ public class AIDemonDog : MonoBehaviour
     void Die()
     {
         Debug.Log("Demon Dog has died!");
-
+        animator.SetBool("isDead", true);
+        animatorlod.SetBool("isDead", true);
         // AI 동작 정지
         agent.isStopped = true;
         enabled = false; // 스크립트 동작 정지
@@ -175,5 +209,19 @@ public class AIDemonDog : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         gameObject.SetActive(false);
+    }
+    void AnimationUpdate()
+    {
+        float speed = agent.velocity.magnitude;
+        if (speed > 0)
+        {
+            animator.SetBool("isMove", true);
+            animatorlod.SetBool("isMove", true);
+        }
+        else
+        {
+            animator.SetBool("isMove", false);
+            animatorlod.SetBool("isMove", false);
+        }
     }
 }

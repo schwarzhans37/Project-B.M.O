@@ -20,6 +20,9 @@ public class EnemyObject : NetworkBehaviour
 {
     public EnemyState currentState = EnemyState.Patrolling;
 
+    public float stateInterval; // 상태 전환 주기
+    public float detectionInterval; // 감지 주기
+
     public float patrolSpeed; // 배회 속도
     public float chaseSpeed; // 추적 속도
 
@@ -33,6 +36,7 @@ public class EnemyObject : NetworkBehaviour
     public float patrolRange; // 배회 범위
     public float detectionRange; // 감지 범위
     public float soundDetectionRange; // 소리 감지 범위
+    public float patrolWaitTime; // 배회 대기 시간
     public float detectionLossTime; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     protected float timeSincePlayerOutOfRange; // 플레이어가 감지 범위에서 벗어난 시간
     
@@ -61,10 +65,10 @@ public class EnemyObject : NetworkBehaviour
     {
         agent.speed = patrolSpeed; // 초기 배회 속도 설정
         lastAttackTime = -attackCooldown; // 초기화 시 즉시 공격 가능하도록 설정
-        SetRandomPatrolTarget();
+        patrolTarget = transform.position; // 초기 배회 위치 설정
         
-        StartCoroutine(nameof(StartAI), 0.1f);
-        StartCoroutine(nameof(StartDetection), 0.5f);
+        StartCoroutine(nameof(StartAI), stateInterval);
+        StartCoroutine(nameof(StartDetection), detectionInterval);
     }
 
     // AI 시작
@@ -74,17 +78,23 @@ public class EnemyObject : NetworkBehaviour
 
         while (true)
         {
-            switch (currentState)
-            {
-                case EnemyState.Patrolling:
-                    Patrol();
-                    break;
-                case EnemyState.Chasing:
-                    Chase();
-                    break;
-            }
+            UpdateState();
 
             yield return null;
+        }
+    }
+
+    // 상태 업데이트
+    public virtual void UpdateState()
+    {
+        switch (currentState)
+        {
+            case EnemyState.Patrolling:
+                Patrol();
+                break;
+            case EnemyState.Chasing:
+                Chase();
+                break;
         }
     }
 
@@ -93,9 +103,7 @@ public class EnemyObject : NetworkBehaviour
     {
         while (true)
         {
-            // 플레이어 감지 및 소리 감지 (순서 중요)
-            DetectSound();
-            DetectPlayer();
+            Detect();
 
             yield return new WaitForSeconds(interval);
         }
@@ -109,7 +117,7 @@ public class EnemyObject : NetworkBehaviour
         // 배회할 위치로 이동
         if (Vector3.Distance(transform.position, patrolTarget) < 1f)
         {
-            SetRandomPatrolTarget();
+            StartCoroutine(SetRandomPatrolTarget());
         }
         else
         {
@@ -118,43 +126,48 @@ public class EnemyObject : NetworkBehaviour
     }
 
     // 배회할 목표 지점 설정
-    protected void SetRandomPatrolTarget()
+    protected IEnumerator SetRandomPatrolTarget()
     {
+        currentState = EnemyState.Patrolling;
+        yield return new WaitForSeconds(patrolWaitTime);
+
         Vector3 randomDirection = Random.insideUnitSphere * patrolRange;
         randomDirection += transform.position;
 
-        NavMeshHit navHit;
-        if (NavMesh.SamplePosition(randomDirection, out navHit, patrolRange, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, patrolRange, NavMesh.AllAreas))
         {
             patrolTarget = navHit.position;
         }
     }
 
+    // 감지 로직
+    public virtual void Detect()
+    {
+        // 플레이어 감지 및 소리 감지 (순서 중요)
+        DetectSound();
+        DetectPlayer();
+    }
+
     // 플레이어 감지 로직
     public virtual void DetectPlayer()
     {
-        Debug.Log("DetectPlayer");
         Collider[] targets = Physics.OverlapSphere(transform.position, detectionRange, playerMask)
             .OrderBy(target => Vector3.Distance(transform.position, target.transform.position)).ToArray();
 
         foreach (Collider target in targets)
         {
-            Debug.Log("DetectPlayer2");
             Transform targetTransform = target.transform;
             Vector3 dirToTarget = (targetTransform.position - transform.position).normalized;
 
             // AI의 정면 방향과 타겟 사이의 각도 계산
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
-                Debug.Log("DetectPlayer3");
                 float distanceToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
                 // 타겟까지 Ray를 쏴서 장애물에 막히지 않았는지 확인
                 if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
                 {
-                    Debug.Log("DetectPlayer4");
-                    currentState = EnemyState.Chasing;
-                    this.targetTransform = targetTransform;
+                    OnPlayerDetected(target); // 플레이어 감지 이벤트 호출
 
                     // 첫 번째 타겟만 추적하기 위해 반복문 종료
                     break;
@@ -166,13 +179,11 @@ public class EnemyObject : NetworkBehaviour
     // 소리 감지 로직
     public virtual void DetectSound()
     {
-        Debug.Log("DetectSound");
         Collider[] sounds = Physics.OverlapSphere(transform.position, soundDetectionRange, soundMask)
             .OrderBy(col => Vector3.Distance(transform.position, col.transform.position)).ToArray();
 
         foreach (Collider sound in sounds)
         {
-            Debug.Log("DetectSound2");
             Transform soundTransform = sound.transform;
             Vector3 dirToTarget = (soundTransform.position - transform.position).normalized;
 
@@ -182,14 +193,26 @@ public class EnemyObject : NetworkBehaviour
             // 타겟까지 Ray를 쏴서 장애물에 막히지 않았는지 확인
             if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
             {
-                Debug.Log("DetectSound3");
-                currentState = EnemyState.Chasing;
-                this.targetTransform = soundTransform;
+                OnSoundDetected(sound); // 소리 감지 이벤트 호출
 
                 // 첫 번째 타겟만 추적하기 위해 반복문 종료
                 break;
             }
         }
+    }
+
+    // 플레이어 감지 이벤트
+    public virtual void OnPlayerDetected(Collider target)
+    {
+        currentState = EnemyState.Chasing;
+        targetTransform = target.transform;
+    }
+
+    // 소리 감지 이벤트
+    public virtual void OnSoundDetected(Collider target)
+    {
+        currentState = EnemyState.Chasing;
+        targetTransform = target.transform;
     }
 
     // 추적 로직
@@ -222,12 +245,12 @@ public class EnemyObject : NetworkBehaviour
 
         if (Vector3.Distance(transform.position, targetTransform.position) <= attackRange && Time.time >= lastAttackTime + attackCooldown)
         {
-            StartCoroutine(nameof(PerformAttack));
+            StartCoroutine(nameof(Attack));
         }
     }
 
     // 공격 로직
-    public virtual IEnumerator PerformAttack()
+    public virtual IEnumerator Attack()
     {
         lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
         agent.isStopped = true; // 이동 멈춤

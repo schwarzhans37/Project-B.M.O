@@ -11,6 +11,9 @@ public class AIWeepAngel : EnemyObject
     {
         base.OnValidate();
 
+        stateInterval = 0.1f; // 상태 전환 주기
+        detectionInterval = 0.1f; // 감지 주기
+
         patrolSpeed = 1.5f; // 배회 속도
         chaseSpeed = 10f; // 추적 속도
 
@@ -19,48 +22,18 @@ public class AIWeepAngel : EnemyObject
         attackDamage = 2000; // 공격 데미지
         attackCooldown = 1f; // 공격 쿨타임
 
-        viewAngle = 180f; // 시야각(0 ~ 360도)
+        viewAngle = 360; // 시야각(0 ~ 360도)
         patrolRange = 15f ; // 배회 범위
         detectionRange = 40f; // 감지 범위
         soundDetectionRange = 0f; // 소리 감지 범위
+        patrolWaitTime = 0f; // 배회 대기 시간
         detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
-    public override void Start()
+    public override void Detect()
     {
-        base.Start();
-
-        StartCoroutine(StartAI(0.1f));
-        StartCoroutine(StartDetection(0.1f));
-    }
-
-    public override IEnumerator StartAI(float interval)
-    {
-        while (true)
-        {
-            switch (currentState)
-            {
-                case EnemyState.Patrolling:
-                    Patrol();
-                    break;
-                case EnemyState.Chasing:
-                    Chase();
-                    break;
-            }
-
-            yield return new WaitForSeconds(interval);
-        }
-    }
-
-    public override IEnumerator StartDetection(float interval)
-    {
-        while (true)
-        {
-            DetectPlayer();
-            IsPlayerLookingAtMe();
-
-            yield return new WaitForSeconds(interval);
-        }
+        DetectPlayer();
+        IsPlayerLookingAtMe();
     }
 
     public override void Chase()
@@ -71,7 +44,7 @@ public class AIWeepAngel : EnemyObject
         base.Chase();
     }
 
-    public override IEnumerator PerformAttack()
+    public override IEnumerator Attack()
     {
         lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
         agent.isStopped = true; // 이동 멈춤

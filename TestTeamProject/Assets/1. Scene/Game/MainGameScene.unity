@@ -6454,13 +6454,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4289222506090912945}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4289222506091331737}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4289222506091331737
 Transform:
   m_ObjectHideFlags: 0
@@ -6469,8 +6469,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4289222506090912953}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0005, y: 160, z: -0.22}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.22}
   m_LocalScale: {x: 0.003, y: 60, z: 0.003}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6493,6 +6493,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   currentState: 0
+  stateInterval: 0.1
+  detectionInterval: 0.1
   patrolSpeed: 1.5
   chaseSpeed: 10
   attackAngle: 90
@@ -6501,8 +6503,9 @@ MonoBehaviour:
   attackCooldown: 1
   viewAngle: 180
   patrolRange: 15
-  detectionRange: 25
+  detectionRange: 40
   soundDetectionRange: 0
+  patrolWaitTime: 0
   detectionLossTime: 5
   playerMask:
     serializedVersion: 2
@@ -6880,7 +6883,7 @@ Transform:
   m_GameObject: {fileID: 6187175677221642970}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.2195, y: 5, z: -0.0075}
+  m_LocalPosition: {x: -0.22, y: 0, z: 0}
   m_LocalScale: {x: 0.005, y: 100, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6951,6 +6954,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   currentState: 0
+  stateInterval: 0.1
+  detectionInterval: 0.1
   patrolSpeed: 2
   chaseSpeed: 4
   attackAngle: 90
@@ -6961,6 +6966,7 @@ MonoBehaviour:
   patrolRange: 15
   detectionRange: 5
   soundDetectionRange: 20
+  patrolWaitTime: 0
   detectionLossTime: 5
   playerMask:
     serializedVersion: 2
@@ -8985,7 +8991,7 @@ Transform:
   m_GameObject: {fileID: 8881289046697797218}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0007, y: 0, z: 0.2205}
+  m_LocalPosition: {x: 0, y: 0, z: 0.22}
   m_LocalScale: {x: 0.005, y: 100, z: 0.005}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9077,6 +9083,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   currentState: 0
+  stateInterval: 0.1
+  detectionInterval: 0.1
   patrolSpeed: 2
   chaseSpeed: 4
   attackAngle: 90
@@ -9087,6 +9095,7 @@ MonoBehaviour:
   patrolRange: 15
   detectionRange: 15
   soundDetectionRange: 20
+  patrolWaitTime: 2
   detectionLossTime: 5
   playerMask:
     serializedVersion: 2

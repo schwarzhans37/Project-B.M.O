@@ -16,6 +16,9 @@ public class MinotaurAI : EnemyObject
     {
         base.OnValidate();
 
+        stateInterval = 0.1f; // 상태 전환 주기
+        detectionInterval = 0.1f; // 감지 주기
+
         patrolSpeed = 2f; // 배회 속도
         chaseSpeed = 4f; // 추적 속도
 
@@ -28,91 +31,26 @@ public class MinotaurAI : EnemyObject
         patrolRange = 15f ; // 배회 범위
         detectionRange = 15f; // 감지 범위
         soundDetectionRange = 20f; // 소리 감지 범위
+        patrolWaitTime = 2f; // 배회 대기 시간
         detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
-
-    public override IEnumerator StartAI(float interval)
+    public override void UpdateState()
     {
         if (isDashing)
-        {
-            yield break;
-        }
+            return;
 
-        while (true)
-        {
-            switch (currentState)
-            {
-                case EnemyState.Patrolling:
-                    Patrol();
-                    break;
-                case EnemyState.Chasing:
-                    Chase();
-                    break;
-            }
-
-            yield return new WaitForSeconds(interval);
-        }
+        base.UpdateState();
     }
 
-    public override void Patrol()
+    public override void OnPlayerDetected(Collider target)
     {
-        agent.speed = patrolSpeed;
+        base.OnPlayerDetected(target);
 
-        // 배회할 위치로 이동
-        if (Vector3.Distance(transform.position, patrolTarget) < 1f)
+        if (!isDashing && Time.time > lastDashTime + dashCooldown)
         {
-            WaitAndSetNewPatrolTarget();
-        }
-        else
-        {
-            agent.SetDestination(patrolTarget);
-        }
-    }
-
-
-    IEnumerator WaitAndSetNewPatrolTarget()
-    {
-        currentState = EnemyState.Patrolling;
-        yield return new WaitForSeconds(2f);
-        SetRandomPatrolTarget();
-    }
-
-    public override void DetectPlayer()
-    {
-        Debug.Log("DetectPlayer");
-        Collider[] targets = Physics.OverlapSphere(transform.position, detectionRange, playerMask)
-            .OrderBy(target => Vector3.Distance(transform.position, target.transform.position)).ToArray();
-
-        foreach (Collider target in targets)
-        {
-            Debug.Log("DetectPlayer2");
-            Transform targetTransform = target.transform;
-            Vector3 dirToTarget = (targetTransform.position - transform.position).normalized;
-
-            // AI의 정면 방향과 타겟 사이의 각도 계산
-            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
-            {
-                Debug.Log("DetectPlayer3");
-                float distanceToTarget = Vector3.Distance(transform.position, targetTransform.position);
-
-                // 타겟까지 Ray를 쏴서 장애물에 막히지 않았는지 확인
-                if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
-                {
-                    Debug.Log("DetectPlayer4");
-                    currentState = EnemyState.Chasing;
-                    this.targetTransform = targetTransform;
-
-                    if (!isDashing && Time.time > lastDashTime + dashCooldown)
-                    {
-                        StartCoroutine(Dash());
-                        lastDashTime = Time.time;
-                    }
-
-                    // 첫 번째 타겟만 추적하기 위해 반복문 종료
-                    break;
-                }
-            }
+            StartCoroutine(Dash());
+            lastDashTime = Time.time;
         }
     }
 
@@ -157,5 +95,4 @@ public class MinotaurAI : EnemyObject
         isDashing = false;
         agent.isStopped = false;
     }
-
 }

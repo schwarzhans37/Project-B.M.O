@@ -9,6 +9,9 @@ public class AIDemonDog : EnemyObject
     {
         base.OnValidate();
 
+        stateInterval = 0.1f; // 상태 전환 주기
+        detectionInterval = 0.1f; // 감지 주기
+
         patrolSpeed = 2f; // 배회 속도
         chaseSpeed = 4f; // 추적 속도
 
@@ -21,73 +24,28 @@ public class AIDemonDog : EnemyObject
         patrolRange = 15f ; // 배회 범위
         detectionRange = 5f; // 감지 범위
         soundDetectionRange = 20f; // 소리 감지 범위
+        patrolWaitTime = 0f; // 배회 대기 시간
         detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
-    public override IEnumerator StartAI(float interval)
-    { 
-        while (true)
-        {
-            switch (currentState)
-            {
-                case EnemyState.Patrolling:
-                    Patrol();
-                    break;
-                case EnemyState.Chasing:
-                    Chase();
-                    break;
-            }
-
-            yield return new WaitForSeconds(interval);
-        }
-    }
-
-    public override IEnumerator StartDetection(float interval)
+    public override void Detect()
     {
-        while (true)
-        {
-            DetectSound();
-
-            yield return new WaitForSeconds(interval);
-        }
+        DetectSound();
     }
 
-    public override void DetectSound()
+    public override void OnSoundDetected(Collider target)
     {
-        Debug.Log("DetectSound");
-        Collider[] sounds = Physics.OverlapSphere(transform.position, soundDetectionRange, soundMask)
-            .OrderBy(col => Vector3.Distance(transform.position, col.transform.position)).ToArray();
+        base.OnSoundDetected(target);
 
-        foreach (Collider sound in sounds)
-        {
-            Debug.Log("DetectSound2");
-            Transform soundTransform = sound.transform;
-            Vector3 dirToTarget = (soundTransform.position - transform.position).normalized;
-
-            // 타겟까지의 거리 계산
-            float distanceToTarget = Vector3.Distance(transform.position, soundTransform.position);
-
-            // 타겟까지 Ray를 쏴서 장애물에 막히지 않았는지 확인
-            if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
-            {
-                Debug.Log("DetectSound3");
-                currentState = EnemyState.Chasing;
-                this.targetTransform = soundTransform;
-
-                DetectPlayer(); // 플레이어 감지
-
-                // 첫 번째 타겟만 추적하기 위해 반복문 종료
-                break;
-            }
-        }
+        DetectPlayer();
     }
 
-    public override IEnumerator PerformAttack()
+    public override IEnumerator Attack()
     {
         // animator.SetTrigger("Attack");
         Debug.Log("Demon Dog Attack!");
 
-        yield return base.PerformAttack();
+        yield return base.Attack();
 
         Debug.Log("Demon Dog Attack End!");
     }

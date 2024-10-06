@@ -53,6 +53,8 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] Vector3Int velocity;
     [SerializeField] Vector3 direction;
 
+    public GameObject soundEmitterPrefab;
+
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -222,17 +224,31 @@ public class PlayerMovementController : NetworkBehaviour
     public void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position);
+        CreateSoundEmitter(footstep);
     }
 
     public void SETorch()
     {
         Debug.Log("Torch equipped sound played");
         AudioSource.PlayClipAtPoint(equiptorch, transform.position);
+        CreateSoundEmitter(equiptorch);
     }
 
     public void SEJump()
     {
         Debug.Log("Jump sound played");
         AudioSource.PlayClipAtPoint(jumping, transform.position);
+        CreateSoundEmitter(jumping);
+    }
+
+    // SoundEmitter 객체 생성 함수
+    void CreateSoundEmitter(AudioClip audioClip)
+    {
+        // SoundEmitter 프리팹을 현재 위치에 생성
+        GameObject soundEmitter = Instantiate(soundEmitterPrefab, transform.position, Quaternion.identity);
+
+        // SoundEmitter의 설정 (감지 범위 및 지속 시간)
+        SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
+        emitter.duration = audioClip.length;
     }
 }

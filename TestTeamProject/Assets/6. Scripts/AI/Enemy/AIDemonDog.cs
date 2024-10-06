@@ -1,179 +1,95 @@
 using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System.Linq;
 
-public class AIDemonDog : MonoBehaviour
+public class AIDemonDog : EnemyObject
 {
-    public enum DogState { Patrolling, Chasing, Attacking }
-    public DogState currentState = DogState.Patrolling;
-
-    public float detectionRange = 10f; // 소리 감지 범위
-    public float patrolSpeed = 2f; // 배회 속도
-    public float chaseSpeed = 4f; // 추적 속도
-    public float attackRange = 1.5f; // 공격 범위
-    public int health = 100; // 체력
-    public int attackDamage = 20; // 공격 데미지
-    public float attackCooldown = 1f; // 공격 쿨타임
-    public float detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
-
-    private Transform player; // 플레이어의 Transform
-    private NavMeshAgent agent; // NavMeshAgent 컴포넌트
-    private Vector3 patrolTarget; // 배회할 목표 지점
-    private float timeSincePlayerOutOfRange; // 플레이어가 감지 범위에서 벗어난 시간
-    private float lastAttackTime; // 마지막 공격 시간
-
-    void Start()
+    protected override void OnValidate()
     {
-        // 에이전트 및 플레이어 참조 설정
-        agent = GetComponent<NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        base.OnValidate();
 
-        // 초기 배회 타겟 설정
-        SetRandomPatrolTarget();
+        patrolSpeed = 2f; // 배회 속도
+        chaseSpeed = 4f; // 추적 속도
+
+        attackAngle = 90f; // 공격각(0 ~ 360도)
+        attackRange = 1.5f; // 공격 범위
+        attackDamage = 200; // 공격 데미지
+        attackCooldown = 1f; // 공격 쿨타임
+
+        viewAngle = 360f; // 시야각(0 ~ 360도)
+        patrolRange = 15f ; // 배회 범위
+        detectionRange = 5f; // 감지 범위
+        soundDetectionRange = 20f; // 소리 감지 범위
+        detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
-    void Update()
-    {
-        // 소리 감지 확인
-        CheckForSoundDetection();
-
-        // 현재 상태에 따른 AI 동작
-        switch (currentState)
+    public override IEnumerator StartAI(float interval)
+    { 
+        while (true)
         {
-            case DogState.Patrolling:
-                Patrol();
-                break;
-            case DogState.Chasing:
-                ChasePlayer();
-                break;
-            case DogState.Attacking:
-                // 공격 중에는 플레이어 추적을 멈춤
-                agent.isStopped = true;
-                break;
-        }
-    }
-
-    void Patrol()
-    {
-        agent.speed = patrolSpeed;
-
-        // 배회할 위치로 이동
-        if (Vector3.Distance(transform.position, patrolTarget) < 1f)
-        {
-            SetRandomPatrolTarget();
-        }
-        else
-        {
-            agent.SetDestination(patrolTarget);
-        }
-    }
-
-    void SetRandomPatrolTarget()
-    {
-        float patrolRadius = 15f; // 배회 반경
-        Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
-        randomDirection += transform.position;
-
-        NavMeshHit navHit;
-        if (NavMesh.SamplePosition(randomDirection, out navHit, patrolRadius, NavMesh.AllAreas))
-        {
-            patrolTarget = navHit.position;
-        }
-    }
-
-    void ChasePlayer()
-    {
-        agent.speed = chaseSpeed;
-        agent.SetDestination(player.position);
-
-        // 추적 범위 벗어남을 확인하고 배회로 전환
-        if (Vector3.Distance(transform.position, player.position) > detectionRange)
-        {
-            timeSincePlayerOutOfRange += Time.deltaTime;
-
-            // 추적 범위에서 5초 이상 벗어나면 배회 상태로 전환
-            if (timeSincePlayerOutOfRange >= detectionLossTime)
+            switch (currentState)
             {
-                currentState = DogState.Patrolling;
-                agent.isStopped = false; // 배회 상태에서는 다시 움직임
+                case EnemyState.Patrolling:
+                    Patrol();
+                    break;
+                case EnemyState.Chasing:
+                    Chase();
+                    break;
             }
-        }
-        else
-        {
-            timeSincePlayerOutOfRange = 0f; // 감지 범위 안에 있으면 시간 초기화
-        }
 
-        // 공격 범위에 들어오면 공격 상태로 전환
-        if (Vector3.Distance(transform.position, player.position) <= attackRange && Time.time >= lastAttackTime + attackCooldown)
-        {
-            currentState = DogState.Attacking;
+            yield return new WaitForSeconds(interval);
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    public override IEnumerator StartDetection(float interval)
     {
-        // 공격 상태이며, 충돌한 오브젝트가 플레이어일 때 데미지 입히기
-        if (currentState == DogState.Attacking && other.CompareTag("Player") && Time.time >= lastAttackTime + attackCooldown)
+        while (true)
         {
-            Debug.Log("Demon Dog attacks player!");
+            DetectSound();
 
-            // 플레이어에게 데미지 입히기
-            other.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
-
-            // 마지막 공격 시간 업데이트
-            lastAttackTime = Time.time;
-
-            // 공격 후 추적 상태로 복귀
-            currentState = DogState.Chasing;
-            agent.isStopped = false;
+            yield return new WaitForSeconds(interval);
         }
     }
 
-    void CheckForSoundDetection()
+    public override void DetectSound()
     {
-        // "DogHearSound" 태그를 가진 오브젝트를 찾기
-        GameObject[] soundSources = GameObject.FindGameObjectsWithTag("DogHearSound");
+        Debug.Log("DetectSound");
+        Collider[] sounds = Physics.OverlapSphere(transform.position, soundDetectionRange, soundMask)
+            .OrderBy(col => Vector3.Distance(transform.position, col.transform.position)).ToArray();
 
-        // 모든 소리 소스들에 대해 감지 범위 확인
-        foreach (GameObject soundSource in soundSources)
+        foreach (Collider sound in sounds)
         {
-            float distanceToSound = Vector3.Distance(transform.position, soundSource.transform.position);
+            Debug.Log("DetectSound2");
+            Transform soundTransform = sound.transform;
+            Vector3 dirToTarget = (soundTransform.position - transform.position).normalized;
 
-            // 감지 범위 안에 들어오는 소리가 있다면 추적 시작
-            if (distanceToSound <= detectionRange)
+            // 타겟까지의 거리 계산
+            float distanceToTarget = Vector3.Distance(transform.position, soundTransform.position);
+
+            // 타겟까지 Ray를 쏴서 장애물에 막히지 않았는지 확인
+            if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
             {
-                currentState = DogState.Chasing;
-                return; // 소리가 하나라도 감지되면 추적 시작, 나머지 소리 확인 필요 없음
+                Debug.Log("DetectSound3");
+                currentState = EnemyState.Chasing;
+                this.targetTransform = soundTransform;
+
+                DetectPlayer(); // 플레이어 감지
+
+                // 첫 번째 타겟만 추적하기 위해 반복문 종료
+                break;
             }
         }
     }
 
-    public void TakeDamage(int damage)
+    public override IEnumerator PerformAttack()
     {
-        health -= damage;
+        // animator.SetTrigger("Attack");
+        Debug.Log("Demon Dog Attack!");
 
-        // 체력이 0 이하이면 사망 처리
-        if (health <= 0)
-        {
-            Die();
-        }
+        yield return base.PerformAttack();
+
+        Debug.Log("Demon Dog Attack End!");
     }
 
-    void Die()
-    {
-        Debug.Log("Demon Dog has died!");
-
-        // AI 동작 정지
-        agent.isStopped = true;
-        enabled = false; // 스크립트 동작 정지
-
-        // 3600초 후 오브젝트 비활성화
-        StartCoroutine(DisableAfterTime(3600f));
-    }
-
-    IEnumerator DisableAfterTime(float time)
-    {
-        yield return new WaitForSeconds(time);
-        gameObject.SetActive(false);
-    }
 }

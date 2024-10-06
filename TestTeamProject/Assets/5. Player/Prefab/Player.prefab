@@ -6035,9 +6035,9 @@ GameObject:
   - component: {fileID: -8260837994122704188}
   - component: {fileID: -8542265887876409592}
   - component: {fileID: 6400632713505107134}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6254,6 +6254,7 @@ MonoBehaviour:
   animRotation: 0
   velocity: {x: 0, y: 0, z: 0}
   direction: {x: 0, y: 0, z: 0}
+  soundEmitterPrefab: {fileID: 6014819235235811063, guid: e32b1b86cc02b34449e1e711587acdef, type: 3}
 --- !u!114 &-8542265887876409592
 MonoBehaviour:
   m_ObjectHideFlags: 0

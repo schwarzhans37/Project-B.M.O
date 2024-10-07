@@ -79,6 +79,7 @@ public class MinotaurAI : MonoBehaviour
         // 감지 체크 (시각 및 소리 감지)
         CheckForVisualDetection();
         CheckForSoundDetection();
+        // 애니메이션 업데이트
         AnimationUpdate();
     }
 

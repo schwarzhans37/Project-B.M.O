@@ -75,6 +75,8 @@ public class TestPlayerController : MonoBehaviour
         // 카메라 설정
         playerCamera.orthographic = false;
         playerCamera.transform.SetParent(transform);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()

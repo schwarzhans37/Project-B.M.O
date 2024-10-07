@@ -3,6 +3,7 @@ using Mirror.Discovery;
 using System;
 using System.Net;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse>
 {
@@ -16,8 +17,9 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
             {
                 serverId = ServerId,
                 uri = transport.ServerUri(),
-                nickname = UserModel.Instance.Nickname,
-                roomName = HostModel.Instance.RoomName,
+                isInRoom = SceneManager.GetActiveScene().name == "RoomScene", // 현재 방에 있는지 여부
+                nickname = CustomNetworkRoomManager.Nickname,
+                roomTitle = CustomNetworkRoomManager.RoomTitle,
                 currentPlayerCount = CustomNetworkRoomManager.singleton.numPlayers,
                 maxPlayerCount = CustomNetworkRoomManager.singleton.maxConnections,
             };
@@ -70,9 +72,9 @@ public class DiscoveryResponse : NetworkMessage
 
     // LAN에서 여러 NIC를 통해 연결할 수 있을 때 중복 서버가 나타나는 것을 방지
     public long serverId;
-
+    public bool isInRoom;
     public string nickname;
-    public string roomName;
+    public string roomTitle;
     public int currentPlayerCount;
     public int maxPlayerCount;
 }

@@ -7,15 +7,15 @@ public class JoinHostView : MonoBehaviour
 {
     public GameObject hostItemPrefab;
     public TMP_InputField findHostInput;
-    public GameObject confirmPassword;
-    public TMP_InputField hostPasswordInput;
+    public GameObject nicknamePanel;
+    public TMP_InputField nicknameInput;
     public Transform contentTransform; 
     public Button joinHostButton;
     public Button cancelButton;
 
     public event System.Action<string> OnFindHostAttempt;
     public event System.Action<DiscoveryResponse> OnSelectedHostAttempt;
-    public event System.Action OnJoinHostAttempt;
+    public event System.Action<string> OnJoinHostAttempt;
 
     void Start()
     {
@@ -25,10 +25,10 @@ public class JoinHostView : MonoBehaviour
         });
         joinHostButton.onClick.AddListener(() =>
         {
-            OnJoinHostAttempt?.Invoke();
+            OnJoinHostAttempt?.Invoke(nicknameInput.text);
         });
         cancelButton.onClick.AddListener(OnCancelButton);
-        confirmPassword.GetComponent<Button>().onClick.AddListener(OnCancelButton);
+        nicknamePanel.GetComponent<Button>().onClick.AddListener(OnCancelButton);
         gameObject.GetComponent<Button>().onClick.AddListener(OnMainBackgroundButton);
     }
 
@@ -45,27 +45,26 @@ public class JoinHostView : MonoBehaviour
 
     void OnCancelButton()
     {
-        hostPasswordInput.text = "";
-        confirmPassword.SetActive(false);
+        nicknameInput.text = "";
+        nicknamePanel.SetActive(false);
     }
 
-    public void ShowConfirmPassword()
+    public void ShowNicknamePanel()
     {
-        confirmPassword.SetActive(true);
+        nicknamePanel.SetActive(true);
     }
 
     public void AddHost(DiscoveryResponse info)
     {
         GameObject hostItem = Instantiate(hostItemPrefab, contentTransform);
 
-        if (info.roomName != null && info.roomName != "")
-        {
-            hostItem.transform.Find("Title").GetComponent<TMP_Text>().text = info.roomName;
-        }
-        if (info.nickname != null && info.nickname != "")
-        {
-            hostItem.transform.Find("Nickname").GetComponent<TMP_Text>().text = info.nickname;
-        }
+
+        hostItem.transform.Find("Title").GetComponent<TMP_Text>().text =
+            info.roomTitle != null && info.roomTitle != "" ? info.roomTitle : "No Title";
+
+        hostItem.transform.Find("Nickname").GetComponent<TMP_Text>().text = 
+            info.nickname != null && info.nickname != "" ? info.nickname : "No Nickname";
+            
         hostItem.transform.Find("CurrentPlayers").GetComponent<TMP_Text>().text = $"{info.currentPlayerCount}  /  {info.maxPlayerCount}";
 
         if (hostItem.TryGetComponent<Button>(out var button))

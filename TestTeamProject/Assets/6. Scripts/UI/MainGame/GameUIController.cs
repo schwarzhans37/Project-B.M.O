@@ -1,13 +1,13 @@
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))] // AudioSource ������Ʈ �߰�
+[RequireComponent(typeof(AudioSource))]
 public class GameUIController : MonoBehaviour
 {
     public static bool IsPaused { get; set; } = false;
 
     public GameObject menuUI;
     public AudioClip click;
-    private AudioSource audioSource; // AudioSource ���� �߰�
+    private AudioSource audioSource;
 
     void Start()
     {
@@ -20,7 +20,7 @@ public class GameUIController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        audioSource = GetComponent<AudioSource>(); // AudioSource ������Ʈ �ʱ�ȭ
+        audioSource = GetComponent<AudioSource>();
     }
     
     void Update()
@@ -32,7 +32,7 @@ public class GameUIController : MonoBehaviour
             Cursor.visible = !Cursor.visible;
             menuUI.SetActive(!menuUI.activeSelf);
 
-            audioSource.PlayOneShot(click); // Ŭ�� �Ҹ� ���
+            audioSource.PlayOneShot(click);
         }
     }
 }

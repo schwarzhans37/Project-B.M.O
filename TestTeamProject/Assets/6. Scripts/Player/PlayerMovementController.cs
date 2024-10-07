@@ -53,6 +53,8 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] Vector3Int velocity;
     [SerializeField] Vector3 direction;
 
+    public GameObject soundEmitterPrefab;
+
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -134,12 +136,12 @@ public class PlayerMovementController : NetworkBehaviour
         // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용]
         if (Input.GetKey(KeyCode.LeftShift) && gameObject.GetComponent<PlayerDataController>().stamina > 0)
         {
-            gameObject.GetComponent<PlayerDataController>().SubtractStamina();
+            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-5);
             moveSpeedMultiplier = walkSpeed * 2;
         }
         else
         {
-            gameObject.GetComponent<PlayerDataController>().AddStamina();
+            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(5);
             moveSpeedMultiplier = walkSpeed;
         }
 
@@ -222,6 +224,7 @@ public class PlayerMovementController : NetworkBehaviour
     public void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position);
+        CreateSoundEmitter(footstep);
     }
 
     public void SETorch()
@@ -234,5 +237,17 @@ public class PlayerMovementController : NetworkBehaviour
     {
         Debug.Log("Jump sound played");
         AudioSource.PlayClipAtPoint(jumping, transform.position);
+        CreateSoundEmitter(jumping);
+    }
+
+    // SoundEmitter 객체 생성 함수
+    void CreateSoundEmitter(AudioClip audioClip)
+    {
+        // SoundEmitter 프리팹을 현재 위치에 생성
+        GameObject soundEmitter = Instantiate(soundEmitterPrefab, transform.position, Quaternion.identity);
+
+        // SoundEmitter의 설정 (감지 범위 및 지속 시간)
+        SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
+        emitter.duration = audioClip.length;
     }
 }

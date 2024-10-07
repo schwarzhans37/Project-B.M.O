@@ -23,9 +23,9 @@ TagManager:
   - Water
   - UI
   - LocalPlayer
-  - 
-  - 
-  - 
+  - Player
+  - Obstacle
+  - Sound
   - 
   - 
   - 

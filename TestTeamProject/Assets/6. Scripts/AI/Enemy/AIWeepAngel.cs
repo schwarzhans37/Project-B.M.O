@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Linq;
+using Mirror;
 
 public class AIWeepAngel : EnemyObject
 {
@@ -17,17 +18,18 @@ public class AIWeepAngel : EnemyObject
         patrolSpeed = 1.5f; // 배회 속도
         chaseSpeed = 10f; // 추적 속도
 
+        patrolRange = 15f ; // 배회 범위
+        patrolWaitTime = 3f; // 배회 대기 시간
+
         attackAngle = 90f; // 공격각(0 ~ 360도)
         attackRange = 1f; // 공격 범위
         attackDamage = 2000; // 공격 데미지
         attackCooldown = 1f; // 공격 쿨타임
 
         viewAngle = 360; // 시야각(0 ~ 360도)
-        patrolRange = 15f ; // 배회 범위
         detectionRange = 40f; // 감지 범위
         soundDetectionRange = 0f; // 소리 감지 범위
-        patrolWaitTime = 0f; // 배회 대기 시간
-        detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
+        timeToChaseLostTarget = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
     public override void Detect()
@@ -46,7 +48,6 @@ public class AIWeepAngel : EnemyObject
 
     public override IEnumerator Attack()
     {
-        lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
         agent.isStopped = true; // 이동 멈춤
 
         yield return new WaitForSeconds(2f);
@@ -65,7 +66,7 @@ public class AIWeepAngel : EnemyObject
             // AI와 플레이어 카메라 방향의 내적(Dot Product) 계산
             float dotProduct = Vector3.Dot(playerCam.forward, dirToPlayer);
 
-            // 내적이 0보다 크다면, 카메라가 AI를 바라보고 있는 것
+            // 내적이 0.5보다 크다면, 카메라가 AI를 바라보고 있는 것
             if (dotProduct > 0.5f)
             {
                 float distanceToPlayer = Vector3.Distance(playerCam.position, transform.position);
@@ -74,8 +75,12 @@ public class AIWeepAngel : EnemyObject
                 if (!Physics.Raycast(playerCam.position, dirToPlayer, distanceToPlayer, obstacleMask))
                 {
                     Debug.Log("Player is looking at me!");
+
+                    OnPlayerLookedAtMe();
+
                     isPlayerLooking = true;
                     agent.isStopped = true; // AI 이동 멈춤
+
                     break; // 첫 번째로 감지된 플레이어만 고려
                 }
             }
@@ -87,5 +92,14 @@ public class AIWeepAngel : EnemyObject
             agent.isStopped = false;
         }
         isPlayerLooking = false;
+    }
+
+    public void OnPlayerLookedAtMe()
+    {
+        // 플레이어가 AI를 바라보고 있을 때 실행할 로직
+        if (!agent.isStopped)
+        {
+
+        }
     }
 }

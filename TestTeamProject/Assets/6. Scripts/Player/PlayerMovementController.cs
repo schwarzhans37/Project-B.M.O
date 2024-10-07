@@ -231,7 +231,6 @@ public class PlayerMovementController : NetworkBehaviour
     {
         Debug.Log("Torch equipped sound played");
         AudioSource.PlayClipAtPoint(equiptorch, transform.position);
-        CreateSoundEmitter(equiptorch);
     }
 
     public void SEJump()

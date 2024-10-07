@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 using System.Linq;
+using Mirror;
 
 public class MinotaurAI : EnemyObject
 {
@@ -11,6 +12,8 @@ public class MinotaurAI : EnemyObject
     public float dashCooldown = 10f; // 대쉬 쿨타임
     private float lastDashTime; // 마지막 대쉬 시간
     private bool isDashing = false; // 대쉬 중인지 여부
+
+    public AudioClip DashSound; // 대쉬 사운드
 
     protected override void OnValidate()
     {
@@ -22,17 +25,18 @@ public class MinotaurAI : EnemyObject
         patrolSpeed = 2f; // 배회 속도
         chaseSpeed = 4f; // 추적 속도
 
+        patrolRange = 15f ; // 배회 범위
+        patrolWaitTime = 2f; // 배회 대기 시간
+
         attackAngle = 90f; // 공격각(0 ~ 360도)
         attackRange = 2f; // 공격 범위
         attackDamage = 500; // 공격 데미지
         attackCooldown = 1f; // 공격 쿨타임
 
         viewAngle = 120f; // 시야각(0 ~ 360도)
-        patrolRange = 15f ; // 배회 범위
         detectionRange = 15f; // 감지 범위
         soundDetectionRange = 20f; // 소리 감지 범위
-        patrolWaitTime = 2f; // 배회 대기 시간
-        detectionLossTime = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
+        timeToChaseLostTarget = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
     public override void UpdateState()
@@ -54,7 +58,7 @@ public class MinotaurAI : EnemyObject
         }
     }
 
-    private IEnumerator Dash()
+    public IEnumerator Dash()
     {
         Debug.Log("Dash!");
         isDashing = true;
@@ -75,8 +79,8 @@ public class MinotaurAI : EnemyObject
             Vector3 nextPosition = transform.position + dashDirection * moveDistance;
 
             // 충돌 감지 (돌진 방향으로 레이캐스트)
-            if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask) || 
-                Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
+            if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask)
+             || Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
             {
                 Debug.Log("Dash hit obstacle or player.");
                 break;
@@ -94,5 +98,10 @@ public class MinotaurAI : EnemyObject
         // 돌진 종료 후 NavMeshAgent 재활성화
         isDashing = false;
         agent.isStopped = false;
+    }
+
+    public void PlayDashSound()
+    {
+        AudioSource.PlayClipAtPoint(DashSound, transform.position);
     }
 }

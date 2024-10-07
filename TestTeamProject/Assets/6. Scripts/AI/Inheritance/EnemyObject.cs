@@ -26,6 +26,9 @@ public class EnemyObject : NetworkBehaviour
     public float patrolSpeed; // 배회 속도
     public float chaseSpeed; // 추적 속도
 
+    public float patrolRange; // 배회 범위
+    public float patrolWaitTime; // 배회 대기 시간
+
     [Range(0, 360)] public float attackAngle; // 공격각(0 ~ 360도)
     public float attackRange; // 공격 범위
     public int attackDamage; // 공격 데미지
@@ -33,21 +36,25 @@ public class EnemyObject : NetworkBehaviour
     protected float lastAttackTime; // 마지막 공격 시간
 
     [Range(0, 360)] public float viewAngle; // 시야각(0 ~ 360도)
-    public float patrolRange; // 배회 범위
     public float detectionRange; // 감지 범위
     public float soundDetectionRange; // 소리 감지 범위
-    public float patrolWaitTime; // 배회 대기 시간
-    public float detectionLossTime; // 추적 범위에서 벗어나 배회로 돌아가는 시간
-    protected float timeSincePlayerOutOfRange; // 플레이어가 감지 범위에서 벗어난 시간
+    public float timeToChaseLostTarget; // 추적 범위에서 벗어나 배회로 돌아가는 시간
+    protected float timeSinceTargetLost; // 플레이어가 감지 범위에서 벗어난 시간
     
+    protected Transform targetTransform; // 추적할 타겟의 Transform
+    protected Vector3 patrolTarget; // 배회할 목표 지점
+
     public LayerMask playerMask; // 플레이어 레이어
     public LayerMask soundMask; // 소리 레이어
     public LayerMask obstacleMask; // 장애물 레이어
 
-    protected Transform targetTransform; // 플레이어의 Transform
+    public AudioClip patrolSound; // 배회 사운드
+    public AudioClip chaseSound; // 추적 사운드
+    public AudioClip meleeAttackSound; // 근접 공격 사운드
+    public AudioClip rangedAttackSound; // 원거리 공격 사운드
+
     protected NavMeshAgent agent; // NavMeshAgent 컴포넌트
     public Animator animator; // 애니메이터 컴포넌트
-    protected Vector3 patrolTarget; // 배회할 목표 지점
 
     protected override void OnValidate()
     {
@@ -67,8 +74,11 @@ public class EnemyObject : NetworkBehaviour
         lastAttackTime = -attackCooldown; // 초기화 시 즉시 공격 가능하도록 설정
         patrolTarget = transform.position; // 초기 배회 위치 설정
         
-        StartCoroutine(nameof(StartAI), stateInterval);
-        StartCoroutine(nameof(StartDetection), detectionInterval);
+        if (isServer)
+        {
+            StartCoroutine(nameof(StartAI), stateInterval);
+            StartCoroutine(nameof(StartDetection), detectionInterval);
+        }
     }
 
     // AI 시작
@@ -115,7 +125,8 @@ public class EnemyObject : NetworkBehaviour
         agent.speed = patrolSpeed;
 
         // 배회할 위치로 이동
-        if (Vector3.Distance(transform.position, patrolTarget) < 1f)
+        if (Vector3.Distance(transform.position, patrolTarget) > patrolRange
+         || Vector3.Distance(transform.position, patrolTarget) < 1f)
         {
             StartCoroutine(SetRandomPatrolTarget());
         }
@@ -230,17 +241,17 @@ public class EnemyObject : NetworkBehaviour
         // 추적 범위 벗어남을 확인하고 배회로 전환
         if (Vector3.Distance(transform.position, targetTransform.position) > detectionRange)
         {
-            timeSincePlayerOutOfRange += Time.deltaTime;
+            timeSinceTargetLost += Time.deltaTime;
 
-            if (timeSincePlayerOutOfRange >= detectionLossTime)
+            if (timeSinceTargetLost >= timeToChaseLostTarget)
             {
                 currentState = EnemyState.Patrolling;
-                timeSincePlayerOutOfRange = 0f;
+                timeSinceTargetLost = 0f;
             }
         }
         else
         {
-            timeSincePlayerOutOfRange = 0f;
+            timeSinceTargetLost = 0f;
         }
 
         if (Vector3.Distance(transform.position, targetTransform.position) <= attackRange && Time.time >= lastAttackTime + attackCooldown)
@@ -252,7 +263,6 @@ public class EnemyObject : NetworkBehaviour
     // 공격 로직
     public virtual IEnumerator Attack()
     {
-        lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
         agent.isStopped = true; // 이동 멈춤
 
         // 현재 애니메이션 클립의 길이 가져오기
@@ -263,6 +273,7 @@ public class EnemyObject : NetworkBehaviour
         yield return new WaitForSeconds(animationLength);
 
         agent.isStopped = false; // 이동 재개
+        lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
     }
 
     // 근접 공격 로직
@@ -287,4 +298,23 @@ public class EnemyObject : NetworkBehaviour
     // 원거리 공격 로직
     public virtual void RangedAttack() {}
 
+    public virtual void PlayPatrolSound()
+    {
+        AudioSource.PlayClipAtPoint(patrolSound, transform.position);
+    }
+
+    public virtual void PlayChaseSound()
+    {
+        AudioSource.PlayClipAtPoint(chaseSound, transform.position);
+    }
+
+    public virtual void PlayMeleeAttackSound()
+    {
+        AudioSource.PlayClipAtPoint(meleeAttackSound, transform.position);
+    }
+
+    public virtual void PlayRangedAttackSound()
+    {
+        AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position);
+    }
 }

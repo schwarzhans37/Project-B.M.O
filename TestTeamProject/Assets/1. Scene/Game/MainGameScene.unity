@@ -704,63 +704,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 116776133}
   m_CullTransparentMesh: 1
---- !u!1001 &138943898
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036425726690773832, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4545258498260310729, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
-      propertyPath: m_Name
-      value: TestPlayer
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d041c83248bc9b240a20aee8bb5b94ed, type: 3}
 --- !u!1 &156230551
 GameObject:
   m_ObjectHideFlags: 0
@@ -6455,7 +6398,7 @@ Transform:
   m_GameObject: {fileID: 4289222506090912945}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6497,16 +6440,16 @@ MonoBehaviour:
   detectionInterval: 0.1
   patrolSpeed: 1.5
   chaseSpeed: 10
+  patrolRange: 15
+  patrolWaitTime: 3
   attackAngle: 90
   attackRange: 1
   attackDamage: 2000
   attackCooldown: 1
-  viewAngle: 180
-  patrolRange: 15
+  viewAngle: 360
   detectionRange: 40
   soundDetectionRange: 0
-  patrolWaitTime: 0
-  detectionLossTime: 5
+  timeToChaseLostTarget: 5
   playerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -6516,6 +6459,10 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
+  patrolSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
   animator: {fileID: 0}
 --- !u!114 &4289222506091331739
 MonoBehaviour:
@@ -6958,16 +6905,16 @@ MonoBehaviour:
   detectionInterval: 0.1
   patrolSpeed: 2
   chaseSpeed: 4
+  patrolRange: 15
+  patrolWaitTime: 0
   attackAngle: 90
   attackRange: 1.5
   attackDamage: 200
   attackCooldown: 1
   viewAngle: 360
-  patrolRange: 15
   detectionRange: 5
   soundDetectionRange: 20
-  patrolWaitTime: 0
-  detectionLossTime: 5
+  timeToChaseLostTarget: 5
   playerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -6977,6 +6924,10 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
+  patrolSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
   animator: {fileID: 6187175677221642980}
 --- !u!195 &6187175677221642975
 NavMeshAgent:
@@ -9087,16 +9038,16 @@ MonoBehaviour:
   detectionInterval: 0.1
   patrolSpeed: 2
   chaseSpeed: 4
+  patrolRange: 15
+  patrolWaitTime: 2
   attackAngle: 90
   attackRange: 2
   attackDamage: 500
   attackCooldown: 1
   viewAngle: 120
-  patrolRange: 15
   detectionRange: 15
   soundDetectionRange: 20
-  patrolWaitTime: 2
-  detectionLossTime: 5
+  timeToChaseLostTarget: 5
   playerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -9106,10 +9057,15 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 256
+  patrolSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
   animator: {fileID: 8881289046697797219}
   dashDistance: 10
   dashSpeed: 10
   dashCooldown: 10
+  DashSound: {fileID: 0}
 --- !u!114 &8881289046697797222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11901,4 +11857,3 @@ SceneRoots:
   - {fileID: 814564368}
   - {fileID: 156230554}
   - {fileID: 907103534}
-  - {fileID: 138943898}

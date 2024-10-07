@@ -2902,14 +2902,14 @@ CharacterController:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 1.8
   m_Radius: 0.3
   m_SlopeLimit: 60
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
+  m_SkinWidth: 0.02
+  m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!136 &8954731992147251587
 CapsuleCollider:
@@ -2941,18 +2941,40 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2626625633320295862}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a3a133aa05dc4543b5672f6792afc95, type: 3}
+  m_Script: {fileID: 11500000, guid: c96e201046aa68043ae5734e82833d59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WalkSpeed: 2
-  RunSpeed: 6
-  JumpForce: 5
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  characterController: {fileID: 1457048985088495377}
+  networkAnimator: {fileID: 0}
   animator: {fileID: 9066077418518236929}
-  mouseSpeed: 3
-  PlayerModel: {fileID: 2626625633320295862}
-  PlayerCamera: {fileID: 4341890471740845682}
+  moveSpeedMultiplier: 0
+  walkSpeed: 2
+  runSpeed: 4
+  crouchSpeed: 1
+  isJump: 0
+  isCrouch: 0
+  isFall: 0
+  isLand: 1
+  isTorch: 0
+  footstep: {fileID: 0}
+  equiptorch: {fileID: 0}
+  landing: {fileID: 0}
+  jumping: {fileID: 0}
+  burning: {fileID: 0}
+  torchSoundInterval: 4
+  jumpForce: 5
+  horizontal: 0
+  vertical: 0
+  jumpSpeed: 0
+  animVelocity: 0
+  animRotation: 0
+  velocity: {x: 0, y: 0, z: 0}
+  direction: {x: 0, y: 0, z: 0}
 --- !u!1 &2684403325467371767
 GameObject:
   m_ObjectHideFlags: 0

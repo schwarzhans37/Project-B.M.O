@@ -22,7 +22,7 @@ public class AIWeepAngel : MonoBehaviour
     private Vector3 patrolTarget; // 배회할 목표 지점
     private bool isPlayerLooking = false; // 플레이어가 우는 천사를 바라보는지 여부
     private float timeSincePlayerOutOfRange; // 플레이어가 감지 범위에서 벗어난 시간
-
+    
     void Start()
     {
         // 에이전트 및 플레이어 참조 설정
@@ -39,6 +39,7 @@ public class AIWeepAngel : MonoBehaviour
         {
             Debug.LogError("PlayerCam with the tag 'PlayerCam' not found!");
         }
+        
 
         // 초기 배회 타겟 설정
         SetRandomPatrolTarget();

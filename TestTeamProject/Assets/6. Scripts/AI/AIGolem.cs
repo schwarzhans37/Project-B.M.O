@@ -25,6 +25,7 @@ public class AIRockGolem : MonoBehaviour
     private NavMeshAgent agent; // NavMeshAgent 컴포넌트
     private enum GolemState { Patrolling, Chasing }
     private GolemState currentState = GolemState.Patrolling;
+    private Animator animator;
 
     void Start()
     {
@@ -33,6 +34,7 @@ public class AIRockGolem : MonoBehaviour
         FindNearestPlayer();
         lastRockThrowTime = -rockThrowCooldown; // 초기화 시 즉시 공격 가능하도록 설정
         lastMeleeAttackTime = -meleeAttackCooldown; // 근접 공격도 초기화
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -52,6 +54,7 @@ public class AIRockGolem : MonoBehaviour
                 ChasePlayer();
                 break;
         }
+        AnimationUpdate();
     }
 
     void FindNearestPlayer()
@@ -132,6 +135,7 @@ public class AIRockGolem : MonoBehaviour
         {
             // 근접 공격 로직 (한 번 공격하면 다시 추적 상태로)
             Debug.Log("Rock Golem performs a melee attack.");
+            animator.SetTrigger("attack");
             // 근접 공격 후 타이머 초기화
             lastMeleeAttackTime = Time.time;
             // 근접 공격 후 다시 추적 상태로
@@ -143,6 +147,7 @@ public class AIRockGolem : MonoBehaviour
     {
         // 제자리에서 바위 투척 공격
         Debug.Log("Rock Golem throws a rock.");
+        animator.SetTrigger("rock");
         // 바위 투척 프리팹 인스턴스 생성
         GameObject rock = Instantiate(rockProjectilePrefab, rockThrowOrigin.position, Quaternion.identity);
         // 바위 투척 발사 방향 설정
@@ -164,6 +169,7 @@ public class AIRockGolem : MonoBehaviour
     void Die()
     {
         Debug.Log("Rock Golem has died.");
+        animator.SetBool("isDead", true);
         // 사망 시 AI 정지
         agent.isStopped = true;
         // 3600초 후에 오브젝트 비활성화
@@ -185,6 +191,18 @@ public class AIRockGolem : MonoBehaviour
             other.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(meleeAttackDamage));
             // 근접 공격 후 타이머 초기화
             lastMeleeAttackTime = Time.time;
+        }
+    }
+    void AnimationUpdate()
+    {
+        float speed = agent.velocity.magnitude;
+        if (speed > 0)
+        {
+            animator.SetBool("isMove", true);
+        }
+        else
+        {
+            animator.SetBool("isMove", false);
         }
     }
 }

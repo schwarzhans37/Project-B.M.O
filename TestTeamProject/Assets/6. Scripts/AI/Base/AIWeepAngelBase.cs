@@ -139,7 +139,7 @@ public class AIWeepAngelBase : MonoBehaviour
         if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
             Debug.Log("Weeping Angel attacks player!");
-            player.GetComponent<PlayerHealth>().TakeDamage(attackDamage); // 플레이어에게 데미지 입히기
+            // player.GetComponent<PlayerHealth>().TakeDamage(attackDamage); // 플레이어에게 데미지 입히기
         }
 
         // 공격 후 추적 상태로 복귀

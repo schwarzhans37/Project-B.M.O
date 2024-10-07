@@ -28,7 +28,7 @@ public class MinoWeapon : MonoBehaviour
         if (isAttacking && other.CompareTag("Player"))
         {
             // 플레이어에게 데미지 적용 (플레이어 스크립트에 따라 수정 필요)
-            other.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
+            // other.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
         }
     }
 }

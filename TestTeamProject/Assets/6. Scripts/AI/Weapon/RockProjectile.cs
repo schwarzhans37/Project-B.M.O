@@ -62,12 +62,12 @@ public class RockProjectile : MonoBehaviour
                 if (distanceToHit < 1f) // 충돌이 거의 정확할 때
                 {
                     // 데미지를 int로 변환하여 적용
-                    hitCollider.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(directHitDamage));
+                    // hitCollider.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(directHitDamage));
                 }
                 else // 범위 충격파 데미지
                 {
                     // 데미지를 int로 변환하여 적용
-                    hitCollider.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(aoeDamage));
+                    // hitCollider.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(aoeDamage));
                 }
             }
         }

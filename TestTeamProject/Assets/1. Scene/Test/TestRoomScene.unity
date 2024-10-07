@@ -18495,6 +18495,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1710117803}
     m_Modifications:
+    - target: {fileID: 4032477274992958769, guid: 99da91cb4f0dc7c4b9065d65d19bcb33, type: 3}
+      propertyPath: sceneId
+      value: 4029777453
+      objectReference: {fileID: 0}
     - target: {fileID: 4411545095394068779, guid: 99da91cb4f0dc7c4b9065d65d19bcb33, type: 3}
       propertyPath: m_Name
       value: Minotaur
@@ -20775,6 +20779,9 @@ GameObject:
   - component: {fileID: 7485179762660207833}
   - component: {fileID: 7485179762660207832}
   - component: {fileID: 7485179762660207831}
+  - component: {fileID: 7485179762660207836}
+  - component: {fileID: 7485179762660207835}
+  - component: {fileID: 7485179762660207834}
   m_Layer: 0
   m_Name: FelineGargoyle
   m_TagString: Untagged
@@ -20794,15 +20801,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9699c2003080def499d5a4a24eefe7be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   currentState: 0
-  detectionRange: 15
+  stateInterval: 0.1
+  detectionInterval: 0.1
   patrolSpeed: 1.5
-  chaseSpeed: 3
+  chaseSpeed: 10
+  patrolRange: 15
+  patrolWaitTime: 3
+  attackAngle: 90
   attackRange: 1
-  health: 100
-  attackDamage: 9999
-  sightAngle: 30
-  detectionLossTime: 5
+  attackDamage: 2000
+  attackCooldown: 1
+  viewAngle: 360
+  detectionRange: 40
+  soundDetectionRange: 0
+  timeToChaseLostTarget: 5
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  soundMask:
+    serializedVersion: 2
+    m_Bits: 512
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 256
+  patrolSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
+  animator: {fileID: 0}
 --- !u!136 &7485179762660207832
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -20848,6 +20878,84 @@ NavMeshAgent:
   m_BaseOffset: 1.65
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &7485179762660207834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7485179762660207830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 7485179762659979510}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
+--- !u!114 &7485179762660207835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7485179762660207830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 1670635533
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!54 &7485179762660207836
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7485179762660207830}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7485179762660207838
 GameObject:
   m_ObjectHideFlags: 0
@@ -22026,6 +22134,9 @@ GameObject:
   - component: {fileID: 8299410748178303092}
   - component: {fileID: 8299410748178303094}
   - component: {fileID: 8299410748178303095}
+  - component: {fileID: 8299410748178303098}
+  - component: {fileID: 8299410748178303097}
+  - component: {fileID: 8299410748178303096}
   m_Layer: 0
   m_Name: DemonDog
   m_TagString: Untagged
@@ -22045,15 +22156,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0f6dc5bd7b6394cb5158a16622dbac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   currentState: 0
-  detectionRange: 10
+  stateInterval: 0.1
+  detectionInterval: 0.1
   patrolSpeed: 2
   chaseSpeed: 4
+  patrolRange: 15
+  patrolWaitTime: 0
+  attackAngle: 90
   attackRange: 1.5
-  health: 100
-  attackDamage: 20
+  attackDamage: 200
   attackCooldown: 1
-  detectionLossTime: 5
+  viewAngle: 360
+  detectionRange: 5
+  soundDetectionRange: 20
+  timeToChaseLostTarget: 5
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  soundMask:
+    serializedVersion: 2
+    m_Bits: 512
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 256
+  patrolSound: {fileID: 0}
+  chaseSound: {fileID: 0}
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
+  animator: {fileID: 8299410748178303095}
 --- !u!136 &8299410748178303093
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -22120,6 +22254,84 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8299410748178303096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299410748178303091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 8299410748178303089}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 0
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
+--- !u!114 &8299410748178303097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299410748178303091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 1742631611
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!54 &8299410748178303098
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299410748178303091}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!4 &8315629115689658815
 Transform:
   m_ObjectHideFlags: 0

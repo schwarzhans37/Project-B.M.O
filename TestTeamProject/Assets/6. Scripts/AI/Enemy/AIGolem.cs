@@ -188,7 +188,7 @@ public class AIRockGolem : MonoBehaviour
         {
             Debug.Log("Rock Golem hits the player with melee attack.");
             // 플레이어에게 데미지 적용 (float을 int로 변환하여 전달)
-            other.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(meleeAttackDamage));
+            // other.GetComponent<PlayerHealth>().TakeDamage(Mathf.RoundToInt(meleeAttackDamage));
             // 근접 공격 후 타이머 초기화
             lastMeleeAttackTime = Time.time;
         }

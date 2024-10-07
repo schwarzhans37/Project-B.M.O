@@ -290,7 +290,7 @@ public class EnemyObject : NetworkBehaviour
             if (Vector3.Angle(transform.forward, directionToTarget) <= attackAngle / 2)
             {
                 // 2. 타겟이 정면 각도 내에 있으면 공격
-                target.GetComponent<PlayerDataController>().CmdChangeHp(attackDamage); // 타겟의 체력 감소
+                target.GetComponent<PlayerDataController>().CmdChangeHp(-attackDamage); // 타겟의 체력 감소
             }
         }
     }

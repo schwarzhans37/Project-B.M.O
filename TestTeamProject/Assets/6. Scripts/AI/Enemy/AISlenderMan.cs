@@ -172,12 +172,12 @@ public class AISlenderMan : MonoBehaviour
 
     void DealDamageToPlayer()
     {
-        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        // PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         
-        if (playerHealth != null)
-        {
-            playerHealth.TakeDamage(Mathf.RoundToInt(damagePerSecond));
-        }
+        // if (playerHealth != null)
+        // {
+        //     playerHealth.TakeDamage(Mathf.RoundToInt(damagePerSecond));
+        // }
     }
 
     void Die()

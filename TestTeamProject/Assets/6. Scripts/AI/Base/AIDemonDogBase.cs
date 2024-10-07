@@ -151,7 +151,7 @@ public class AIDemonDoBase : MonoBehaviour
             Debug.Log("Demon Dog attacks player!");
 
             // 플레이어에게 데미지 입히기
-            other.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
+            // other.GetComponent<PlayerHealth>().TakeDamage(attackDamage);
 
             // 마지막 공격 시간 업데이트
             lastAttackTime = Time.time;

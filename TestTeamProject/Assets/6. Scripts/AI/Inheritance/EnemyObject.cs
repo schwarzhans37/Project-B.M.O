@@ -55,6 +55,7 @@ public class EnemyObject : NetworkBehaviour
 
     protected NavMeshAgent agent; // NavMeshAgent 컴포넌트
     public Animator animator; // 애니메이터 컴포넌트
+    public AudioClip footstep; // 발소리 클립
 
     protected override void OnValidate()
     {
@@ -106,6 +107,7 @@ public class EnemyObject : NetworkBehaviour
                 Chase();
                 break;
         }
+        AnimationUpdate();
     }
 
     // 감지 시작
@@ -263,6 +265,8 @@ public class EnemyObject : NetworkBehaviour
     // 공격 로직
     public virtual IEnumerator Attack()
     {
+        lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
+
         agent.isStopped = true; // 이동 멈춤
 
         // 현재 애니메이션 클립의 길이 가져오기
@@ -273,7 +277,7 @@ public class EnemyObject : NetworkBehaviour
         yield return new WaitForSeconds(animationLength);
 
         agent.isStopped = false; // 이동 재개
-        lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
+        
     }
 
     // 근접 공격 로직
@@ -316,5 +320,30 @@ public class EnemyObject : NetworkBehaviour
     public virtual void PlayRangedAttackSound()
     {
         AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position);
+    }
+    //애니메이션 업데이트
+    public virtual void AnimationUpdate()
+    {
+        float speed = agent.velocity.magnitude;
+        if (speed > 0)
+        {
+            animator.SetBool("isMove", true);
+        }
+        else
+        {
+            animator.SetBool("isMove", false);
+        }
+        if (currentState == EnemyState.Chasing)
+        {
+            animator.SetBool("isChase", true);
+        }
+        else
+            animator.SetBool("isChase", false);
+    }
+    //발소리
+    public virtual void FootStep()
+    {
+        AudioSource.PlayClipAtPoint(footstep, transform.position);
+        Debug.Log("footstep sound play");
     }
 }

@@ -105,11 +105,13 @@ public class AIRockGolem : MonoBehaviour
         if (distanceToPlayer <= meleeRange && Time.time >= lastMeleeAttackTime + meleeAttackCooldown)
         {
             MeleeAttack();
+            animator.SetTrigger("Attack");
         }
         else if (distanceToPlayer <= rockThrowRange && Time.time >= lastRockThrowTime + rockThrowCooldown)
         {
             // 쿨타임이 끝나면 바위 투척
             RockThrowAttack();
+            animator.SetTrigger("rock");
         }
         else
         {

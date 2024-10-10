@@ -15,9 +15,9 @@ public class MinotaurAI : EnemyObject
 
     public AudioClip DashSound; // 대쉬 사운드
 
-    protected override void OnValidate()
+    public override void Setting()
     {
-        base.OnValidate();
+        base.Setting();
 
         stateInterval = 0.1f; // 상태 전환 주기
         detectionInterval = 0.1f; // 감지 주기
@@ -62,7 +62,7 @@ public class MinotaurAI : EnemyObject
     {
         Debug.Log("Dash!");
         isDashing = true;
-        agent.isStopped = true; // NavMeshAgent 일시 중지
+        StopMoving();
 
         // 돌진 방향 계산
         Vector3 dashDirection = (targetTransform.position - transform.position).normalized;
@@ -97,7 +97,7 @@ public class MinotaurAI : EnemyObject
 
         // 돌진 종료 후 NavMeshAgent 재활성화
         isDashing = false;
-        agent.isStopped = false;
+        ResumeMoving();
     }
 
     public void PlayDashSound()

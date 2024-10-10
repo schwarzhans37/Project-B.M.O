@@ -6,9 +6,9 @@ using Mirror;
 
 public class AIDemonDog : EnemyObject
 {
-    protected override void OnValidate()
+    public override void Setting()
     {
-        base.OnValidate();
+        base.Setting();
 
         stateInterval = 0.1f; // 상태 전환 주기
         detectionInterval = 0.1f; // 감지 주기

@@ -1,8 +1,5 @@
 using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
-using System.Linq;
-using Mirror;
 
 public class AIWeepAngel : EnemyObject
 {

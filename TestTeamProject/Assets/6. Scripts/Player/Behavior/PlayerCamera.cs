@@ -1,5 +1,4 @@
 using Mirror;
-using Mirror.Examples.MultipleMatch;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkIdentity))]

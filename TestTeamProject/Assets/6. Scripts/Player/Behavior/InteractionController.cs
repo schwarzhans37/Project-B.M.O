@@ -20,6 +20,7 @@ public class InteractionController : NetworkBehaviour
 
         waitTime = 0.5f;
         lastWaitTime = -waitTime;
+        this.enabled = false;
     }
 
     public override void OnStartAuthority()
@@ -34,7 +35,6 @@ public class InteractionController : NetworkBehaviour
     {
         base.OnStopAuthority();
 
-        // 권한이 없으면 상호작용 컨트롤러를 비활성화
         this.enabled = false;
     }
 

@@ -91,13 +91,11 @@ public class EnemyObject : NetworkBehaviour
     // AI 시작
     public IEnumerator StartAI(float interval)
     {
-        yield return new WaitForSeconds(interval);
-
         while (true)
         {
             UpdateState();
 
-            yield return null;
+            yield return new WaitForSeconds(interval);
         }
     }
 

@@ -10,7 +10,17 @@ public class InteractionController : NetworkBehaviour
     public CanvasGroup guideLine;   // 상호작용 가이드 UI
     public GameObject progressBar; // 원형 진행 바
     public float holdTime; // F키를 누르고 있어야 하는 시간
+    public float waitTime; // 다음 상호작용을 위한 대기 시간 
     private float holdProgress = 0f;
+    private float lastWaitTime;
+
+    protected override void OnValidate()
+    {
+        base.OnValidate();
+
+        waitTime = 0.5f;
+        lastWaitTime = -waitTime;
+    }
 
     public override void OnStartAuthority()
     {
@@ -49,6 +59,8 @@ public class InteractionController : NetworkBehaviour
             return;
         if (GameUIController.IsPaused)
             return;
+        if (Time.time - lastWaitTime < waitTime)
+            return;
 
         // 카메라 중앙에서 Ray를 쏴서 오브젝트를 탐지
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
@@ -58,13 +70,9 @@ public class InteractionController : NetworkBehaviour
             if (hit.collider.CompareTag("Untagged"))
             {
                 // UI 숨기기
-                guideLine.alpha = 0;
-                holdProgress = 0;
-                UpdateProgressBar(0);
-                return;
+                HideUI();
             }
-
-            if (hit.collider.CompareTag("InteractableObject"))
+            else if (hit.collider.CompareTag("InteractableObject"))
             {
                 GameObject obj = hit.collider.gameObject;
                 holdTime = obj.GetComponent<InteractableObject>().holdTime;
@@ -72,42 +80,66 @@ public class InteractionController : NetworkBehaviour
                 // F키를 누르고 있으면 바를 채운다
                 if (Input.GetKey(KeyCode.F))
                 {
-                    guideLine.alpha = 0;
-
-                    if (holdTime == 0)
-                    {
-                        // 행동을 트리거
-                        InteractWithObject(hit.collider.gameObject, this.gameObject);
-                        return;
-                    }
-
-                    holdProgress += Time.deltaTime;
-                    UpdateProgressBar(holdProgress / holdTime);
-
-                    if (holdProgress >= holdTime)
-                    {
-                        // 행동을 트리거
-                        InteractWithObject(hit.collider.gameObject, this.gameObject);
-                        holdProgress = 0;
-                    }
+                    HandleTriggerStay(obj);
                 }
                 else
                 {
                     // UI를 표시
-                    guideLine.GetComponentInChildren<TMP_Text>().text = obj.GetComponent<InteractableObject>().guideText;
-                    guideLine.alpha = 1;
-                    holdProgress = 0;
-                    UpdateProgressBar(0);
+                    ShowguideLine(obj.GetComponent<InteractableObject>().guideText);
                 }
             }
         }
         else
         {
             // Ray가 아무것도 맞추지 않으면 UI를 숨김
-            guideLine.alpha = 0;
-            holdProgress = 0;
-            UpdateProgressBar(0);
+            HideUI();
         }
+    }
+
+    void HandleTriggerStay(GameObject gameObject)
+    {
+        guideLine.alpha = 0;
+
+        if (holdTime == 0)
+        {
+            // 행동을 트리거
+            InteractWithObject(gameObject, this.gameObject);
+            lastWaitTime = Time.time;
+            HideUI();
+            return;
+        }
+
+        holdProgress += Time.deltaTime;
+        UpdateProgressBar(holdProgress / holdTime);
+
+        if (holdProgress >= holdTime)
+        {
+            // 행동을 트리거
+            InteractWithObject(gameObject, this.gameObject);
+            lastWaitTime = Time.time;
+            HideUI();
+        }
+    }
+
+    void ShowguideLine(string text)
+    {
+        guideLine.GetComponentInChildren<TMP_Text>().text = text;
+        guideLine.alpha = 1;
+        holdProgress = 0;
+        UpdateProgressBar(0);
+    }
+
+    void HideUI()
+    {
+        guideLine.alpha = 0;
+        holdProgress = 0;
+        UpdateProgressBar(0);
+    }
+
+    void UpdateProgressBar(float progress)
+    {
+        // 원형 진행 바 업데이트 로직
+        progressBar.GetComponent<Image>().fillAmount = progress;
     }
 
     [Command]
@@ -115,11 +147,5 @@ public class InteractionController : NetworkBehaviour
     {
         // 상호작용 로직
         obj.GetComponent<InteractableObject>().InteractWithObject(player);
-    }
-
-    void UpdateProgressBar(float progress)
-    {
-        // 원형 진행 바 업데이트 로직
-        progressBar.GetComponent<Image>().fillAmount = progress;
     }
 }

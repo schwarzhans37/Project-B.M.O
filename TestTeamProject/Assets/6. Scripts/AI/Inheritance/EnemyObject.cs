@@ -261,7 +261,7 @@ public class EnemyObject : NetworkBehaviour
             timeSinceTargetLost = 0f;
         }
 
-        if (Vector3.Distance(transform.position, targetTransform.position) <= attackRange && Time.time >= lastAttackTime + attackCooldown)
+        if (Vector3.Distance(transform.position, targetTransform.position) <= attackRange && Time.time - lastAttackTime > attackCooldown)
         {
             StartCoroutine(nameof(Attack));
         }
@@ -279,7 +279,7 @@ public class EnemyObject : NetworkBehaviour
         Vector3 originalPosition = transform.position; // 현재 위치 저장
 
         // 애니메이션의 길이만큼 대기
-        while (Time.time < lastAttackTime + animationLength)
+        while (Time.time - lastAttackTime < animationLength)
         {
             transform.position = originalPosition; // 위치 고정
             yield return null; // 한 프레임 대기
@@ -291,6 +291,9 @@ public class EnemyObject : NetworkBehaviour
     // 근접 공격 로직
     public virtual void MeleeAttack()
     {
+        if (!isServer)
+            return;
+
         // 1. 적의 정면 방향으로 범위 내 타겟을 탐지
         Collider[] targets = Physics.OverlapSphere(transform.position, attackRange, playerMask);
         
@@ -302,7 +305,7 @@ public class EnemyObject : NetworkBehaviour
             if (Vector3.Angle(transform.forward, directionToTarget) <= attackAngle / 2)
             {
                 // 2. 타겟이 정면 각도 내에 있으면 공격
-                target.GetComponent<PlayerDataController>().CmdChangeHp(-attackDamage); // 타겟의 체력 감소
+                target.GetComponent<PlayerDataController>().ChangeHp(-attackDamage); // 타겟의 체력 감소
             }
         }
     }

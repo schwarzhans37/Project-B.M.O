@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.18006688, g: 0.22545186, b: 0.3067876, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4326,6 +4326,7 @@ MonoBehaviour:
   - {fileID: 2608406151542785269, guid: 9c1699db7ecc30a4ea0b420eedd793e6, type: 3}
   - {fileID: 6496405698498005963, guid: 69d42339d824ffe4893b53b378bdf7b1, type: 3}
   - {fileID: 7521629857053333725, guid: 02a6acffea0cf3444a0825475364e5c1, type: 3}
+  - {fileID: 3543955170667400224, guid: b8c93829d972b2948ba9dc5712e71ae1, type: 3}
   spawnRange: 100
   spawnInterval: 50
   navMeshSampleDistance: 4

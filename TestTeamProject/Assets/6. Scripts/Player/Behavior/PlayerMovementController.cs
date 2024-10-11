@@ -14,11 +14,11 @@ public class PlayerMovementController : NetworkBehaviour
     [Range(1, 20)]
     public float moveSpeedMultiplier; // 이동 속도 배율
     [SerializeField]
-    float walkSpeed = 2f; // 걷기 속도
+    float walkSpeed; // 걷기 속도
     [SerializeField]
-    float runSpeed = 4f; // 달리기 속도
+    float crouchSpeed; // 앉기 속도
     [SerializeField]
-    float crouchSpeed = 1f; // 앉기 속도
+    float runSpeedMultiplier; // 뛰기 속도 배율
 
     //애니메이터 플래그
     public bool isTorch = false;
@@ -34,7 +34,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     [Header("Jumping")]
     [Range(-10f, 10f)]
-    public float jumpForce = 5f;
+    public float jumpForce; // 점프 힘
 
     [SerializeField, Range(-1f, 1f)]
     float horizontal;
@@ -71,6 +71,11 @@ public class PlayerMovementController : NetworkBehaviour
         characterController.enabled = false;
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
+
+        walkSpeed = 2.5f;
+        runSpeedMultiplier = 2f;
+        crouchSpeed = 1f;
+        jumpForce = 5f;
 
         this.enabled = false;
     }
@@ -133,20 +138,6 @@ public class PlayerMovementController : NetworkBehaviour
 
     void HandleMove()
     {
-        // 왼쪽 Shift 키가 눌리면 달리기 속도를 사용하고, 그렇지 않으면 걷기 속도를 사용]
-        if (Input.GetKey(KeyCode.LeftShift) && gameObject.GetComponent<PlayerDataController>().stamina > 0)
-        {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-5);
-            moveSpeedMultiplier = walkSpeed * 2;
-        }
-        else
-        {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(5);
-            moveSpeedMultiplier = walkSpeed;
-        }
-
-        moveSpeedMultiplier = Input.GetKey(KeyCode.LeftControl) ? moveSpeedMultiplier / 2 : moveSpeedMultiplier;
-    
         // 입력 캡처
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
@@ -159,6 +150,20 @@ public class PlayerMovementController : NetworkBehaviour
 
         // 방향을 로컬 공간에서 월드 공간으로 변환
         direction = transform.TransformDirection(direction);
+
+        // 이동 속도 설정
+        moveSpeedMultiplier = Input.GetKey(KeyCode.LeftControl) ? crouchSpeed : walkSpeed;
+        if (Input.GetKey(KeyCode.LeftShift)
+            && gameObject.GetComponent<PlayerDataController>().stamina > 0
+            && (horizontal != 0 || vertical != 0))
+        {
+            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-7);
+            moveSpeedMultiplier *= runSpeedMultiplier;
+        }
+        else
+        {
+            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(5);
+        }
 
         // 원하는 지상 속도로 곱셈
         direction *= moveSpeedMultiplier;

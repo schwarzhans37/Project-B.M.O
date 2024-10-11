@@ -7,17 +7,28 @@ using Mirror;
 public class MinotaurAI : EnemyObject
 {
 
-    public float dashDistance = 10f; // 대쉬 거리
-    public float dashSpeed = 10f; // 대쉬 속도
-    public float dashCooldown = 10f; // 대쉬 쿨타임
+    public float dashDistance; // 대쉬 거리
+    public float dashSpeed; // 대쉬 속도
+    public float dashCooldown; // 대쉬 쿨타임
     private float lastDashTime; // 마지막 대쉬 시간
     private bool isDashing = false; // 대쉬 중인지 여부
 
     public AudioClip DashSound; // 대쉬 사운드
 
+    protected override void OnValidate()
+    {
+        base.OnValidate();
+
+        dashDistance = 10f; // 대쉬 거리
+        dashSpeed = 10f; // 대쉬 속도
+        dashCooldown = 10f; // 대쉬 쿨타임
+    }
+
     public override void Setting()
     {
         base.Setting();
+
+        lastDashTime = -dashCooldown;
 
         stateInterval = 0.1f; // 상태 전환 주기
         detectionInterval = 0.1f; // 감지 주기
@@ -51,7 +62,7 @@ public class MinotaurAI : EnemyObject
     {
         base.OnPlayerDetected(target);
 
-        if (!isDashing && Time.time > lastDashTime + dashCooldown)
+        if (!isDashing && Time.time - lastDashTime > dashCooldown)
         {
             StartCoroutine(Dash());
             lastDashTime = Time.time;
@@ -60,7 +71,6 @@ public class MinotaurAI : EnemyObject
 
     public IEnumerator Dash()
     {
-        Debug.Log("Dash!");
         isDashing = true;
         StopMoving();
 
@@ -82,7 +92,6 @@ public class MinotaurAI : EnemyObject
             if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask)
              || Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
             {
-                Debug.Log("Dash hit obstacle or player.");
                 break;
             }
 

@@ -1637,7 +1637,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6676608946917806825}
   - component: {fileID: 8178969665086080235}
-  - component: {fileID: 1202877528747576856}
   - component: {fileID: 4394487063505256539}
   - component: {fileID: 2141504212660475741}
   - component: {fileID: 7374287290646657713}
@@ -1686,22 +1685,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1202877528747576856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424128996324446545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e411f2f69a6f38d4fbff8fb67acd9591, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  teleportMinDistance: 5
-  teleportMaxDistance: 20
-  damagePerSecond: 5
-  teleportInterval: 4
 --- !u!195 &4394487063505256539
 NavMeshAgent:
   m_ObjectHideFlags: 0

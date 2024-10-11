@@ -48,7 +48,6 @@ public class AIWeepAngel : EnemyObject
 
     public override IEnumerator Attack()
     {
-        Debug.Log("Weep Angel Attack!");
         lastAttackTime = Time.time;
 
         StopMoving();
@@ -77,8 +76,6 @@ public class AIWeepAngel : EnemyObject
                 // Raycast를 통해 장애물이 있는지 확인
                 if (!Physics.Raycast(playerCam.position, dirToPlayer, distanceToPlayer, obstacleMask))
                 {
-                    Debug.Log("Player is looking at me!");
-
                     OnPlayerLookedAtMe();
 
                     return; // 첫 번째로 감지된 플레이어만 고려
@@ -96,6 +93,7 @@ public class AIWeepAngel : EnemyObject
 
     public void OnPlayerLookedAtMe()
     {
+        Debug.Log("Player Looked At Me");
         // 플레이어가 AI를 바라보고 있을 때 실행할 로직
         if (!agent.isStopped)
         {

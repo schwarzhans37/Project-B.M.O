@@ -3363,11 +3363,11 @@ GameObject:
   m_Component:
   - component: {fileID: 8542112200672404445}
   - component: {fileID: 4371997982932448013}
-  - component: {fileID: 4622872779495385246}
-  - component: {fileID: 1800948505584957654}
-  - component: {fileID: 4828250783634838951}
-  - component: {fileID: 5157201704009609292}
-  - component: {fileID: 8855624913841143398}
+  - component: {fileID: 4870900844803216504}
+  - component: {fileID: 8970342877136660603}
+  - component: {fileID: -867174743063312594}
+  - component: {fileID: 6505212903495318670}
+  - component: {fileID: 7865506186863237139}
   m_Layer: 0
   m_Name: Minotaur
   m_TagString: Untagged
@@ -3414,7 +3414,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!54 &4622872779495385246
+--- !u!54 &4870900844803216504
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3441,7 +3441,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!195 &1800948505584957654
+--- !u!195 &8970342877136660603
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3463,7 +3463,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &4828250783634838951
+--- !u!114 &-867174743063312594
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3480,7 +3480,7 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
---- !u!114 &5157201704009609292
+--- !u!114 &6505212903495318670
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3514,7 +3514,7 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &8855624913841143398
+--- !u!114 &7865506186863237139
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3546,13 +3546,13 @@ MonoBehaviour:
   timeToChaseLostTarget: 5
   playerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 64
   soundMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 256
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 128
   patrolSound: {fileID: 0}
   chaseSound: {fileID: 0}
   meleeAttackSound: {fileID: 0}

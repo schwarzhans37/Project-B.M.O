@@ -827,11 +827,11 @@ GameObject:
   m_Component:
   - component: {fileID: 330494678151520798}
   - component: {fileID: 1170350492810089484}
-  - component: {fileID: 4592771221286332652}
-  - component: {fileID: 7239150920683671454}
-  - component: {fileID: 560527889715860217}
-  - component: {fileID: 583784968634011124}
-  - component: {fileID: 4392749649568121525}
+  - component: {fileID: 2119081292228911138}
+  - component: {fileID: -7224173146144130917}
+  - component: {fileID: -8111092786401220419}
+  - component: {fileID: -491297467782211118}
+  - component: {fileID: 7937564840321168694}
   m_Layer: 0
   m_Name: DemonDog
   m_TagString: Untagged
@@ -877,7 +877,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!54 &4592771221286332652
+--- !u!54 &2119081292228911138
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -904,7 +904,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!195 &7239150920683671454
+--- !u!195 &-7224173146144130917
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -926,7 +926,7 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &560527889715860217
+--- !u!114 &-8111092786401220419
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -943,7 +943,7 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
---- !u!114 &583784968634011124
+--- !u!114 &-491297467782211118
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -977,7 +977,7 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &4392749649568121525
+--- !u!114 &7937564840321168694
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1003,19 +1003,19 @@ MonoBehaviour:
   attackRange: 1.5
   attackDamage: 200
   attackCooldown: 1
-  viewAngle: 360
+  viewAngle: 120
   detectionRange: 5
   soundDetectionRange: 20
   timeToChaseLostTarget: 5
   playerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 64
   soundMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 256
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 128
   patrolSound: {fileID: 0}
   chaseSound: {fileID: 0}
   meleeAttackSound: {fileID: 0}

@@ -26,5 +26,7 @@ public class SalesLocationController : InteractableObject
                 Destroy(collider.gameObject);
             }
         }
+
+        GameObject.Find("EnemySpawner").GetComponent<TestSpawner>().SpawnEnemies();
     }
 }

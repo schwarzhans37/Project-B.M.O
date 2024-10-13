@@ -1,193 +1,254 @@
+using System.Collections;
+using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.AI;
+using UnityStandardAssets.ImageEffects;
 
-public class AISlenderMan : MonoBehaviour
+[RequireComponent(typeof(NetworkIdentity))]
+[RequireComponent(typeof(NetworkTransformReliable))]
+public class AISlenderMan : NetworkBehaviour
 {
-    public float teleportMinDistance = 2f; // 순간이동 후 플레이어와 최소 거리
-    public float teleportMaxDistance = 8f; // 순간이동 후 플레이어와 최대 거리
-    public float attackMinDistance = 1f; // 노이즈와 데미지 발생 최소 거리
-    public float damagePerSecond = 5f; // 초당 플레이어에게 주는 데미지
-    public float teleportInterval = 2f; // 2초마다 순간이동
+    public Transform player;
+    public Transform playerCamera;
+    public Animator animator;
+    public AudioSource audioSource;
 
-    private Transform player; // 추적할 플레이어
-    private Transform playerCam; // 플레이어의 카메라
-    private float damageTimer; // 데미지 타이머
-    private float lookAwayTimer; // 플레이어가 쳐다보지 않은 시간 카운터
-    private float teleportTimer; // 순간이동 타이머
+    public SkinnedMeshRenderer body;
+    public Transform head;
 
-    private SkinnedMeshRenderer slenderRenderer; // 슬렌더 맨 모델의 SkinnedMeshRenderer
+    public float deathTime = 30f; // 플레이어가 바라보는 시간이 사망 시간에 도달
 
-    private PostProcessVolume postProcessVolume; // 포스트 프로세스 볼륨
-    private Grain grain; // 노이즈 효과 (Grain)
+    public float teleportMinDistance = 21f; // 순간이동 후 플레이어와 최소 거리
+    public float teleportMaxDistance = 30f; // 순간이동 후 플레이어와 최대 거리
+    public float deathDistanceProportion = 0.16f; // 사망 거리 비율
+    public float teleportCooldown = 2f; // 텔레포트 간 최소 시간 간격
 
-    private float targetGrainIntensity = 0f; // 노이즈의 목표 강도
-    private float grainLerpSpeed = 1f; // 노이즈 변화 속도
-    
-    public event System.Action OnSlenderManDeath;
+    private float lookTime = 0f;
+    private float noLookTime = 0f;
+    private float lastLookTime = 0f;
+    private bool isPlayerLooking = false;
+    private bool isStopped = false;
+
+    private float effectCooldown = 6f;
+    private float effectTime = 0f;
+    private float lastEffectTime = 0f;
+
+
+    Vector3 lookAtTargetPosition, lookAtPosition;
+    float lookAtWeight;
+    public float blendTime = 0.4f;
+    public float towards = 5.0f;
+    public float weightMul = 1;
+    public float clampWeight = 0.5f;
+    public Vector3 weight = new Vector3(0.4f, 0.8f, 0.9f);
+    public bool yTargetHeadSynk;
+
 
     void Start()
     {
-        FindNearestPlayer();
-        slenderRenderer = transform.Find("Slender").GetComponent<SkinnedMeshRenderer>();
-
-        // PlayerCam의 Post-Processing Volume 가져오기
-        postProcessVolume = playerCam.GetComponent<PostProcessVolume>();
-
-        // 노이즈 효과 초기화
-        if (postProcessVolume.profile.TryGetSettings(out grain))
-        {
-            grain.active = true; // 노이즈 효과 활성화
-            grain.intensity.value = 0f; // 노이즈 초기화
-        }
-        else
-        {
-            Debug.LogError("Grain settings not found in PostProcessProfile!");
-        }
+        playerCamera = player.GetComponentInChildren<Camera>(true).transform;
+        animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (!isServer)
+            return;
 
-        AttackPlayer();
+        if (isStopped)
+            return;
 
-        // 노이즈 효과 조절
-        grain.intensity.value = Mathf.Lerp(grain.intensity.value, targetGrainIntensity, Time.deltaTime * grainLerpSpeed);
-    }
 
-    void FindNearestPlayer()
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        float closestDistance = Mathf.Infinity;
-
-        foreach (GameObject p in players)
+        if (noLookTime >= deathTime)
         {
-            float distance = Vector3.Distance(transform.position, p.transform.position);
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                player = p.transform;
-                playerCam = p.transform.Find("PlayerCam");
-            }
+            isStopped = true;
+            StartCoroutine(TriggerSurvive());
+            return;
         }
-    }
-
-    void AttackPlayer()
-    {
-        Vector3 viewportPosition = playerCam.GetComponent<Camera>().WorldToViewportPoint(transform.position);
-        bool isInViewport = viewportPosition.z > 0 && viewportPosition.x > 0 && viewportPosition.x < 1 && viewportPosition.y > 0 && viewportPosition.y < 1;
-
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        // 뷰포트 내에 있고, 거리가 attackMinDistance 이상, teleportMaxDistance 이하일 때만 효과 발생
-        if (isInViewport && distanceToPlayer >= attackMinDistance && distanceToPlayer <= teleportMaxDistance)
+        if (lookTime >= deathTime
+            || Vector3.Distance(player.position, transform.position) < teleportMinDistance * deathDistanceProportion)
         {
-            // 플레이어가 바라보고 있다면 데미지 주기
-            damageTimer += Time.deltaTime;
+            isStopped = true;
+            StartCoroutine(TriggerDeath());
+            return;
+        }
 
-            if (damageTimer >= 1f)
+        PlayEffect();
+
+        // 플레이어가 슬렌더맨을 보고 있는지 확인
+        isPlayerLooking = IsPlayerLooking();
+
+        float proportion = lookTime / (deathTime + deathTime * deathDistanceProportion);
+        if (isPlayerLooking)
+        {
+            lookTime += Time.deltaTime;
+            
+            if (Time.time - lastLookTime > teleportCooldown * 3f)
             {
-                DealDamageToPlayer();
-                damageTimer = 0f; // 타이머 초기화
+                lastLookTime = Time.time;
+
+                Teleport(1f - proportion);
             }
-
-            targetGrainIntensity = 1f; // 노이즈 증가
-            lookAwayTimer = 0f; // 시선 돌린 시간 초기화
-
-            // 플레이어를 계속 바라보도록 회전
-            FacePlayerInstantly();
         }
         else
         {
-            // 플레이어가 바라보지 않거나, 거리가 teleportMaxDistance보다 클 때
-            lookAwayTimer += Time.deltaTime;
-            targetGrainIntensity = 0f; // 노이즈 감소
+            noLookTime += Time.deltaTime;
 
-            // teleportInterval 간격마다 순간이동
-            teleportTimer += Time.deltaTime;
-            if (teleportTimer >= teleportInterval)
+            if (Time.time - lastLookTime > teleportCooldown)
             {
-                TeleportToPlayerViewport();
-                teleportTimer = 0f; // 순간이동 타이머 초기화
-            }
+                lastLookTime = Time.time;
 
-            // 10초 이상 바라보지 않으면 슬렌더맨 사망
-            if (lookAwayTimer >= 10f)
-            {
-                Die();
+                Teleport(1f - proportion);
             }
         }
     }
 
-    void TeleportToPlayerViewport()
+    private void PlayEffect()
     {
-        // 순간이동 위치 찾기
-        Vector3 teleportPosition = FindTeleportPositionInViewport();
-        transform.position = teleportPosition;
+        // 여기서 시각적 또는 음향 효과를 추가할 수 있음
+        lookAtTargetPosition = player.position + transform.forward;
+        float proportion = Vector3.Distance(player.position, transform.position) / teleportMaxDistance;
 
-        // 슬렌더맨이 순간적으로 플레이어를 바라보도록 즉시 회전
-        FacePlayerInstantly();
+        playerCamera.GetComponent<NoiseAndGrain>().softness = Random.Range(1f - proportion / 2, 1f);;
+        if (effectTime < Time.time)
+        {
+            audioSource.volume = 0;
+            body.SetBlendShapeWeight(0, 0);
+
+            if (Time.time - lastEffectTime > effectCooldown * proportion)
+            {
+                effectTime = Time.time + Random.Range(1.0f, 2.0f);
+                lastEffectTime = Time.time;
+                audioSource.pitch = Random.Range(0.8f, 1.0f);
+                audioSource.volume = 1f;
+                body.SetBlendShapeWeight(0, 100f);
+            }
+        }
     }
 
-    void FacePlayerInstantly()
+    private bool IsPlayerLooking()
     {
+
+        Vector3 dirToPlayer = (transform.position - playerCamera.position).normalized;
+
+        // AI와 플레이어 카메라 방향의 내적(Dot Product) 계산
+        float dotProduct = Vector3.Dot(playerCamera.forward, dirToPlayer);
+
+        // 내적이 0.5보다 크다면, 카메라가 AI를 바라보고 있는 것
+        if (dotProduct > 0.5f)
+        {
+            float distanceToPlayer = Vector3.Distance(playerCamera.position, transform.position);
+
+            // Raycast를 통해 장애물이 있는지 확인
+            if (!Physics.Raycast(playerCamera.position, dirToPlayer, distanceToPlayer, LayerMask.GetMask("Obstacle")))
+            {
+                return true; // 첫 번째로 감지된 플레이어만 고려
+            }
+        }
+
+        return false;
+    }
+
+    private void Teleport(float distanceMultiplier)
+    {
+        Vector3 newSpawnPoint = GetRandomSpawnPoint(distanceMultiplier);
+
+        if (newSpawnPoint == Vector3.zero)
+            return;
+
+        transform.position = newSpawnPoint;
+
         // 플레이어를 즉시 바라보도록 회전
         Vector3 direction = (player.position - transform.position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
         transform.rotation = lookRotation;
     }
 
-    Vector3 FindTeleportPositionInViewport()
+    private Vector3 GetRandomSpawnPoint(float distanceMultiplier)
     {
         Vector3 teleportPosition;
-        int safetyCounter = 0;
 
-        do
+        // 플레이어의 카메라를 기준으로 순간이동할 랜덤한 위치 찾기
+        Vector3 randomViewportPoint = new Vector3(
+            Random.Range(0.2f, 0.8f), // X 범위
+            Random.Range(0.2f, 0.8f), // Y 범위
+            Random.Range(teleportMinDistance * distanceMultiplier, teleportMaxDistance * distanceMultiplier)
+        );
+
+        teleportPosition = playerCamera.GetComponent<Camera>().ViewportToWorldPoint(randomViewportPoint);
+
+        if (NavMesh.SamplePosition(teleportPosition, out NavMeshHit hit, (teleportMinDistance + teleportMinDistance) / 2f, NavMesh.AllAreas))
         {
-            // 플레이어의 카메라를 기준으로 순간이동할 랜덤한 위치 찾기
-            Vector3 randomViewportPoint = new Vector3(
-                Random.Range(0.2f, 0.8f), // X 범위 (중앙을 피해서 스폰)
-                Random.Range(0.2f, 0.8f), // Y 범위 (중앙을 피해서 스폰)
-                Random.Range(teleportMinDistance, teleportMaxDistance)
-            );
+            return hit.position;
+        }
 
-            teleportPosition = playerCam.GetComponent<Camera>().ViewportToWorldPoint(randomViewportPoint);
-
-            // 안전하게 순간이동할 위치 찾기 위한 최대 시도 횟수
-            safetyCounter++;
-        } while (Vector3.Distance(teleportPosition, player.position) < teleportMinDistance 
-                 || Vector3.Distance(teleportPosition, player.position) > teleportMaxDistance
-                 && safetyCounter < 10); // 10번 시도 후에 탈출
-
-        return teleportPosition;
+        return player.position + deathDistanceProportion * teleportMinDistance * Vector3.forward;
     }
 
-    void SetTransparency(float alpha)
+    private IEnumerator TriggerSurvive()
     {
-        // 슬렌더 맨의 메인 `Material`의 투명도 변경
-        Color color = slenderRenderer.material.color;
-        color.a = alpha;
-        slenderRenderer.material.color = color;
+        // 생존 로직 구현
+        Debug.Log("플레이어가 생존했습니다!");
+
+        float proportion = lookTime / deathTime;
+        Teleport(1f - proportion);
+
+        float startTime = Time.time;
+        float time = 0f;
+
+        while (Time.time - startTime < 3f)
+        {
+            time += Time.deltaTime;
+            PlayEffect();
+
+            // 현재 위치에서 뒤쪽으로 이동 (transform.forward의 반대 방향)
+            Vector3 targetPosition = transform.position - transform.forward;
+            transform.position = Vector3.Lerp(transform.position, targetPosition, time);
+
+            yield return null; // 한 프레임 대기
+        }
+
+        playerCamera.GetComponent<NoiseAndGrain>().softness = 0;
+        NetworkServer.Destroy(gameObject); // AI 제거
     }
 
-    void DealDamageToPlayer()
+    private IEnumerator TriggerDeath()
     {
-        // PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-        
-        // if (playerHealth != null)
-        // {
-        //     playerHealth.TakeDamage(Mathf.RoundToInt(damagePerSecond));
-        // }
+        // 사망 로직 구현
+        Debug.Log("플레이어가 사망했습니다!");
+
+        Teleport(0.08f);
+
+        float startTime = Time.time;
+        float time = 1f;
+        Vector3 originalPosition = player.position; // 현재 위치 저장
+
+        while (Time.time - startTime < 3f)
+        {
+            time += Time.deltaTime / 2;
+            PlayEffect();
+            player.position = originalPosition; // 플레이어 위치 고정
+            playerCamera.LookAt(transform.position + Vector3.up * time); // AI를 바라보도록 카메라 회전
+            player.LookAt(transform); // AI를 바라보도록 플레이어 회전
+
+            yield return null; // 한 프레임 대기
+        }
+
+        player.rotation = Quaternion.identity; // 플레이어 회전 초기화
+        playerCamera.GetComponent<NoiseAndGrain>().softness = 0;
+        NetworkServer.Destroy(gameObject); // AI 제거
     }
 
-    void Die()
+    void OnAnimatorIK()
     {
-        Debug.Log("Slender Man has died.");
-        
-        // 사망 시 이벤트 호출
-        OnSlenderManDeath?.Invoke();
-
-        // 슬렌더맨 오브젝트 파괴
-        Destroy(gameObject);
+        if (yTargetHeadSynk == false) lookAtTargetPosition.y = head.position.y;
+        Vector3 curDir = lookAtPosition - head.position;
+        curDir = Vector3.RotateTowards(curDir, lookAtTargetPosition - head.position, towards * Time.deltaTime, float.PositiveInfinity);
+        lookAtPosition = head.position + curDir;
+        lookAtWeight = Mathf.MoveTowards(lookAtWeight, 1, Time.deltaTime / blendTime);
+        animator.SetLookAtWeight(lookAtWeight * weightMul, weight.x, weight.y, weight.z, clampWeight);
+        animator.SetLookAtPosition(lookAtPosition);
     }
 }

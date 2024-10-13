@@ -16,5 +16,6 @@ public class OutsideDoorController : InteractableObject
     public override void InteractWithObject(GameObject player)
     {
         Debug.Log("OutsideDoorController.InteractWithObject()");
+        GameObject.Find("EnemySpawner").GetComponent<EnemySpawner>().RemoveEnemies();
     }
 }

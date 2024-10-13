@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.18006688, g: 0.22545186, b: 0.3067876, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4300,6 +4300,7 @@ GameObject:
   - component: {fileID: 1224211906}
   - component: {fileID: 1224211907}
   - component: {fileID: 1224211905}
+  - component: {fileID: 1224211908}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -4322,14 +4323,24 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  enemyPrefabs:
-  - {fileID: 2608406151542785269, guid: 9c1699db7ecc30a4ea0b420eedd793e6, type: 3}
-  - {fileID: 6496405698498005963, guid: 69d42339d824ffe4893b53b378bdf7b1, type: 3}
-  - {fileID: 7521629857053333725, guid: 02a6acffea0cf3444a0825475364e5c1, type: 3}
-  - {fileID: 3543955170667400224, guid: b8c93829d972b2948ba9dc5712e71ae1, type: 3}
-  spawnRange: 100
-  spawnInterval: 50
-  navMeshSampleDistance: 4
+  spawnConfigurations:
+  - enemyPrefab: {fileID: 2608406151542785269, guid: 9c1699db7ecc30a4ea0b420eedd793e6, type: 3}
+    minSpawnRatio: 0.5
+    maxSpawnRatio: 0.6
+  - enemyPrefab: {fileID: 3543955170667400224, guid: b8c93829d972b2948ba9dc5712e71ae1, type: 3}
+    minSpawnRatio: 0.2
+    maxSpawnRatio: 0.3
+  - enemyPrefab: {fileID: 6496405698498005963, guid: 69d42339d824ffe4893b53b378bdf7b1, type: 3}
+    minSpawnRatio: 0.2
+    maxSpawnRatio: 0.3
+  - enemyPrefab: {fileID: 7521629857053333725, guid: 02a6acffea0cf3444a0825475364e5c1, type: 3}
+    minSpawnRatio: 0.1
+    maxSpawnRatio: 0.2
+  spawnRange: 150
+  spawnInterval: 10
+  navMeshSampleDistance: 3
+  baseEnemyCount: 10
+  currentLevel: 0
 --- !u!4 &1224211906
 Transform:
   m_ObjectHideFlags: 0
@@ -4362,6 +4373,22 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &1224211908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1224211904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d95e3c79f77241d4380e317a418f72da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  enemyPrefab: {fileID: 1382692366143680594, guid: a6014508926c6bd4abfc46027105cb5f, type: 3}
 --- !u!1 &1269041139
 GameObject:
   m_ObjectHideFlags: 0

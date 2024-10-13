@@ -64,7 +64,7 @@ public class SlenderManSpawner : MonoBehaviour
 
                         // 슬렌더맨이 사망할 때 호출할 메서드를 연결
                         AISlenderMan slenderManScript = currentSlenderMan.GetComponent<AISlenderMan>();
-                        slenderManScript.OnSlenderManDeath += OnSlenderManDeath;
+                        // slenderManScript.OnSlenderManDeath += OnSlenderManDeath;
                     }
                 }
             }

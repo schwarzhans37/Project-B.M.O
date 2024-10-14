@@ -80,7 +80,7 @@ public class AISlenderMan : NetworkBehaviour
         // 플레이어가 슬렌더맨을 보고 있는지 확인
         isPlayerLooking = IsPlayerLooking();
 
-        float proportion = lookTime / (deathTime + deathTime * deathDistanceProportion);
+        float proportion = lookTime / deathTime;
         if (isPlayerLooking)
         {
             lookTime += Time.deltaTime;
@@ -89,7 +89,7 @@ public class AISlenderMan : NetworkBehaviour
             {
                 lastLookTime = Time.time;
 
-                Teleport(1f - proportion);
+                Teleport(1f - proportion - deathDistanceProportion);
             }
         }
         else
@@ -100,7 +100,7 @@ public class AISlenderMan : NetworkBehaviour
             {
                 lastLookTime = Time.time;
 
-                Teleport(1f - proportion);
+                Teleport(1f - proportion - deathDistanceProportion);
             }
         }
     }
@@ -179,7 +179,7 @@ public class AISlenderMan : NetworkBehaviour
 
         teleportPosition = playerCamera.GetComponent<Camera>().ViewportToWorldPoint(randomViewportPoint);
 
-        if (NavMesh.SamplePosition(teleportPosition, out NavMeshHit hit, (teleportMinDistance + teleportMinDistance) / 2f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(teleportPosition, out NavMeshHit hit, (teleportMinDistance + teleportMaxDistance) / 2f * distanceMultiplier, NavMesh.AllAreas))
         {
             return hit.position;
         }
@@ -193,7 +193,7 @@ public class AISlenderMan : NetworkBehaviour
         Debug.Log("플레이어가 생존했습니다!");
 
         float proportion = lookTime / deathTime;
-        Teleport(1f - proportion);
+        Teleport(1f - proportion - deathDistanceProportion);
 
         float startTime = Time.time;
         float time = 0f;

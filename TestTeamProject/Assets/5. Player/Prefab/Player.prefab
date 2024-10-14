@@ -1946,10 +1946,10 @@ MonoBehaviour:
   runSpeedMultiplier: 2
   isTorch: 0
   footstep: {fileID: 8300000, guid: 551d550ab98e3cc4bb7793e752fe8628, type: 3}
-  equiptorch: {fileID: 8300000, guid: b4e59d98db04bc34892337946c3a136c, type: 3}
+  equiptorch: {fileID: 0}
   landing: {fileID: 8300000, guid: 6aeefb601c305f64487cebdfacae5b6c, type: 3}
   jumping: {fileID: 8300000, guid: 984d316ed8be3ac4da9e31768a8b1fa9, type: 3}
-  burning: {fileID: 8300000, guid: b4e59d98db04bc34892337946c3a136c, type: 3}
+  burning: {fileID: 0}
   torchSoundInterval: 4
   jumpForce: 5
   horizontal: 0

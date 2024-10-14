@@ -1,16 +1,13 @@
 using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
-using System.Linq;
-using Mirror;
 
 public class AIWeepAngel : EnemyObject
 {
     private bool isPlayerLooking = false; // 플레이어가 우는 천사를 바라보는지 여부
 
-    protected override void OnValidate()
+    public override void Setting()
     {
-        base.OnValidate();
+        base.Setting();
 
         stateInterval = 0.1f; // 상태 전환 주기
         detectionInterval = 0.1f; // 감지 주기
@@ -48,9 +45,11 @@ public class AIWeepAngel : EnemyObject
 
     public override IEnumerator Attack()
     {
-        agent.isStopped = true; // 이동 멈춤
+        lastAttackTime = Time.time;
 
-        yield return new WaitForSeconds(2f);
+        StopMoving();
+        yield return new WaitForSeconds(attackCooldown);
+        ResumeMoving();
     }
 
     public void IsPlayerLookingAtMe()
@@ -74,33 +73,32 @@ public class AIWeepAngel : EnemyObject
                 // Raycast를 통해 장애물이 있는지 확인
                 if (!Physics.Raycast(playerCam.position, dirToPlayer, distanceToPlayer, obstacleMask))
                 {
-                    Debug.Log("Player is looking at me!");
-
                     OnPlayerLookedAtMe();
 
-                    isPlayerLooking = true;
-                    agent.isStopped = true; // AI 이동 멈춤
-
-                    break; // 첫 번째로 감지된 플레이어만 고려
+                    return; // 첫 번째로 감지된 플레이어만 고려
                 }
             }
         }
 
         // 플레이어가 감지되지 않으면 이동 재개
-        if (!isPlayerLooking)
+        if (isPlayerLooking)
         {
-            agent.isStopped = false;
+            ResumeMoving();
         }
         isPlayerLooking = false;
     }
 
     public void OnPlayerLookedAtMe()
     {
+        Debug.Log("Player Looked At Me");
         // 플레이어가 AI를 바라보고 있을 때 실행할 로직
         if (!agent.isStopped)
         {
 
         }
+
+        isPlayerLooking = true;
+        StopMoving();
     }
     public override void AnimationUpdate()
     {

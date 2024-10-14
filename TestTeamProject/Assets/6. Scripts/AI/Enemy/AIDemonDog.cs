@@ -1,14 +1,11 @@
 using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
-using System.Linq;
-using Mirror;
 
 public class AIDemonDog : EnemyObject
 {
-    protected override void OnValidate()
+    public override void Setting()
     {
-        base.OnValidate();
+        base.Setting();
 
         stateInterval = 0.1f; // 상태 전환 주기
         detectionInterval = 0.1f; // 감지 주기
@@ -24,7 +21,7 @@ public class AIDemonDog : EnemyObject
         attackDamage = 200; // 공격 데미지
         attackCooldown = 1f; // 공격 쿨타임
 
-        viewAngle = 360f; // 시야각(0 ~ 360도)
+        viewAngle = 120f; // 시야각(0 ~ 360도)
         detectionRange = 5f; // 감지 범위
         soundDetectionRange = 20f; // 소리 감지 범위
         timeToChaseLostTarget = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
@@ -51,7 +48,6 @@ public class AIDemonDog : EnemyObject
 
         yield return base.Attack();
 
-        Debug.Log("Demon Dog Attack End!");
     }
 
 }

@@ -27,5 +27,7 @@ public class SalesLocationController : InteractableObject
                 AudioSource.PlayClipAtPoint(soundEffect, transform.position);
             }
         }
+
+        GameObject.Find("EnemySpawner").GetComponent<TestSpawner>().SpawnEnemies();
     }
 }

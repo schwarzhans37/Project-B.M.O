@@ -1,15 +1,12 @@
 using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
-using System.Linq;
-using Mirror;
 
 public class MinotaurAI : EnemyObject
 {
 
-    public float dashDistance = 10f; // 대쉬 거리
-    public float dashSpeed = 10f; // 대쉬 속도
-    public float dashCooldown = 10f; // 대쉬 쿨타임
+    public float dashDistance; // 대쉬 거리
+    public float dashSpeed; // 대쉬 속도
+    public float dashCooldown; // 대쉬 쿨타임
     private float lastDashTime; // 마지막 대쉬 시간
     private bool isDashing = false; // 대쉬 중인지 여부
 
@@ -18,6 +15,17 @@ public class MinotaurAI : EnemyObject
     protected override void OnValidate()
     {
         base.OnValidate();
+
+        dashDistance = 10f; // 대쉬 거리
+        dashSpeed = 10f; // 대쉬 속도
+        dashCooldown = 10f; // 대쉬 쿨타임
+    }
+
+    public override void Setting()
+    {
+        base.Setting();
+
+        lastDashTime = -dashCooldown;
 
         stateInterval = 0.1f; // 상태 전환 주기
         detectionInterval = 0.1f; // 감지 주기
@@ -51,7 +59,7 @@ public class MinotaurAI : EnemyObject
     {
         base.OnPlayerDetected(target);
 
-        if (!isDashing && Time.time > lastDashTime + dashCooldown)
+        if (!isDashing && Time.time - lastDashTime > dashCooldown)
         {
             StartCoroutine(Dash());
             lastDashTime = Time.time;
@@ -60,10 +68,9 @@ public class MinotaurAI : EnemyObject
 
     public IEnumerator Dash()
     {
-        animator.SetBool("isCharge", true);
         Debug.Log("Dash!");
         isDashing = true;
-        agent.isStopped = true; // NavMeshAgent 일시 중지
+        StopMoving();
 
         // 돌진 방향 계산
         Vector3 dashDirection = (targetTransform.position - transform.position).normalized;
@@ -83,7 +90,6 @@ public class MinotaurAI : EnemyObject
             if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask)
              || Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
             {
-                Debug.Log("Dash hit obstacle or player.");
                 break;
             }
 
@@ -98,8 +104,7 @@ public class MinotaurAI : EnemyObject
 
         // 돌진 종료 후 NavMeshAgent 재활성화
         isDashing = false;
-        agent.isStopped = false;
-        animator.SetBool("isCharge", false);
+        ResumeMoving();
     }
     public override IEnumerator Attack()
     {
@@ -115,5 +120,11 @@ public class MinotaurAI : EnemyObject
     public void PlayDashSound()
     {
         AudioSource.PlayClipAtPoint(DashSound, transform.position);
+    }
+
+    public override void AnimationUpdate()
+    {
+        base.AnimationUpdate();
+        animator.SetBool("isCharge", isDashing);
     }
 }

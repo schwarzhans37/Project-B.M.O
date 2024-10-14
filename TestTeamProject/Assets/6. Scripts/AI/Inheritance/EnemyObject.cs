@@ -61,6 +61,26 @@ public class EnemyObject : NetworkBehaviour
     {
         base.OnValidate();
 
+        Setting();
+    }
+
+    public virtual void Start()
+    {
+        Setting();
+
+        agent.speed = patrolSpeed; // 초기 배회 속도 설정
+        lastAttackTime = -attackCooldown; // 초기화 시 즉시 공격 가능하도록 설정
+        patrolTarget = transform.position; // 초기 배회 위치 설정
+
+        if (isServer)
+        {
+            StartCoroutine(nameof(StartAI), stateInterval);
+            StartCoroutine(nameof(StartDetection), detectionInterval);
+        }
+    }
+
+    public virtual void Setting()
+    {
         playerMask = LayerMask.GetMask("Player");
         soundMask = LayerMask.GetMask("Sound");
         obstacleMask = LayerMask.GetMask("Obstacle");
@@ -69,29 +89,25 @@ public class EnemyObject : NetworkBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public virtual void Start()
-    {
-        agent.speed = patrolSpeed; // 초기 배회 속도 설정
-        lastAttackTime = -attackCooldown; // 초기화 시 즉시 공격 가능하도록 설정
-        patrolTarget = transform.position; // 초기 배회 위치 설정
-        
-        if (isServer)
-        {
-            StartCoroutine(nameof(StartAI), stateInterval);
-            StartCoroutine(nameof(StartDetection), detectionInterval);
-        }
-    }
-
     // AI 시작
-    public virtual IEnumerator StartAI(float interval)
+    public IEnumerator StartAI(float interval)
     {
-        yield return new WaitForSeconds(interval);
-
         while (true)
         {
             UpdateState();
 
-            yield return null;
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
+    // 감지 시작
+    public IEnumerator StartDetection(float interval)
+    {
+        while (true)
+        {
+            Detect();
+
+            yield return new WaitForSeconds(interval);
         }
     }
 
@@ -108,17 +124,6 @@ public class EnemyObject : NetworkBehaviour
                 break;
         }
         AnimationUpdate();
-    }
-
-    // 감지 시작
-    public virtual IEnumerator StartDetection(float interval)
-    {
-        while (true)
-        {
-            Detect();
-
-            yield return new WaitForSeconds(interval);
-        }
     }
 
     // 배회 로직
@@ -144,8 +149,8 @@ public class EnemyObject : NetworkBehaviour
         currentState = EnemyState.Patrolling;
         yield return new WaitForSeconds(patrolWaitTime);
 
-        Vector3 randomDirection = Random.insideUnitSphere * patrolRange;
-        randomDirection += transform.position;
+        Vector3 randomDirection = transform.position + Random.insideUnitSphere * patrolRange;
+        randomDirection.y = transform.position.y;
 
         if (NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, patrolRange, NavMesh.AllAreas))
         {
@@ -162,7 +167,7 @@ public class EnemyObject : NetworkBehaviour
     }
 
     // 플레이어 감지 로직
-    public virtual void DetectPlayer()
+    public void DetectPlayer()
     {
         Collider[] targets = Physics.OverlapSphere(transform.position, detectionRange, playerMask)
             .OrderBy(target => Vector3.Distance(transform.position, target.transform.position)).ToArray();
@@ -190,7 +195,7 @@ public class EnemyObject : NetworkBehaviour
     }
 
     // 소리 감지 로직
-    public virtual void DetectSound()
+    public void DetectSound()
     {
         Collider[] sounds = Physics.OverlapSphere(transform.position, soundDetectionRange, soundMask)
             .OrderBy(col => Vector3.Distance(transform.position, col.transform.position)).ToArray();
@@ -256,7 +261,7 @@ public class EnemyObject : NetworkBehaviour
             timeSinceTargetLost = 0f;
         }
 
-        if (Vector3.Distance(transform.position, targetTransform.position) <= attackRange && Time.time >= lastAttackTime + attackCooldown)
+        if (Vector3.Distance(transform.position, targetTransform.position) <= attackRange && Time.time - lastAttackTime > attackCooldown)
         {
             StartCoroutine(nameof(Attack));
         }
@@ -266,23 +271,29 @@ public class EnemyObject : NetworkBehaviour
     public virtual IEnumerator Attack()
     {
         lastAttackTime = Time.time; // 공격 후 쿨타임 초기화
-
-        agent.isStopped = true; // 이동 멈춤
+        StopMoving(); // 이동 및 물리 효과 중지
 
         // 현재 애니메이션 클립의 길이 가져오기
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         float animationLength = stateInfo.length;  // 현재 애니메이션 길이
-        
-        // 애니메이션의 길이만큼 대기
-        yield return new WaitForSeconds(animationLength);
+        Vector3 originalPosition = transform.position; // 현재 위치 저장
 
-        agent.isStopped = false; // 이동 재개
-        
+        // 애니메이션의 길이만큼 대기
+        while (Time.time - lastAttackTime < animationLength)
+        {
+            transform.position = originalPosition; // 위치 고정
+            yield return null; // 한 프레임 대기
+        }
+
+        ResumeMoving(); // 애니메이션 종료 후 이동 및 물리 효과 재개
     }
 
     // 근접 공격 로직
     public virtual void MeleeAttack()
     {
+        if (!isServer)
+            return;
+
         // 1. 적의 정면 방향으로 범위 내 타겟을 탐지
         Collider[] targets = Physics.OverlapSphere(transform.position, attackRange, playerMask);
         
@@ -294,13 +305,38 @@ public class EnemyObject : NetworkBehaviour
             if (Vector3.Angle(transform.forward, directionToTarget) <= attackAngle / 2)
             {
                 // 2. 타겟이 정면 각도 내에 있으면 공격
-                target.GetComponent<PlayerDataController>().CmdChangeHp(-attackDamage); // 타겟의 체력 감소
+                target.GetComponent<PlayerDataController>().ChangeHp(-attackDamage); // 타겟의 체력 감소
             }
         }
     }
 
     // 원거리 공격 로직
     public virtual void RangedAttack() {}
+
+    public void StopMoving()
+    {
+        agent.isStopped = true; // 이동 멈춤
+        agent.updatePosition = false; // NavMeshAgent 위치 업데이트 비활성화
+        agent.updateRotation = false; // NavMeshAgent 회전 업데이트 비활성화
+
+        // Rigidbody의 물리 효과 비활성화
+        if (TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb.isKinematic = true;
+        }
+    }
+
+    public void ResumeMoving()
+    {
+        agent.isStopped = false; // 이동 재개
+        agent.updatePosition = true;
+        agent.updateRotation = true;
+
+        if (TryGetComponent<Rigidbody>(out var rb))
+        {
+            rb.isKinematic = false; // 물리 효과 재활성화
+        }
+    }
 
     public virtual void PlayPatrolSound()
     {

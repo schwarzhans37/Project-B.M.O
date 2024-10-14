@@ -19,8 +19,7 @@ public class PlayerDataController : NetworkBehaviour
         staminaBar = GameObject.Find("StaminaBar");
     }
 
-    [Command]
-    public void CmdChangeHp(int amount)
+    public void ChangeHp(int amount)
     {
         hp += amount;
 

@@ -17,5 +17,6 @@ public class OutsideDoorController : InteractableObject
     {
         Debug.Log("OutsideDoorController.InteractWithObject()");
         GameObject.Find("EnemySpawner").GetComponent<EnemySpawner>().RemoveEnemies();
+        AudioSource.PlayClipAtPoint(soundEffect, transform.position);
     }
 }

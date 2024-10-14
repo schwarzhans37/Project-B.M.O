@@ -55,6 +55,7 @@ public class EnemyObject : NetworkBehaviour
 
     protected NavMeshAgent agent; // NavMeshAgent 컴포넌트
     public Animator animator; // 애니메이터 컴포넌트
+    public AudioClip footstep; // 발소리 클립
 
     protected override void OnValidate()
     {
@@ -122,6 +123,7 @@ public class EnemyObject : NetworkBehaviour
                 Chase();
                 break;
         }
+        AnimationUpdate();
     }
 
     // 배회 로직
@@ -354,5 +356,30 @@ public class EnemyObject : NetworkBehaviour
     public virtual void PlayRangedAttackSound()
     {
         AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position);
+    }
+    //애니메이션 업데이트
+    public virtual void AnimationUpdate()
+    {
+        float speed = agent.velocity.magnitude;
+        if (speed > 0)
+        {
+            animator.SetBool("isMove", true);
+        }
+        else
+        {
+            animator.SetBool("isMove", false);
+        }
+        if (currentState == EnemyState.Chasing)
+        {
+            animator.SetBool("isChase", true);
+        }
+        else
+            animator.SetBool("isChase", false);
+    }
+    //발소리
+    public virtual void FootStep()
+    {
+        AudioSource.PlayClipAtPoint(footstep, transform.position);
+        Debug.Log("footstep sound play");
     }
 }

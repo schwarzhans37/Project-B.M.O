@@ -68,6 +68,7 @@ public class MinotaurAI : EnemyObject
 
     public IEnumerator Dash()
     {
+        Debug.Log("Dash!");
         isDashing = true;
         StopMoving();
 
@@ -105,9 +106,25 @@ public class MinotaurAI : EnemyObject
         isDashing = false;
         ResumeMoving();
     }
+    public override IEnumerator Attack()
+    {
 
+        animator.SetTrigger("Attack");
+
+        Debug.Log("MINO Attack!");
+
+        yield return base.Attack();
+
+        Debug.Log("MINO Attack End!");
+    }
     public void PlayDashSound()
     {
         AudioSource.PlayClipAtPoint(DashSound, transform.position);
+    }
+
+    public override void AnimationUpdate()
+    {
+        base.AnimationUpdate();
+        animator.SetBool("isCharge", isDashing);
     }
 }

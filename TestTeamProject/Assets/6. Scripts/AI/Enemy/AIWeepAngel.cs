@@ -100,4 +100,8 @@ public class AIWeepAngel : EnemyObject
         isPlayerLooking = true;
         StopMoving();
     }
+    public override void AnimationUpdate()
+    {
+
+    }
 }

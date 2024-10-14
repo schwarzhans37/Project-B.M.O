@@ -19,5 +19,6 @@ public class InnerDoorController : InteractableObject
         Debug.Log("InnerDoorController.InteractWithObject()");
         GameObject.Find("EnemySpawner").GetComponent<EnemySpawner>().SpawnEnemies(level);
         level++;
+        AudioSource.PlayClipAtPoint(soundEffect, transform.position);
     }
 }

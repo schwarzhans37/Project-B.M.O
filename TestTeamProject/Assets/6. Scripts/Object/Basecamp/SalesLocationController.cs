@@ -24,6 +24,7 @@ public class SalesLocationController : InteractableObject
                 // 아이템을 판매
                 GameObject.Find("GameDataManager").GetComponent<GameDataController>().AddMoney(collider.gameObject.GetComponent<ItemObject>().itemPrice);
                 Destroy(collider.gameObject);
+                AudioSource.PlayClipAtPoint(soundEffect, transform.position);
             }
         }
 

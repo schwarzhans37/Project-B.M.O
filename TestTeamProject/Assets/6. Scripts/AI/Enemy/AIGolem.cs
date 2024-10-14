@@ -85,8 +85,6 @@ public class AIGolem : EnemyObject
 
             // animator.SetTrigger("RangedAttack");
             yield return base.Attack();
-            yield return new WaitForSeconds(0.5f);
-            RangedAttack();
         }
     }
 

@@ -4275,6 +4275,7 @@ MonoBehaviour:
   objectName: OutsideDoor
   guideText: "\uB4E4\uC5B4\uAC00\uAE30 : [F]"
   holdTime: 1
+  soundEffect: {fileID: 8300000, guid: a0e7a886025f0f944bd9cff326e7c91a, type: 3}
 --- !u!114 &1207705688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4510,6 +4511,7 @@ MonoBehaviour:
   objectName: Sales Location
   guideText: "\uD310\uB9E4\uD558\uAE30 : [F]"
   holdTime: 3
+  soundEffect: {fileID: 8300000, guid: 5669676e9c2acfc46961e91b81e8abd0, type: 3}
 --- !u!114 &1317972596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5507,6 +5509,7 @@ MonoBehaviour:
   objectName: InnerDoor
   guideText: "\uBB38 \uC5F4\uAE30 : [F]"
   holdTime: 0.5
+  soundEffect: {fileID: 8300000, guid: a0e7a886025f0f944bd9cff326e7c91a, type: 3}
 --- !u!114 &1742975584
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -44,7 +44,9 @@ public class AIDemonDog : EnemyObject
 
     public override IEnumerator Attack()
     {
-        //animator.SetTrigger("Attack");
+        
+        animator.SetTrigger("Attack");
+        
         Debug.Log("Demon Dog Attack!");
 
         yield return base.Attack();

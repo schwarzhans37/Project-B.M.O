@@ -16,5 +16,6 @@ public class InnerDoorController : InteractableObject
     public override void InteractWithObject(GameObject player)
     {
         Debug.Log("InnerDoorController.InteractWithObject()");
+        AudioSource.PlayClipAtPoint(soundEffect, transform.position);
     }
 }

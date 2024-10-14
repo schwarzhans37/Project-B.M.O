@@ -102,4 +102,8 @@ public class AIWeepAngel : EnemyObject
 
         }
     }
+    public override void AnimationUpdate()
+    {
+
+    }
 }

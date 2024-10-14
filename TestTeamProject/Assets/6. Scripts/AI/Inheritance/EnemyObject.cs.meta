@@ -3,7 +3,13 @@ guid: fec83c57e86d9494eaa53ebf2052cfc7
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - patrolSound: {instanceID: 0}
+  - chaseSound: {instanceID: 0}
+  - meleeAttackSound: {instanceID: 0}
+  - rangedAttackSound: {instanceID: 0}
+  - animator: {instanceID: 0}
+  - footstep: {fileID: 8300000, guid: 3d132da7af60f1145a3deb6a8bc42a08, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

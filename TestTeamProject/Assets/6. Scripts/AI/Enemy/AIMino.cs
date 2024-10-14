@@ -60,6 +60,7 @@ public class MinotaurAI : EnemyObject
 
     public IEnumerator Dash()
     {
+        animator.SetBool("isCharge", true);
         Debug.Log("Dash!");
         isDashing = true;
         agent.isStopped = true; // NavMeshAgent 일시 중지
@@ -98,8 +99,19 @@ public class MinotaurAI : EnemyObject
         // 돌진 종료 후 NavMeshAgent 재활성화
         isDashing = false;
         agent.isStopped = false;
+        animator.SetBool("isCharge", false);
     }
+    public override IEnumerator Attack()
+    {
 
+        animator.SetTrigger("Attack");
+
+        Debug.Log("MINO Attack!");
+
+        yield return base.Attack();
+
+        Debug.Log("MINO Attack End!");
+    }
     public void PlayDashSound()
     {
         AudioSource.PlayClipAtPoint(DashSound, transform.position);

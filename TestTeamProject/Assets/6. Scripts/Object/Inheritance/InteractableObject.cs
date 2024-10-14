@@ -12,6 +12,7 @@ public class InteractableObject : NetworkBehaviour
     
     [SyncVar(hook = nameof(OnHoldTimeChanged))]
     public float holdTime; // 누르고 있어야 하는 시간
+    public AudioClip soundEffect;
 
     public virtual void InteractWithObject(GameObject player) {}
     public virtual void OnObjectNameChanged(string oldName, string newName) {}

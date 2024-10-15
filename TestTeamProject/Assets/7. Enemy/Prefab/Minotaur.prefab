@@ -3558,10 +3558,11 @@ MonoBehaviour:
   meleeAttackSound: {fileID: 0}
   rangedAttackSound: {fileID: 0}
   animator: {fileID: 4371997982932448013}
+  footstep: {fileID: 8300000, guid: 3bd1b93317b7a3a49b13011cdaa64d0b, type: 3}
   dashDistance: 10
   dashSpeed: 10
   dashCooldown: 10
-  DashSound: {fileID: 0}
+  DashSound: {fileID: 8300000, guid: 40315603b3315c54fb3111e63ab0f3a1, type: 3}
 --- !u!1 &6504623298064681782
 GameObject:
   m_ObjectHideFlags: 0

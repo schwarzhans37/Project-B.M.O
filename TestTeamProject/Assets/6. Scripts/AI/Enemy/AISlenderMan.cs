@@ -218,7 +218,8 @@ public class AISlenderMan : NetworkBehaviour
     {
         // 사망 로직 구현
         Debug.Log("플레이어가 사망했습니다!");
-
+        animator.SetTrigger("Attack");
+        
         Teleport(0.08f);
 
         float startTime = Time.time;
@@ -235,7 +236,7 @@ public class AISlenderMan : NetworkBehaviour
 
             yield return null; // 한 프레임 대기
         }
-
+        
         player.rotation = Quaternion.identity; // 플레이어 회전 초기화
         playerCamera.GetComponent<NoiseAndGrain>().softness = 0;
         NetworkServer.Destroy(gameObject); // AI 제거

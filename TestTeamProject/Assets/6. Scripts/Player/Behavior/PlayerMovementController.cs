@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 [RequireComponent(typeof(NetworkIdentity))]
 [RequireComponent(typeof(NetworkTransformReliable))]
@@ -28,9 +29,8 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip equiptorch;
     public AudioClip landing;
     public AudioClip jumping;
-    public AudioClip burning;
-    private float torchSoundTimer = 0f;
-    [SerializeField] private float torchSoundInterval = 4f;
+    // Torch 테스트
+    public GameObject Torch;
 
     [Header("Jumping")]
     [Range(-10f, 10f)]
@@ -182,9 +182,12 @@ public class PlayerMovementController : NetworkBehaviour
 
     void HandlerItem()
     {
+        Torch = FindChildWithName(transform,"Torch").gameObject;
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
+            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);          
         }
     }
 
@@ -213,17 +216,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     void HandlerSound()
     {
-        if (isTorch)
-        {
-            torchSoundTimer += Time.deltaTime;
-            if(torchSoundTimer >= torchSoundInterval)
-            {
-                torchSoundTimer = 0f;
-                Debug.Log("Torch burning sound played");
-                AudioSource.PlayClipAtPoint(burning, transform.position);
-            }
-            
-        }
+        
     }
 
     public void FootStep()
@@ -254,5 +247,23 @@ public class PlayerMovementController : NetworkBehaviour
         // SoundEmitter의 설정 (감지 범위 및 지속 시간)
         SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
         emitter.duration = audioClip.length;
+    }
+    Transform FindChildWithName(Transform parent, string name)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == name)
+            {
+                return child; // 찾은 자식 반환
+            }
+
+            // 자식의 자식에서 재귀적으로 탐색
+            Transform found = FindChildWithName(child, name);
+            if (found != null)
+            {
+                return found; // 재귀 호출에서 찾은 경우 반환
+            }
+        }
+        return null; // 찾지 못했을 경우 null 반환
     }
 }

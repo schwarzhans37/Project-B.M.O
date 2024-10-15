@@ -9,7 +9,7 @@ public class SalesLocationController : InteractableObject
         base.OnValidate();
         
         objectName = "Sales Location";
-        guideText = "판매하기 : [F]";
+        guideText = "판매하기 : [V]";
         holdTime = 3f;
     }
 

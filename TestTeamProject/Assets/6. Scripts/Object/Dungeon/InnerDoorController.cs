@@ -10,7 +10,7 @@ public class InnerDoorController : InteractableObject
         base.OnValidate();
         
         objectName = "InnerDoor";
-        guideText = "문 열기 : [F]";
+        guideText = "문 열기 : [V]";
         holdTime = 0.5f;
     }
 

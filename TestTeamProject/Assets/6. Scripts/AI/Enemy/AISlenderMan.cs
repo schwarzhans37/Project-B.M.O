@@ -34,6 +34,9 @@ public class AISlenderMan : NetworkBehaviour
     private float effectTime = 0f;
     private float lastEffectTime = 0f;
 
+    public LayerMask playerMask; // 플레이어 레이어
+    public LayerMask obstacleMask; // 장애물 레이어
+
 
     Vector3 lookAtTargetPosition, lookAtPosition;
     float lookAtWeight;
@@ -44,9 +47,20 @@ public class AISlenderMan : NetworkBehaviour
     public Vector3 weight = new Vector3(0.4f, 0.8f, 0.9f);
     public bool yTargetHeadSynk;
 
+    protected override void OnValidate()
+    {
+        base.OnValidate();
+
+        playerMask = LayerMask.GetMask("Player");
+        obstacleMask = LayerMask.GetMask("Obstacle");
+    }
+
 
     void Start()
     {
+        if (!isServer)
+            return;
+            
         playerCamera = player.GetComponentInChildren<Camera>(true).transform;
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
@@ -75,7 +89,7 @@ public class AISlenderMan : NetworkBehaviour
             return;
         }
 
-        PlayEffect();
+        PlayEffect(player.GetComponent<NetworkIdentity>().connectionToClient);
 
         // 플레이어가 슬렌더맨을 보고 있는지 확인
         isPlayerLooking = IsPlayerLooking();
@@ -105,7 +119,8 @@ public class AISlenderMan : NetworkBehaviour
         }
     }
 
-    private void PlayEffect()
+    [TargetRpc]
+    private void PlayEffect(NetworkConnectionToClient target)
     {
         // 여기서 시각적 또는 음향 효과를 추가할 수 있음
         lookAtTargetPosition = player.position + transform.forward;
@@ -142,7 +157,7 @@ public class AISlenderMan : NetworkBehaviour
             float distanceToPlayer = Vector3.Distance(playerCamera.position, transform.position);
 
             // Raycast를 통해 장애물이 있는지 확인
-            if (!Physics.Raycast(playerCamera.position, dirToPlayer, distanceToPlayer, LayerMask.GetMask("Obstacle")))
+            if (!Physics.Raycast(playerCamera.position, dirToPlayer, distanceToPlayer, obstacleMask))
             {
                 return true; // 첫 번째로 감지된 플레이어만 고려
             }
@@ -201,7 +216,7 @@ public class AISlenderMan : NetworkBehaviour
         while (Time.time - startTime < 3f)
         {
             time += Time.deltaTime;
-            PlayEffect();
+            PlayEffect(player.GetComponent<NetworkIdentity>().connectionToClient);
 
             // 현재 위치에서 뒤쪽으로 이동 (transform.forward의 반대 방향)
             Vector3 targetPosition = transform.position - transform.forward;
@@ -228,7 +243,7 @@ public class AISlenderMan : NetworkBehaviour
         while (Time.time - startTime < 3f)
         {
             time += Time.deltaTime / 2;
-            PlayEffect();
+            PlayEffect(player.GetComponent<NetworkIdentity>().connectionToClient);
             player.position = originalPosition; // 플레이어 위치 고정
             playerCamera.LookAt(transform.position + Vector3.up * time); // AI를 바라보도록 카메라 회전
             player.LookAt(transform); // AI를 바라보도록 플레이어 회전

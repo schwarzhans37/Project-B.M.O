@@ -77,8 +77,8 @@ public class InteractionController : NetworkBehaviour
                 GameObject obj = hit.collider.gameObject;
                 holdTime = obj.GetComponent<InteractableObject>().holdTime;
 
-                // F키를 누르고 있으면 바를 채운다
-                if (Input.GetKey(KeyCode.F))
+                // V키를 누르고 있으면 바를 채운다
+                if (Input.GetKey(KeyCode.V))
                 {
                     HandleTriggerStay(obj);
                 }

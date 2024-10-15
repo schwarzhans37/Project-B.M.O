@@ -25,10 +25,8 @@ public class PlayerMovementController : NetworkBehaviour
 
     //사운드 테스트
     public AudioClip footstep;
-    public AudioClip equiptorch;
     public AudioClip landing;
     public AudioClip jumping;
-    public AudioClip burning;
     private float torchSoundTimer = 0f;
     [SerializeField] private float torchSoundInterval = 4f;
 
@@ -125,9 +123,6 @@ public class PlayerMovementController : NetworkBehaviour
         
         // 애니메이션 업데이트
         AnimationUpdate();
-        
-        // 사운드 업데이트
-        HandlerSound();
 
         // 캐릭터를 이동
         characterController.Move(direction * Time.deltaTime);
@@ -185,6 +180,7 @@ public class PlayerMovementController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
+            GetComponent<AudioSource>().volume = isTorch ? 0.3f : 0f;
         }
     }
 
@@ -211,31 +207,10 @@ public class PlayerMovementController : NetworkBehaviour
         networkAnimator.animator.SetBool("isTorch", isTorch);
     }
 
-    void HandlerSound()
-    {
-        if (isTorch)
-        {
-            torchSoundTimer += Time.deltaTime;
-            if(torchSoundTimer >= torchSoundInterval)
-            {
-                torchSoundTimer = 0f;
-                Debug.Log("Torch burning sound played");
-                AudioSource.PlayClipAtPoint(burning, transform.position);
-            }
-            
-        }
-    }
-
     public void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position);
         CreateSoundEmitter(footstep);
-    }
-
-    public void SETorch()
-    {
-        Debug.Log("Torch equipped sound played");
-        AudioSource.PlayClipAtPoint(equiptorch, transform.position);
     }
 
     public void SEJump()
@@ -243,6 +218,11 @@ public class PlayerMovementController : NetworkBehaviour
         Debug.Log("Jump sound played");
         AudioSource.PlayClipAtPoint(jumping, transform.position);
         CreateSoundEmitter(jumping);
+    }
+
+    public void SETorch()
+    {
+        Debug.Log("Torch equipped sound played");
     }
 
     // SoundEmitter 객체 생성 함수
@@ -253,6 +233,6 @@ public class PlayerMovementController : NetworkBehaviour
 
         // SoundEmitter의 설정 (감지 범위 및 지속 시간)
         SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
-        emitter.duration = audioClip.length;
+        emitter.duration = audioClip.length * 3;
     }
 }

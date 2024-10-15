@@ -9,7 +9,7 @@ public class OutsideDoorController : InteractableObject
         base.OnValidate();
         
         objectName = "OutsideDoor";
-        guideText = "들어가기 : [F]";
+        guideText = "들어가기 : [V]";
         holdTime = 1.0f;
     }
 

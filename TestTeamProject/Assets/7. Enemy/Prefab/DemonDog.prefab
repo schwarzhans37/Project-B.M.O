@@ -1016,11 +1016,12 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 128
-  patrolSound: {fileID: 0}
-  chaseSound: {fileID: 0}
-  meleeAttackSound: {fileID: 0}
-  rangedAttackSound: {fileID: 0}
+  patrolSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  chaseSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  meleeAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  rangedAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   animator: {fileID: 1170350492810089484}
+  footstep: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
 --- !u!1 &2623013319242237936
 GameObject:
   m_ObjectHideFlags: 0

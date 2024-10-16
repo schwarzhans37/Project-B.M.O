@@ -11,7 +11,7 @@ public class RockProjectile : NetworkBehaviour
     public int damage; // 공격 데미지
     public float shockwaveRadius; // 충격파 범위
     public int shockwaveDamage; // 충격파 데미지
-
+    public AudioClip SE;
     private bool isTriggered = false;
 
     public LayerMask playerMask; // 플레이어 레이어
@@ -52,6 +52,7 @@ public class RockProjectile : NetworkBehaviour
         isTriggered = true;
 
         // 파괴
+        AudioSource.PlayClipAtPoint(SE, transform.position);
         StartCoroutine(DestroyRock());
     }
 

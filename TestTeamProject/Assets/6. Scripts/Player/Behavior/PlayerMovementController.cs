@@ -29,6 +29,7 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip equiptorch;
     public AudioClip landing;
     public AudioClip jumping;
+    public AudioClip disarmTorch;
     // Torch 테스트
     public GameObject Torch;
 
@@ -265,5 +266,9 @@ public class PlayerMovementController : NetworkBehaviour
             }
         }
         return null; // 찾지 못했을 경우 null 반환
+    }
+    public void LightOffTorch()
+    {
+        AudioSource.PlayClipAtPoint(disarmTorch, transform.position);
     }
 }

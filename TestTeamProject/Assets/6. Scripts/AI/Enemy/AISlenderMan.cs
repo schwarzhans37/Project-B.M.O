@@ -13,6 +13,7 @@ public class AISlenderMan : NetworkBehaviour
     public Transform playerCamera;
     public Animator animator;
     public AudioSource audioSource;
+    public AudioClip ScreamSE;
 
     public SkinnedMeshRenderer body;
     public Transform head;
@@ -251,5 +252,9 @@ public class AISlenderMan : NetworkBehaviour
         lookAtWeight = Mathf.MoveTowards(lookAtWeight, 1, Time.deltaTime / blendTime);
         animator.SetLookAtWeight(lookAtWeight * weightMul, weight.x, weight.y, weight.z, clampWeight);
         animator.SetLookAtPosition(lookAtPosition);
+    }
+    public void Scream()
+    {
+        AudioSource.PlayClipAtPoint(ScreamSE,transform.position,10.0f);
     }
 }

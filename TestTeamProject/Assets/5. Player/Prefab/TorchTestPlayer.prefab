@@ -5758,6 +5758,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7445411586155772060}
+  - component: {fileID: 467250205033901326}
   m_Layer: 0
   m_Name: Torch
   m_TagString: Untagged
@@ -5781,6 +5782,19 @@ Transform:
   - {fileID: 7010012312445092194}
   m_Father: {fileID: 5103999252673341330}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &467250205033901326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7375011610560076131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f2556e4ef6928c41a288c229670b27e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  burning: {fileID: 8300000, guid: b4e59d98db04bc34892337946c3a136c, type: 3}
 --- !u!1 &7416694127261908922
 GameObject:
   m_ObjectHideFlags: 0
@@ -5894,6 +5908,7 @@ GameObject:
   - component: {fileID: 2718917082471727275}
   - component: {fileID: 7355337860964262339}
   - component: {fileID: 884580390090673494}
+  - component: {fileID: 5179441507738714826}
   m_Layer: 6
   m_Name: TorchTestPlayer
   m_TagString: Player
@@ -6086,8 +6101,7 @@ MonoBehaviour:
   equiptorch: {fileID: 8300000, guid: c42182d27084eb14e8ff4196bb17b8a5, type: 3}
   landing: {fileID: 8300000, guid: 6aeefb601c305f64487cebdfacae5b6c, type: 3}
   jumping: {fileID: 8300000, guid: 984d316ed8be3ac4da9e31768a8b1fa9, type: 3}
-  burning: {fileID: 8300000, guid: b4e59d98db04bc34892337946c3a136c, type: 3}
-  torchSoundInterval: 4
+  disarmTorch: {fileID: 8300000, guid: b83ba2db2e6e49b4797dca9fe73633c5, type: 3}
   Torch: {fileID: 0}
   jumpForce: 5
   horizontal: 0
@@ -6157,6 +6171,14 @@ MonoBehaviour:
   stamina: 1000
   hpBar: {fileID: 0}
   staminaBar: {fileID: 0}
+--- !u!81 &5179441507738714826
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7429717593573396571}
+  m_Enabled: 1
 --- !u!1 &7459232634828664791
 GameObject:
   m_ObjectHideFlags: 0

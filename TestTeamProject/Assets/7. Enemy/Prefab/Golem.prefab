@@ -875,7 +875,7 @@ MonoBehaviour:
   stateInterval: 0.5
   detectionInterval: 0.5
   patrolSpeed: 1
-  chaseSpeed: 3
+  chaseSpeed: 2
   patrolRange: 15
   patrolWaitTime: 3
   attackAngle: 180
@@ -900,7 +900,7 @@ MonoBehaviour:
   meleeAttackSound: {fileID: 0}
   rangedAttackSound: {fileID: 0}
   animator: {fileID: 2748855706720999003}
-  footstep: {fileID: 0}
+  footstep: {fileID: 8300000, guid: f4a0fdd7e91feb64e865dac518bdd0fd, type: 3}
   meleeRange: 3
   meleeAttackCooldown: 3
   rangedAttackRange: 40

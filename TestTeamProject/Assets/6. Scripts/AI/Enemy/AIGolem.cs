@@ -103,5 +103,9 @@ public class AIGolem : EnemyObject
         NetworkServer.Spawn(rockProjectile);
         rockProjectile.GetComponent<Rigidbody>().AddForce(direction * rangedAttackForce, ForceMode.Impulse);
     }
-   
+
+    public override void FootStep()
+    {
+        AudioSource.PlayClipAtPoint(footstep, transform.position,0.1f);
+    }
 }

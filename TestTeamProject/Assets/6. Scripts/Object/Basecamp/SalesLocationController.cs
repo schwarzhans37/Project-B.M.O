@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SalesLocationController : InteractableObject
 {
+    public float radius;
+
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -15,7 +17,7 @@ public class SalesLocationController : InteractableObject
 
     public override void InteractWithObject(GameObject player)
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
         foreach (Collider collider in colliders)
         {
@@ -27,7 +29,11 @@ public class SalesLocationController : InteractableObject
                 AudioSource.PlayClipAtPoint(soundEffect, transform.position);
             }
         }
+    }
 
-        GameObject.Find("EnemySpawner").GetComponent<TestSpawner>().SpawnEnemies();
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 }

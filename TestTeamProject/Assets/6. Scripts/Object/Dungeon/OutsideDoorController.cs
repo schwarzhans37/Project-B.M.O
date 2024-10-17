@@ -8,15 +8,14 @@ public class OutsideDoorController : InteractableObject
     {
         base.OnValidate();
         
-        objectName = "OutsideDoor";
         guideText = "들어가기 : [V]";
         holdTime = 1.0f;
+        isInteractable = true;
     }
 
     public override void InteractWithObject(GameObject player)
     {
         Debug.Log("OutsideDoorController.InteractWithObject()");
-        GameObject.Find("EnemySpawner").GetComponent<EnemySpawner>().RemoveEnemies();
         AudioSource.PlayClipAtPoint(soundEffect, transform.position);
     }
 }

@@ -10,9 +10,9 @@ public class SalesLocationController : InteractableObject
     {
         base.OnValidate();
         
-        objectName = "Sales Location";
         guideText = "판매하기 : [V]";
         holdTime = 3f;
+        isInteractable = true;
     }
 
     public override void InteractWithObject(GameObject player)

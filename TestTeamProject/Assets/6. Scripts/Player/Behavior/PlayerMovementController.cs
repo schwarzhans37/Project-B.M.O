@@ -1,3 +1,4 @@
+using kcp2k;
 using Mirror;
 using UnityEngine;
 
@@ -8,17 +9,22 @@ public class PlayerMovementController : NetworkBehaviour
 {
     public CharacterController characterController;
     public NetworkAnimator networkAnimator;
-    public Animator animator;
 
     [Header("Movement")]
-    [Range(1, 20)]
-    public float moveSpeedMultiplier; // 이동 속도 배율
-    [SerializeField]
-    float walkSpeed; // 걷기 속도
-    [SerializeField]
-    float crouchSpeed; // 앉기 속도
-    [SerializeField]
-    float runSpeedMultiplier; // 뛰기 속도 배율
+    [Range(1f, 10f)]
+    public float walkSpeed; // 걷기 속도
+    [Range(1f, 10f)]
+    public float crouchSpeed; // 앉기 속도
+    [Range(1f, 10f)]
+    public float runSpeedMultiplier; // 뛰기 속도 배율
+    private float moveSpeedMultiplier; // 이동 속도 배율
+    private float horizontal;
+    private float vertical;
+
+    [Header("Jumping")]
+    [Range(-10f, 10f)]
+    public float jumpForce; // 점프 힘
+    private float jumpSpeed;
 
     //애니메이터 플래그
     public bool isTorch = false;
@@ -27,29 +33,9 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip footstep;
     public AudioClip landing;
     public AudioClip jumping;
-    private float torchSoundTimer = 0f;
-    [SerializeField] private float torchSoundInterval = 4f;
 
-    [Header("Jumping")]
-    [Range(-10f, 10f)]
-    public float jumpForce; // 점프 힘
-
-    [SerializeField, Range(-1f, 1f)]
-    float horizontal;
-    [SerializeField, Range(-1f, 1f)]
-    float vertical;
-
-    [SerializeField, Range(0f, 10f)]
-    float jumpSpeed;
-
-    [SerializeField, Range(-1.5f, 1.5f)]
-    float animVelocity;
-
-    [SerializeField, Range(-1.5f, 1.5f)]
-    float animRotation;
-
-    [SerializeField] Vector3Int velocity;
-    [SerializeField] Vector3 direction;
+    Vector3 direction;
+    Vector3Int velocity;
 
     public GameObject soundEmitterPrefab;
 
@@ -60,21 +46,19 @@ public class PlayerMovementController : NetworkBehaviour
         if (characterController == null)
             characterController = GetComponent<CharacterController>();
 
-        if (animator == null)
-            animator = GetComponent<Animator>();
-
         if (networkAnimator == null)
             networkAnimator = GetComponent<NetworkAnimator>();
 
-        characterController.enabled = false;
+        walkSpeed = 2.5f;
+        crouchSpeed = 1f;
+        runSpeedMultiplier = 2f;
+        jumpForce = 4f;
+
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
 
-        walkSpeed = 2.5f;
-        runSpeedMultiplier = 2f;
-        crouchSpeed = 1f;
-        jumpForce = 5f;
-
+        GetComponent<Collider>().enabled = true;
+        characterController.enabled = false;
         this.enabled = false;
     }
 
@@ -83,17 +67,9 @@ public class PlayerMovementController : NetworkBehaviour
         base.OnStartAuthority();
 
         // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
+        GetComponent<Collider>().enabled = false;
         characterController.enabled = true;
         this.enabled = true;
-    }
-
-    public override void OnStopAuthority()
-    {
-        base.OnStopAuthority();
-
-        // 로컬 플레이어가 아닌 경우 캐릭터 컨트롤러 비활성화
-        characterController.enabled = false;
-        this.enabled = false;
     }
 
     void Update()
@@ -116,10 +92,10 @@ public class PlayerMovementController : NetworkBehaviour
         }
 
         // 중력 적용
-        jumpSpeed += Physics.gravity.y * Time.deltaTime;
+        jumpSpeed += Physics.gravity.y * Time.deltaTime / 2;
 
         // 방향에 y축 속도를 추가
-        direction.y = Mathf.Clamp(jumpSpeed, -10f, 10f);
+        direction.y = Mathf.Clamp(jumpSpeed, Physics.gravity.y, jumpForce);
         
         // 애니메이션 업데이트
         AnimationUpdate();
@@ -165,9 +141,10 @@ public class PlayerMovementController : NetworkBehaviour
     }
 
     void HandleJumping()
-    {
+    { 
         // 점프기능
-        if (Input.GetKeyDown(KeyCode.Space) && characterController.isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space)
+            && characterController.isGrounded)
         {
             jumpSpeed = jumpForce;
             networkAnimator.SetTrigger("Jump");
@@ -180,7 +157,6 @@ public class PlayerMovementController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
-            GetComponent<AudioSource>().volume = isTorch ? 0.3f : 0f;
         }
     }
 

@@ -25,7 +25,7 @@ public class PlayerMovementController : NetworkBehaviour
     [Header("Jumping")]
     [Range(-10f, 10f)]
     public float jumpForce; // 점프 힘
-    private float jumpSpeed;
+    public float jumpSpeed;
 
     //애니메이터 플래그
     public bool isTorch = false;
@@ -56,7 +56,7 @@ public class PlayerMovementController : NetworkBehaviour
         walkSpeed = 2.5f;
         crouchSpeed = 1f;
         runSpeedMultiplier = 2f;
-        jumpForce = 4f;
+        jumpForce = 6f;
 
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
@@ -79,9 +79,10 @@ public class PlayerMovementController : NetworkBehaviour
     void Update()
     {
         // 로컬 플레이어 인지 확인
-        if (!isLocalPlayer)
+        if (!isLocalPlayer
+            || GetComponent<PlayerDataController>().isDead)
             return;
-        
+
         // 일시정지 상태가 아니면 이동, 점프, 업데이트
         if (!GameUIController.IsPaused)
         {
@@ -96,7 +97,7 @@ public class PlayerMovementController : NetworkBehaviour
         }
 
         // 중력 적용
-        jumpSpeed += Physics.gravity.y * Time.deltaTime / 2;
+        jumpSpeed += Physics.gravity.y * Time.deltaTime;
 
         // 방향에 y축 속도를 추가
         direction.y = Mathf.Clamp(jumpSpeed, Physics.gravity.y, jumpForce);

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SleepingPointContoller : InteractableObject
@@ -16,7 +17,8 @@ public class SleepingPointContoller : InteractableObject
 
     public override void InteractWithObject(GameObject player)
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius)
+        .Where(collider => collider.CompareTag("Player")).ToArray();
 
         foreach (Collider collider in colliders)
         {

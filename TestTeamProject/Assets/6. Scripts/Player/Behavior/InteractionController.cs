@@ -31,13 +31,6 @@ public class InteractionController : NetworkBehaviour
         this.enabled = true;
     }
 
-    public override void OnStopAuthority()
-    {
-        base.OnStopAuthority();
-
-        this.enabled = false;
-    }
-
     void Start()
     {
         if (guideLine == null)
@@ -55,43 +48,55 @@ public class InteractionController : NetworkBehaviour
 
     void Update()
     {
-        if (Camera.main == null)
+        if (!isLocalPlayer
+            || GetComponent<PlayerDataController>().isDead)
             return;
-        if (GameUIController.IsPaused)
+
+        if (GameUIController.IsPaused
+            || Time.time - lastWaitTime < waitTime)
+        {
+            HideUI();
             return;
-        if (Time.time - lastWaitTime < waitTime)
-            return;
+        }
 
         // 카메라 중앙에서 Ray를 쏴서 오브젝트를 탐지
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
 
-        if (Physics.Raycast(ray, out RaycastHit hit, rayDistance))
+        if (!Physics.Raycast(ray, out RaycastHit hit, rayDistance))
         {
-            if (hit.collider.CompareTag("Untagged"))
-            {
-                // UI 숨기기
-                HideUI();
-            }
-            else if (hit.collider.CompareTag("InteractableObject"))
-            {
-                GameObject obj = hit.collider.gameObject;
-                holdTime = obj.GetComponent<InteractableObject>().holdTime;
+            HideUI();
+            return;
+        }
 
-                // V키를 누르고 있으면 바를 채운다
-                if (Input.GetKey(KeyCode.V))
-                {
-                    HandleTriggerStay(obj);
-                }
-                else
-                {
-                    // UI를 표시
-                    ShowguideLine(obj.GetComponent<InteractableObject>().guideText);
-                }
+        GameObject obj = hit.collider.gameObject;
+
+        if (hit.collider.CompareTag("ItemObject"))
+        {
+            HideUI();
+            return;
+        }
+        else if (hit.collider.CompareTag("InteractableObject"))
+        {
+            InteractableObject interactable = obj.GetComponent<InteractableObject>();
+            holdTime = interactable.holdTime;
+
+            if (!interactable.isInteractable)
+            {
+                HideUI();
+                return;
+            }
+
+            if (Input.GetKey(KeyCode.V))
+            {
+                HandleTriggerStay(obj);
+            }
+            else
+            {
+                ShowguideLine(interactable.guideText);
             }
         }
         else
         {
-            // Ray가 아무것도 맞추지 않으면 UI를 숨김
             HideUI();
         }
     }
@@ -105,7 +110,6 @@ public class InteractionController : NetworkBehaviour
             // 행동을 트리거
             InteractWithObject(gameObject, this.gameObject);
             lastWaitTime = Time.time;
-            HideUI();
             return;
         }
 
@@ -117,7 +121,6 @@ public class InteractionController : NetworkBehaviour
             // 행동을 트리거
             InteractWithObject(gameObject, this.gameObject);
             lastWaitTime = Time.time;
-            HideUI();
         }
     }
 

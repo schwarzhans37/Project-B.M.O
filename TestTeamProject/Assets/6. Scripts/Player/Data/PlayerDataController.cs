@@ -5,7 +5,10 @@ using UnityEngine.UI;
 [RequireComponent(typeof(NetworkIdentity))]
 public class PlayerDataController : NetworkBehaviour
 {
-    
+
+    [SyncVar(hook = nameof(OnDeadChanged))]
+    public bool isDead = false;
+
     [SyncVar(hook = nameof(OnHpChanged))]
     public int hp = 1000;
     public int stamina = 1000;
@@ -44,6 +47,13 @@ public class PlayerDataController : NetworkBehaviour
             stamina = -300;
 
         staminaBar.GetComponent<Image>().fillAmount = (float)stamina / 1000;
+    }
+
+    public void OnDeadChanged(bool oldDead, bool newDead)
+    {
+        if (!isLocalPlayer)
+            return;
+
     }
 
     public void OnHpChanged(int oldHp, int newHp)

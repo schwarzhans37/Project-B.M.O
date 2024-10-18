@@ -360,21 +360,8 @@ public class EnemyObject : NetworkBehaviour
     //애니메이션 업데이트
     public virtual void AnimationUpdate()
     {
-        float speed = agent.velocity.magnitude;
-        if (speed > 0)
-        {
-            animator.SetBool("isMove", true);
-        }
-        else
-        {
-            animator.SetBool("isMove", false);
-        }
-        if (currentState == EnemyState.Chasing)
-        {
-            animator.SetBool("isChase", true);
-        }
-        else
-            animator.SetBool("isChase", false);
+        animator.SetBool("isMove", agent.velocity.magnitude > 0);
+        animator.SetBool("isChase", currentState == EnemyState.Chasing);
     }
     //발소리
     public virtual void FootStep()

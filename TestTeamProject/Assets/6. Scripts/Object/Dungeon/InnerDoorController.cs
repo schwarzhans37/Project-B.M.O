@@ -4,21 +4,18 @@ using UnityEngine;
 
 public class InnerDoorController : InteractableObject
 {
-    int level = 0;
     protected override void OnValidate()
     {
         base.OnValidate();
         
-        objectName = "InnerDoor";
-        guideText = "문 열기 : [F]";
+        guideText = "문 열기 : [V]";
         holdTime = 0.5f;
+        isInteractable = true;
     }
 
     public override void InteractWithObject(GameObject player)
     {
         Debug.Log("InnerDoorController.InteractWithObject()");
-        GameObject.Find("EnemySpawner").GetComponent<EnemySpawner>().SpawnEnemies(level);
-        level++;
         AudioSource.PlayClipAtPoint(soundEffect, transform.position);
     }
 }

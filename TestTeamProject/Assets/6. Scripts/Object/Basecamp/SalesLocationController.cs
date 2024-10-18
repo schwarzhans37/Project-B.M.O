@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class SalesLocationController : InteractableObject
 {
+    public float radius;
+
     public ParticleSystem particle;
     protected override void OnValidate()
     {
         base.OnValidate();
         
-        objectName = "Sales Location";
-        guideText = "판매하기 : [F]";
+        guideText = "판매하기 : [V]";
         holdTime = 3f;
+        isInteractable = true;
         particle = transform.GetChild(0).GetComponent<ParticleSystem>();
     }
 
     public override void InteractWithObject(GameObject player)
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius);
 
         foreach (Collider collider in colliders)
         {
@@ -31,7 +33,11 @@ public class SalesLocationController : InteractableObject
                 particle.Play();
             }
         }
+    }
 
-        GameObject.Find("EnemySpawner").GetComponent<TestSpawner>().SpawnEnemies();
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 }

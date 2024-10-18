@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18006688, g: 0.22545186, b: 0.3067876, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -260,6 +260,7 @@ MonoBehaviour:
   syncInterval: 0
   itemName: Test Item
   itemPrice: 10
+  ItemImage: {fileID: 0}
 --- !u!114 &28039897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,6 +476,7 @@ MonoBehaviour:
   syncInterval: 0
   itemName: Test Item
   itemPrice: 10
+  ItemImage: {fileID: 0}
 --- !u!114 &71188762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2063,6 +2065,7 @@ MonoBehaviour:
   syncInterval: 0
   itemName: Test Item
   itemPrice: 10
+  ItemImage: {fileID: 0}
 --- !u!114 &552142899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3031,6 +3034,105 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 821258309}
   m_CullTransparentMesh: 1
+--- !u!1001 &840690497
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1317972594}
+    m_Modifications:
+    - target: {fileID: 274800222813354487, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 280014332511540107, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336510160583922030, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1602394655745013977, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4638712882946042690, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_Name
+      value: AoE Magic
+      objectReference: {fileID: 0}
+    - target: {fileID: 5936817956851514767, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+--- !u!4 &840690498 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7898914686281044152, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+  m_PrefabInstance: {fileID: 840690497}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &840690499 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5936817956851514767, guid: 9029beab0dd9eb84aade1739487ed290, type: 3}
+  m_PrefabInstance: {fileID: 840690497}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &856934073
 GameObject:
   m_ObjectHideFlags: 0
@@ -3751,6 +3853,7 @@ MonoBehaviour:
   syncInterval: 0
   itemName: Test Item
   itemPrice: 10
+  ItemImage: {fileID: 0}
 --- !u!114 &998506017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4663,7 +4766,8 @@ Transform:
   m_LocalPosition: {x: 0.03, y: 0, z: 0}
   m_LocalScale: {x: 0.015, y: 1, z: 0.015}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 840690498}
   m_Father: {fileID: 1269041140}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1317972595
@@ -4685,6 +4789,7 @@ MonoBehaviour:
   guideText: "\uD310\uB9E4\uD558\uAE30 : [F]"
   holdTime: 3
   soundEffect: {fileID: 8300000, guid: 5669676e9c2acfc46961e91b81e8abd0, type: 3}
+  particle: {fileID: 840690499}
 --- !u!114 &1317972596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5271,6 +5376,7 @@ MonoBehaviour:
   syncInterval: 0
   itemName: Test Item
   itemPrice: 10
+  ItemImage: {fileID: 0}
 --- !u!114 &1461060010
 MonoBehaviour:
   m_ObjectHideFlags: 0

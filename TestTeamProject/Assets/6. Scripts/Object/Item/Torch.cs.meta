@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/LightingManager_Assets/LightingPreset.cs.meta
+guid: c7d1f34fb3f9515468da7a24041bc771
+========
 guid: 1f2556e4ef6928c41a288c229670b27e
+>>>>>>>> develop:TestTeamProject/Assets/6. Scripts/Object/Item/Torch.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

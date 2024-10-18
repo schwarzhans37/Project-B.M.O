@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 3DH FTT Path_001 Abandoned_004 2K
-  m_DiffuseTexture: {fileID: 2800000, guid: 29bb65d122b2c794bb3cdcc3c9da019e, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: c5f895b6ca1a7ad4c85b14534bf254ae, type: 3}
   m_NormalMapTexture: {fileID: 0}
   m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 1.497076, y: 1.497076}

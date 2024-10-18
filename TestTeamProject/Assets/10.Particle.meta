@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/1. Scene/Map2.meta
+guid: f34f83963eea325419768ec2181dbfa3
+========
 guid: a25d97897b4fc68429cc43c8a5ff02ef
+>>>>>>>> develop:TestTeamProject/Assets/10.Particle.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

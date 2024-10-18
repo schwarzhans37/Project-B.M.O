@@ -367,6 +367,5 @@ public class EnemyObject : NetworkBehaviour
     public virtual void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position);
-        Debug.Log("footstep sound play");
     }
 }

@@ -229,6 +229,7 @@ MonoBehaviour:
   damage: 0
   shockwaveRadius: 0
   shockwaveDamage: 0
+  SE: {fileID: 8300000, guid: 4ae07ecec8a99084d851095da6af9f22, type: 3}
   playerMask:
     serializedVersion: 2
     m_Bits: 0

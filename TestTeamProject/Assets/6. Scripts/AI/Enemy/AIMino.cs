@@ -31,7 +31,7 @@ public class MinotaurAI : EnemyObject
         detectionInterval = 0.1f; // 감지 주기
 
         patrolSpeed = 2f; // 배회 속도
-        chaseSpeed = 4f; // 추적 속도
+        chaseSpeed = 3f; // 추적 속도
 
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 2f; // 배회 대기 시간
@@ -71,7 +71,7 @@ public class MinotaurAI : EnemyObject
         Debug.Log("Dash!");
         isDashing = true;
         StopMoving();
-
+        PlayDashSound();
         // 돌진 방향 계산
         Vector3 dashDirection = (targetTransform.position - transform.position).normalized;
 

@@ -744,8 +744,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3543955170667400224}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 63e974d9ec82619419e69ae2287be94e, type: 3}
-  m_Controller: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: cfbfb95b5f2b90949be0b5faab2775fb, type: 3}
+  m_Controller: {fileID: 9100000, guid: 4bcc2ca7f47b3794b93302cd3d9a5eb1, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -875,7 +875,7 @@ MonoBehaviour:
   stateInterval: 0.5
   detectionInterval: 0.5
   patrolSpeed: 1
-  chaseSpeed: 3
+  chaseSpeed: 2
   patrolRange: 15
   patrolWaitTime: 3
   attackAngle: 180
@@ -900,7 +900,7 @@ MonoBehaviour:
   meleeAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   rangedAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   animator: {fileID: 2748855706720999003}
-  footstep: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  footstep: {fileID: 8300000, guid: f4a0fdd7e91feb64e865dac518bdd0fd, type: 3}
   meleeRange: 3
   meleeAttackCooldown: 3
   rangedAttackRange: 40

@@ -6,7 +6,7 @@ using Mirror;
 [RequireComponent(typeof(NetworkIdentity))]
 public class InteractionController : NetworkBehaviour
 {
-    public float rayDistance = 5f;  // Ray의 거리
+    public float rayDistance = 4f;  // Ray의 거리
     public CanvasGroup guideLine;   // 상호작용 가이드 UI
     public GameObject progressBar; // 원형 진행 바
     public float holdTime; // F키를 누르고 있어야 하는 시간
@@ -77,8 +77,8 @@ public class InteractionController : NetworkBehaviour
                 GameObject obj = hit.collider.gameObject;
                 holdTime = obj.GetComponent<InteractableObject>().holdTime;
 
-                // F키를 누르고 있으면 바를 채운다
-                if (Input.GetKey(KeyCode.F))
+                // V키를 누르고 있으면 바를 채운다
+                if (Input.GetKey(KeyCode.V))
                 {
                     HandleTriggerStay(obj);
                 }

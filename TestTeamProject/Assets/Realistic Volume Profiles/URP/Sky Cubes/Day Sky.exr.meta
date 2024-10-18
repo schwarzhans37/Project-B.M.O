@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/Realistic Volume Profiles/URP/Sky Cubes/Day Sky.exr.meta
 guid: c202781703505f24dadd430624e8df46
+========
+guid: 46d152caa96c1904c80ed7f0ae068a7d
+>>>>>>>> develop:TestTeamProject/Assets/3. UI/Icons/AITorch.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -54,8 +58,13 @@ TextureImporter:
   alphaUsage: 1
   alphaIsTransparency: 0
   spriteTessellationDetail: -1
+<<<<<<<< HEAD:TestTeamProject/Assets/Realistic Volume Profiles/URP/Sky Cubes/Day Sky.exr.meta
   textureType: 0
   textureShape: 2
+========
+  textureType: 8
+  textureShape: 1
+>>>>>>>> develop:TestTeamProject/Assets/3. UI/Icons/AITorch.png.meta
   singleChannelComponent: 0
   flipbookRows: 1
   flipbookColumns: 1
@@ -99,7 +108,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 

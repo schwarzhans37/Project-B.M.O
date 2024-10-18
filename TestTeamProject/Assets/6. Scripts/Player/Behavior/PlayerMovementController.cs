@@ -1,5 +1,7 @@
+using kcp2k;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 [RequireComponent(typeof(NetworkIdentity))]
 [RequireComponent(typeof(NetworkTransformReliable))]
@@ -8,50 +10,36 @@ public class PlayerMovementController : NetworkBehaviour
 {
     public CharacterController characterController;
     public NetworkAnimator networkAnimator;
-    public Animator animator;
 
     [Header("Movement")]
-    [Range(1, 20)]
-    public float moveSpeedMultiplier; // 이동 속도 배율
-    [SerializeField]
-    float walkSpeed; // 걷기 속도
-    [SerializeField]
-    float crouchSpeed; // 앉기 속도
-    [SerializeField]
-    float runSpeedMultiplier; // 뛰기 속도 배율
+    [Range(1f, 10f)]
+    public float walkSpeed; // 걷기 속도
+    [Range(1f, 10f)]
+    public float crouchSpeed; // 앉기 속도
+    [Range(1f, 10f)]
+    public float runSpeedMultiplier; // 뛰기 속도 배율
+    private float moveSpeedMultiplier; // 이동 속도 배율
+    private float horizontal;
+    private float vertical;
+
+    [Header("Jumping")]
+    [Range(-10f, 10f)]
+    public float jumpForce; // 점프 힘
+    private float jumpSpeed;
 
     //애니메이터 플래그
     public bool isTorch = false;
 
     //사운드 테스트
     public AudioClip footstep;
-    public AudioClip equiptorch;
     public AudioClip landing;
     public AudioClip jumping;
-    public AudioClip burning;
-    private float torchSoundTimer = 0f;
-    [SerializeField] private float torchSoundInterval = 4f;
+    public AudioClip disarmTorch;
+    // Torch 테스트
+    public GameObject Torch;
 
-    [Header("Jumping")]
-    [Range(-10f, 10f)]
-    public float jumpForce; // 점프 힘
-
-    [SerializeField, Range(-1f, 1f)]
-    float horizontal;
-    [SerializeField, Range(-1f, 1f)]
-    float vertical;
-
-    [SerializeField, Range(0f, 10f)]
-    float jumpSpeed;
-
-    [SerializeField, Range(-1.5f, 1.5f)]
-    float animVelocity;
-
-    [SerializeField, Range(-1.5f, 1.5f)]
-    float animRotation;
-
-    [SerializeField] Vector3Int velocity;
-    [SerializeField] Vector3 direction;
+    Vector3 direction;
+    Vector3Int velocity;
 
     public GameObject soundEmitterPrefab;
 
@@ -62,21 +50,19 @@ public class PlayerMovementController : NetworkBehaviour
         if (characterController == null)
             characterController = GetComponent<CharacterController>();
 
-        if (animator == null)
-            animator = GetComponent<Animator>();
-
         if (networkAnimator == null)
             networkAnimator = GetComponent<NetworkAnimator>();
 
-        characterController.enabled = false;
+        walkSpeed = 2.5f;
+        crouchSpeed = 1f;
+        runSpeedMultiplier = 2f;
+        jumpForce = 4f;
+
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
 
-        walkSpeed = 2.5f;
-        runSpeedMultiplier = 2f;
-        crouchSpeed = 1f;
-        jumpForce = 5f;
-
+        GetComponent<Collider>().enabled = true;
+        characterController.enabled = false;
         this.enabled = false;
     }
 
@@ -85,17 +71,9 @@ public class PlayerMovementController : NetworkBehaviour
         base.OnStartAuthority();
 
         // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
+        GetComponent<Collider>().enabled = false;
         characterController.enabled = true;
         this.enabled = true;
-    }
-
-    public override void OnStopAuthority()
-    {
-        base.OnStopAuthority();
-
-        // 로컬 플레이어가 아닌 경우 캐릭터 컨트롤러 비활성화
-        characterController.enabled = false;
-        this.enabled = false;
     }
 
     void Update()
@@ -118,16 +96,13 @@ public class PlayerMovementController : NetworkBehaviour
         }
 
         // 중력 적용
-        jumpSpeed += Physics.gravity.y * Time.deltaTime;
+        jumpSpeed += Physics.gravity.y * Time.deltaTime / 2;
 
         // 방향에 y축 속도를 추가
-        direction.y = Mathf.Clamp(jumpSpeed, -10f, 10f);
+        direction.y = Mathf.Clamp(jumpSpeed, Physics.gravity.y, jumpForce);
         
         // 애니메이션 업데이트
         AnimationUpdate();
-        
-        // 사운드 업데이트
-        HandlerSound();
 
         // 캐릭터를 이동
         characterController.Move(direction * Time.deltaTime);
@@ -170,9 +145,10 @@ public class PlayerMovementController : NetworkBehaviour
     }
 
     void HandleJumping()
-    {
+    { 
         // 점프기능
-        if (Input.GetKeyDown(KeyCode.Space) && characterController.isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space)
+            && characterController.isGrounded)
         {
             jumpSpeed = jumpForce;
             networkAnimator.SetTrigger("Jump");
@@ -182,9 +158,12 @@ public class PlayerMovementController : NetworkBehaviour
 
     void HandlerItem()
     {
+        Torch = FindChildWithName(transform,"Torch").gameObject;
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
+            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);          
         }
     }
 
@@ -211,31 +190,10 @@ public class PlayerMovementController : NetworkBehaviour
         networkAnimator.animator.SetBool("isTorch", isTorch);
     }
 
-    void HandlerSound()
-    {
-        if (isTorch)
-        {
-            torchSoundTimer += Time.deltaTime;
-            if(torchSoundTimer >= torchSoundInterval)
-            {
-                torchSoundTimer = 0f;
-                Debug.Log("Torch burning sound played");
-                AudioSource.PlayClipAtPoint(burning, transform.position);
-            }
-            
-        }
-    }
-
     public void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position);
         CreateSoundEmitter(footstep);
-    }
-
-    public void SETorch()
-    {
-        Debug.Log("Torch equipped sound played");
-        AudioSource.PlayClipAtPoint(equiptorch, transform.position);
     }
 
     public void SEJump()
@@ -243,6 +201,11 @@ public class PlayerMovementController : NetworkBehaviour
         Debug.Log("Jump sound played");
         AudioSource.PlayClipAtPoint(jumping, transform.position);
         CreateSoundEmitter(jumping);
+    }
+
+    public void SETorch()
+    {
+        Debug.Log("Torch equipped sound played");
     }
 
     // SoundEmitter 객체 생성 함수
@@ -253,6 +216,28 @@ public class PlayerMovementController : NetworkBehaviour
 
         // SoundEmitter의 설정 (감지 범위 및 지속 시간)
         SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
-        emitter.duration = audioClip.length;
+        emitter.duration = audioClip.length * 3;
+    }
+    Transform FindChildWithName(Transform parent, string name)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.name == name)
+            {
+                return child; // 찾은 자식 반환
+            }
+
+            // 자식의 자식에서 재귀적으로 탐색
+            Transform found = FindChildWithName(child, name);
+            if (found != null)
+            {
+                return found; // 재귀 호출에서 찾은 경우 반환
+            }
+        }
+        return null; // 찾지 못했을 경우 null 반환
+    }
+    public void LightOffTorch()
+    {
+        AudioSource.PlayClipAtPoint(disarmTorch, transform.position);
     }
 }

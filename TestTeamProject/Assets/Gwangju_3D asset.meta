@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/Gwangju_3D asset.meta
 guid: a02279fe6ff34484992e5370d2df7197
+========
+guid: 2fab0cdfb30f28043b5e182262c9c135
+>>>>>>>> develop:TestTeamProject/Assets/4. Map/Daniel Mistage.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

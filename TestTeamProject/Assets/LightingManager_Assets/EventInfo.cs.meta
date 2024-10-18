@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/LightingManager_Assets/EventInfo.cs.meta
 guid: 13152b1cdf61272488946e0bd4eb8f08
+========
+guid: 2c1b866d72c5f2b4f8aae5180d5bcceb
+>>>>>>>> develop:TestTeamProject/Assets/6. Scripts/Object/Basecamp/SleepingPointContoller.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

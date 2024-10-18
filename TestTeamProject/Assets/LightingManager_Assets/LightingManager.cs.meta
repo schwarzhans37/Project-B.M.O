@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/LightingManager_Assets/LightingManager.cs.meta
 guid: 6289ad34a168ded4eb13ff4f2af99637
+========
+guid: de5d122db399022418fc8fa76777e4c7
+>>>>>>>> develop:TestTeamProject/Assets/6. Scripts/Object/Basecamp/WagonController.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

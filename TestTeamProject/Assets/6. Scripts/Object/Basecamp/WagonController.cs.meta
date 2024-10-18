@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:TestTeamProject/Assets/LightingManager_Assets/LightingManager.cs.meta
+guid: e2daf0e708cf1114d954798240d7d3f1
+========
+guid: de5d122db399022418fc8fa76777e4c7
+>>>>>>>> develop:TestTeamProject/Assets/6. Scripts/Object/Basecamp/WagonController.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

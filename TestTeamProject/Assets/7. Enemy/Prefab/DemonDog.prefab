@@ -1021,6 +1021,7 @@ MonoBehaviour:
   meleeAttackSound: {fileID: 0}
   rangedAttackSound: {fileID: 0}
   animator: {fileID: 1170350492810089484}
+  footstep: {fileID: 8300000, guid: 1300a1f7bbbf3f140aee0da44ba85694, type: 3}
 --- !u!1 &2623013319242237936
 GameObject:
   m_ObjectHideFlags: 0

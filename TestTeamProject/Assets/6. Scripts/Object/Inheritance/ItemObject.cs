@@ -11,7 +11,8 @@ public class ItemObject : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnItemPriceChanged))]
     public int itemPrice; // 아이템 가격
-
+    public Sprite ItemImage;
+    
     protected override void OnValidate()
     {
         base.OnValidate();

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SalesLocationController : InteractableObject
 {
+    public ParticleSystem particle;
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -11,6 +12,7 @@ public class SalesLocationController : InteractableObject
         objectName = "Sales Location";
         guideText = "판매하기 : [F]";
         holdTime = 3f;
+        particle = transform.GetChild(0).GetComponent<ParticleSystem>();
     }
 
     public override void InteractWithObject(GameObject player)
@@ -25,6 +27,8 @@ public class SalesLocationController : InteractableObject
                 GameObject.Find("GameDataManager").GetComponent<GameDataController>().AddMoney(collider.gameObject.GetComponent<ItemObject>().itemPrice);
                 Destroy(collider.gameObject);
                 AudioSource.PlayClipAtPoint(soundEffect, transform.position);
+                collider.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
+                particle.Play();
             }
         }
 

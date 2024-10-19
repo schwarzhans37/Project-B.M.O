@@ -17,13 +17,32 @@ public class SleepingPointContoller : InteractableObject
 
     public override void InteractWithObject(GameObject player)
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, radius)
-        .Where(collider => collider.CompareTag("Player")).ToArray();
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
+        List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
 
-        foreach (Collider collider in colliders)
+        List<GameObject> deathPlayers = new List<GameObject>();
+        foreach (GameObject playerObject in players)
         {
-
+            if (playerObject.GetComponent<PlayerDataController>().isDead)
+                deathPlayers.Add(playerObject);
+            
+            playerObject.GetComponent<PlayerDataController>().hp = 1000;
         }
+
+        if (colliders.Length != players.Count - deathPlayers.Count)
+        {
+            StartCoroutine(ShowMessage("모든 플레이어가 수면해야 합니다."));
+            return;
+        }
+        
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().AdvanceDay(deathPlayers);
+    }
+
+    IEnumerator ShowMessage(string message)
+    {
+        guideText = message;
+        yield return new WaitForSeconds(3f);
+        guideText = "수면하기 : [V]";
     }
 
     void OnDrawGizmos()

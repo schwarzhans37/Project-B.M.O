@@ -22,8 +22,15 @@ public class WagonController : InteractableObject
         Collider[] items = Physics.OverlapSphere(transform.position, radius)
         .Where(collider => collider.CompareTag("ItemObject")).ToArray();
 
-        Collider[] players = Physics.OverlapSphere(transform.position, radius)
-        .Where(collider => collider.CompareTag("Player")).ToArray();
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
+
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        if (colliders.Length != players.Length && gameObject.name == "BasecampWagon")
+        {
+            StartCoroutine(ShowMessage("모든 플레이어가 웨건에 탑승해야 합니다."));
+            return;
+        }
 
         // 플레이어와 아이템을 모두 웨건으로 이동
         foreach (Collider item in items)
@@ -37,9 +44,13 @@ public class WagonController : InteractableObject
             item.transform.SetParent(null, true);
         }
 
-        foreach (Collider playerCollider in players)
-            MoveToWagon(playerCollider.GetComponent<NetworkIdentity>().connectionToClient, playerCollider.gameObject);
+        foreach (Collider collider in colliders)
+            MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
         
+        if (gameObject.name == "BasecampWagon")
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame());
+        else
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame());
     }
 
     [TargetRpc]
@@ -52,6 +63,13 @@ public class WagonController : InteractableObject
         player.transform.localPosition = localPosition;
         player.transform.localRotation = localRotation;
         player.transform.SetParent(null, true);
+    }
+
+    IEnumerator ShowMessage(string message)
+    {
+        guideText = message;
+        yield return new WaitForSeconds(3f);
+        guideText = "출발하기 : [V]";
     }
 
     void OnDrawGizmos()

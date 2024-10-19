@@ -3367,6 +3367,7 @@ GameObject:
   - component: {fileID: 8970342877136660603}
   - component: {fileID: -867174743063312594}
   - component: {fileID: 6505212903495318670}
+  - component: {fileID: 1923321188028194116}
   - component: {fileID: 7865506186863237139}
   m_Layer: 0
   m_Name: Minotaur
@@ -3514,6 +3515,23 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &1923321188028194116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6496405698498005963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 4371997982932448013}
 --- !u!114 &7865506186863237139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3557,6 +3575,7 @@ MonoBehaviour:
   chaseSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   meleeAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   rangedAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  networkAnimator: {fileID: 1923321188028194116}
   animator: {fileID: 4371997982932448013}
   footstep: {fileID: 8300000, guid: f4a0fdd7e91feb64e865dac518bdd0fd, type: 3}
   dashDistance: 10

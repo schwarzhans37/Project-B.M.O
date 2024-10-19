@@ -27,6 +27,11 @@ public class PlayerMovementController : NetworkBehaviour
     public float jumpForce; // 점프 힘
     public float jumpSpeed;
 
+    public int heal;
+    public float healCooldown;
+    private float lastHealTime = 0f;
+
+
     //애니메이터 플래그
     public bool isTorch = false;
 
@@ -57,6 +62,9 @@ public class PlayerMovementController : NetworkBehaviour
         crouchSpeed = 1f;
         runSpeedMultiplier = 2f;
         jumpForce = 6f;
+
+        heal = 100;
+        healCooldown = 5f;
 
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
@@ -95,6 +103,9 @@ public class PlayerMovementController : NetworkBehaviour
             // 일시정지 상태이면 속도를 0으로 설정
             direction = Vector3.zero;
         }
+
+        // 힐링
+        CheckHeal();
 
         // 중력 적용
         jumpSpeed += Physics.gravity.y * Time.deltaTime;
@@ -168,11 +179,23 @@ public class PlayerMovementController : NetworkBehaviour
         }
     }
 
+    [Command]
+    void CheckHeal()
+    {
+        if (gameObject.GetComponent<PlayerDataController>().stamina >= 1000
+            && Time.time - lastHealTime > healCooldown)
+        {
+            lastHealTime = Time.time;
+            gameObject.GetComponent<PlayerDataController>().ChangeHp(heal);
+        }
+    }
+
     void AnimationUpdate()
     {
         if (!GameUIController.IsPaused)
         {
-            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
+            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift)
+            && gameObject.GetComponent<PlayerDataController>().stamina > 0);
             networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
             networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
             networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));

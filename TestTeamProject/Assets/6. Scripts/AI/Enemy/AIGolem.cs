@@ -72,7 +72,7 @@ public class AIGolem : EnemyObject
         {
             lastMeleeAttackTime = Time.time;
 
-            animator.SetTrigger("Attack");
+            networkAnimator.animator.SetTrigger("Attack");
 
             yield return base.Attack();
 
@@ -85,7 +85,7 @@ public class AIGolem : EnemyObject
 
             
             yield return base.Attack();
-            animator.SetTrigger("rock");
+            networkAnimator.animator.SetTrigger("rock");
         }
     }
 

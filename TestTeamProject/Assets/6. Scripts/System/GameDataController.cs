@@ -10,7 +10,6 @@ using UnityEngine;
 public class GameDataController : NetworkBehaviour
 {
     public GameDataView gameDataView;
-    public LightingManager lightingManager;
 
     public GameObject spawnPoint;
     public GameObject sleepingPoint;
@@ -20,14 +19,15 @@ public class GameDataController : NetworkBehaviour
     public GameObject dungeonSpawner;
 
     [SyncVar(hook = nameof(OnMoneyChanged))]
-    public int money = 0; // 플레이어의 돈
+    public int money; // 플레이어의 돈
 
     [SyncVar(hook = nameof(OnDayChanged))]
-    public int day = 0; // 게임 진행 일수
+    public int day; // 게임 진행 일수
 
     [SyncVar(hook = nameof(OnTimeChanged))]
-    public int time = 0; // 게임 진행 시간
-    private int startTime; // 게임 시작 시간
+    public int time; // 게임 진행 시간
+
+    public int startTime; // 게임 시작 시간
     private float maxGameTime; // 게임 진행 시간 상한
 
     [SyncVar(hook = nameof(OnIsDayChanged))]
@@ -40,8 +40,7 @@ public class GameDataController : NetworkBehaviour
     {
         base.OnValidate();
         gameDataView = GetComponent<GameDataView>();
-        lightingManager = GetComponent<LightingManager>();
-        startTime = (int)lightingManager.StartTime;
+        startTime = (int)GetComponent<LightingManager>().StartTime;
 
         maxGameTime = 900f;
     }
@@ -49,17 +48,25 @@ public class GameDataController : NetworkBehaviour
     // 게임 시작 시 호출
     public IEnumerator StartGame()
     {
+        if (!isServer)
+            yield break;
+
         gameDataView.ShowTime();
-        lightingManager.IsDayCycleOn = true;
+        gameDataView.SetSunMovement(true);
 
         forestSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
+        forestSpawner.GetComponent<SlenderManSpawner>().currentLevel = (int)day/3;
         dungeonSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
 
         float elapsedTime = 0f;
-        while (elapsedTime < maxGameTime && isDay)
+        while (isDay)
         {
             elapsedTime += Time.deltaTime;
             time = Mathf.RoundToInt(elapsedTime) + startTime * 60;
+
+            if (time > 1140 || true)
+                forestSpawner.GetComponent<SlenderManSpawner>().SpawnSlenderMan();
+
             yield return null;
         }
     }
@@ -67,14 +74,21 @@ public class GameDataController : NetworkBehaviour
     // 게임 종료 시 호출
     public IEnumerator EndGame()
     {
+        if (!isServer)
+            yield break;
+
         gameDataView.HideTime();
-        lightingManager.IsDayCycleOn = false;
+        gameDataView.SetSunMovement(false);
         isDay = false;
 
         forestSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
+        forestSpawner.GetComponent<SlenderManSpawner>().RemoveSlenderMan();
         dungeonSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
+        
+        yield return new WaitForSeconds(3f);
 
-        yield return null;
+        forestSpawner.GetComponent<FieldPlayerKiller>().KillPlayer();
+        dungeonSpawner.GetComponent<FieldPlayerKiller>().KillPlayer();
     }
 
     public IEnumerator OnAllPlayersDead()
@@ -92,9 +106,13 @@ public class GameDataController : NetworkBehaviour
 
     public void AdvanceDay(List<GameObject> deathPlayers)
     {
+        if (!isServer)
+            return;
+
         day++;
         isDay = true;
-        lightingManager.TimeOfDay = startTime;
+        time = startTime * 60;
+        gameDataView.SetSunTimePosition(startTime);
 
         List<Transform> spawnPoints = new List<Transform>();
         foreach (Transform transform in spawnPoint.transform)

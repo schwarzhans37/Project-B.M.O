@@ -1,94 +1,92 @@
+using System.Linq;
+using Mirror;
 using UnityEngine;
 
-public class SlenderManSpawner : MonoBehaviour
+[RequireComponent(typeof(NetworkIdentity))]
+public class SlenderManSpawner : NetworkBehaviour
 {
     public GameObject slenderManPrefab; // 슬렌더맨 프리팹
-    public float spawnProbability = 0.5f; // 스폰 확률 (50%)
-    public float spawnCheckInterval = 5f; // 스폰 체크 주기
+    private GameObject spawnedSlenderMan; // 현재 스폰된 슬렌더맨
+    private Collider targetPlayer; // 플레이어 타겟
 
-    private Transform[] players; // 플레이어들
-    private GameObject currentSlenderMan; // 현재 맵에 존재하는 슬렌더맨
-    private bool canSpawn = true; // 슬렌더맨 스폰 가능 여부
-    private float deathTime = -1f; // 슬렌더맨 사망 시각 (-1은 아직 사망하지 않은 상태)
+    public int currentLevel; // 현재 레벨에 따라 변경 (레벨 정보를 가져와서 업데이트)
+    public float LevelMultiplier => 1f + (currentLevel * 0.2f); // 레벨 배율
+    [Range(0, 1000f)] public float spawnRange; // 스폰 범위
+    [Range(0, 1f)] public float spawnProbability; // 스폰 확률 (50%)
+    [Range(0, 100f)] public float spawnDelay; // 스폰 딜레이
+    private float spawnTimer; // 스폰 타이머
 
-    void Start()
+    public void SpawnSlenderMan()
     {
-        // 플레이어 찾기 (Player 태그로 찾음)
-        GameObject[] playerObjects = GameObject.FindGameObjectsWithTag("Player");
-        players = new Transform[playerObjects.Length];
+        // 서버가 아니거나 스폰된 슬렌더맨이 이미 있으면 리턴
+        if (!isServer
+            || spawnedSlenderMan != null)
+            return;
 
-        for (int i = 0; i < playerObjects.Length; i++)
+        // 스폰할 플레이어가 없으면 리턴
+        Collider[] players = Physics.OverlapSphere(transform.position, spawnRange, LayerMask.GetMask("Player"));
+        if (players.Length == 0)
+            return;
+
+        // 타겟 플레이어가 없거나 죽었으면 다시 타겟 설정
+        if (!players.Contains(targetPlayer)
+            || targetPlayer.GetComponent<PlayerDataController>().isDead)
         {
-            players[i] = playerObjects[i].transform;
+            spawnTimer = 0f;
+            targetPlayer = players[Random.Range(0, players.Length)];
+            return;
         }
 
-        // 일정 시간 간격으로 스폰 시도
-        InvokeRepeating("TrySpawnSlenderMan", spawnCheckInterval, spawnCheckInterval);
-    }
-
-    void Update()
-    {
-        // 슬렌더맨이 죽었고, 사망 후 1분이 지났다면 스폰 가능
-        if (!canSpawn && currentSlenderMan == null && deathTime != -1f)
+        // 타겟 플레이어 주변에 다른 플레이어가 있으면 다시 타겟 설정
+        Collider[] colliders = Physics.OverlapSphere(targetPlayer.transform.position, 40f, LayerMask.GetMask("Player"));
+        foreach (Collider collider in colliders)
         {
-            // 슬렌더맨 사망 후 1분 경과 시 스폰 가능하도록 설정
-            if (Time.time - deathTime >= 60f)
-            {
-                canSpawn = true;
-                deathTime = -1f; // 초기화
-            }
-        }
-    }
+            if (collider.GetComponent<PlayerDataController>().isDead
+                || collider == targetPlayer)
+                continue;
 
-    void TrySpawnSlenderMan()
-    {
-        // 슬렌더맨이 없고, 스폰 가능 상태일 때만 스폰 시도
-        if (canSpawn && currentSlenderMan == null)
+            spawnTimer = 0f;
+            targetPlayer = players[Random.Range(0, players.Length)];
+            return;
+        }
+
+        // 스폰 타이머가 스폰 딜레이보다 작으면 리턴
+        spawnTimer += Time.deltaTime;
+        if (spawnTimer < spawnDelay)
+            return;
+
+        // 스폰 확률이 낮으면 리턴
+        if (Random.Range(0f, 1f) > spawnProbability * LevelMultiplier)
         {
-            foreach (Transform player in players)
-            {
-                if (Random.value < spawnProbability) // 50% 확률로 스폰 시도
-                {
-                    // 플레이어의 카메라 찾기
-                    Transform playerCam = player.Find("PlayerCam");
-
-                    if (playerCam != null)
-                    {
-                        // 플레이어 뷰포인트 내에서 임의의 위치 찾기
-                        Vector3 spawnPosition = FindSpawnPositionInViewport(playerCam);
-                        // 슬렌더맨 스폰
-                        currentSlenderMan = Instantiate(slenderManPrefab, spawnPosition, Quaternion.identity);
-                        
-                        // 슬렌더맨이 스폰되었으므로 스폰 금지
-                        canSpawn = false;
-
-                        // 슬렌더맨이 사망할 때 호출할 메서드를 연결
-                        AISlenderMan slenderManScript = currentSlenderMan.GetComponent<AISlenderMan>();
-                        // slenderManScript.OnSlenderManDeath += OnSlenderManDeath;
-                    }
-                }
-            }
+            spawnTimer = 0f;
+            return;
         }
+
+        // 스폰
+        spawnedSlenderMan = Instantiate(slenderManPrefab, targetPlayer.transform.position + Vector3.back * 40, Quaternion.identity);
+        spawnedSlenderMan.GetComponent<AISlenderMan>().player = targetPlayer.transform;
+        spawnedSlenderMan.GetComponent<AISlenderMan>().playerCamera = targetPlayer.GetComponentInChildren<Camera>(true).transform;
+        NetworkServer.Spawn(spawnedSlenderMan);
+
+        // 스폰 후 초기화
+        targetPlayer = null;
+        spawnTimer = 0f;
     }
 
-    Vector3 FindSpawnPositionInViewport(Transform playerCam)
+    public void RemoveSlenderMan()
     {
-        // 카메라의 뷰포인트 내에서 임의의 위치 찾기
-        Camera cam = playerCam.GetComponent<Camera>();
+        if (!isServer
+            || spawnedSlenderMan == null)
+            return;
 
-        Vector3 randomViewportPoint = new Vector3(
-            Random.Range(0.2f, 0.8f), // X 범위 (중앙을 피해서 스폰)
-            Random.Range(0.2f, 0.8f), // Y 범위 (중앙을 피해서 스폰)
-            Random.Range(3f, 10f)     // Z 범위 (거리 3~10 사이)
-        );
-
-        return cam.ViewportToWorldPoint(randomViewportPoint);
+        NetworkServer.Destroy(spawnedSlenderMan);
+        spawnedSlenderMan = null;
     }
 
-    void OnSlenderManDeath()
+    // Gizmos를 사용하여 스폰 범위 표시
+    void OnDrawGizmos()
     {
-        // 슬렌더맨이 사망하면 사망 시각을 기록하고 스폰 가능 여부를 설정
-        deathTime = Time.time;
-        currentSlenderMan = null;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, spawnRange);
     }
 }

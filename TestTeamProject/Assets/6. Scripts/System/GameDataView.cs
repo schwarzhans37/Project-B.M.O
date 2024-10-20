@@ -1,9 +1,11 @@
 using System.Collections;
+using Mirror;
+using Sydewa;
 using TMPro;
 using UnityEngine;
 
-public class GameDataView : MonoBehaviour
-{
+public class GameDataView : NetworkBehaviour
+{    
     public CanvasGroup moneyView;
     public CanvasGroup timeView;
 
@@ -52,19 +54,32 @@ public class GameDataView : MonoBehaviour
 
     public void OnTimeChanged(int oldTime, int newTime)
     {
-        TMP_Text timeText = timeView.GetComponentInChildren<TMP_Text>();
         int hour = newTime / 60;
         int minute = newTime % 60;
-        timeText.text = string.Format("{0:D2} : {1:D2}", hour, minute);
+        timeView.GetComponentInChildren<TMP_Text>().text = string.Format("{0:D2} : {1:D2}", hour, minute);
     }
 
+    [ClientRpc]
     public void ShowTime()
     {
         timeView.alpha = 1;
     }
 
+    [ClientRpc]
     public void HideTime()
     {
         timeView.alpha = 0;
+    }
+
+    [ClientRpc]
+    public void SetSunMovement(bool isDay)
+    {
+        GetComponent<LightingManager>().IsDayCycleOn = isDay;
+    }
+
+    [ClientRpc]
+    public void SetSunTimePosition(int time)
+    {
+        GetComponent<LightingManager>().TimeOfDay = time;
     }
 }

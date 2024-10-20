@@ -20,8 +20,19 @@ public class PlayerDataController : NetworkBehaviour
 
     void Start()
     {
+        if (!isLocalPlayer)
+            return;
+
+        SetNickname(CustomNetworkRoomManager.Nickname != null && CustomNetworkRoomManager.Nickname != ""
+            ? CustomNetworkRoomManager.Nickname : "No Nickname");
         hpBar = GameObject.Find("HPBar");
         staminaBar = GameObject.Find("StaminaBar");
+    }
+
+    [Command]
+    public void SetNickname(string playerNickname)
+    {
+        nickname = playerNickname;
     }
 
     public void ChangeHp(int amount)
@@ -32,7 +43,10 @@ public class PlayerDataController : NetworkBehaviour
             hp = 1000;
 
         if (hp < 0)
+        {
             hp = 0;
+            isDead = true;
+        }
     }
 
     public void AdjustStaminaOverTime(float time)
@@ -48,7 +62,8 @@ public class PlayerDataController : NetworkBehaviour
         if (stamina < 0 && time < 0)
             stamina = -300;
 
-        staminaBar.GetComponent<Image>().fillAmount = (float)stamina / 1000;
+        if (staminaBar != null)
+            staminaBar.GetComponent<Image>().fillAmount = (float)stamina / 1000;
     }
 
     public void OnIsDeadChanged(bool oldDead, bool newDead)
@@ -63,6 +78,7 @@ public class PlayerDataController : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
+        if (hpBar != null)
+            hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
     }
 }

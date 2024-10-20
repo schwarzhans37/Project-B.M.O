@@ -46,7 +46,7 @@ public class WagonController : InteractableObject
 
         foreach (Collider collider in colliders)
             MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
-        
+
         if (gameObject.name == "BasecampWagon")
             StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame());
         else

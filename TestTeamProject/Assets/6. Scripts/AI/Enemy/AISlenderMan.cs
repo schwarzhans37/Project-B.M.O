@@ -7,10 +7,14 @@ using UnityStandardAssets.ImageEffects;
 
 [RequireComponent(typeof(NetworkIdentity))]
 [RequireComponent(typeof(NetworkTransformReliable))]
+[RequireComponent(typeof(NetworkAnimator))]
 public class AISlenderMan : NetworkBehaviour
 {
+    [SyncVar]
     public Transform player;
+    [SyncVar]
     public Transform playerCamera;
+    public NetworkAnimator networkAnimator;
     public Animator animator;
     public AudioSource audioSource;
     public AudioClip ScreamSE;
@@ -54,17 +58,18 @@ public class AISlenderMan : NetworkBehaviour
 
         playerMask = LayerMask.GetMask("Player");
         obstacleMask = LayerMask.GetMask("Obstacle");
+        animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+        networkAnimator = GetComponent<NetworkAnimator>();
+        networkAnimator.animator = GetComponent<Animator>();
     }
-
 
     void Start()
     {
         if (!isServer)
             return;
-            
-        playerCamera = player.GetComponentInChildren<Camera>(true).transform;
-        animator = GetComponent<Animator>();
-        audioSource = GetComponent<AudioSource>();
+
+        Debug.Log("슬렌더맨이 생성되었습니다!");
     }
 
     void Update()
@@ -75,8 +80,9 @@ public class AISlenderMan : NetworkBehaviour
         if (isStopped)
             return;
 
-
-        if (noLookTime >= deathTime)
+        if (noLookTime >= deathTime
+            || player == null
+            || player.GetComponent<PlayerDataController>().isDead)
         {
             isStopped = true;
             StartCoroutine(TriggerSurvive());
@@ -90,6 +96,7 @@ public class AISlenderMan : NetworkBehaviour
             return;
         }
 
+        lookAtTargetPosition = player.position + transform.forward;
         PlayEffect(player.GetComponent<NetworkIdentity>().connectionToClient);
 
         // 플레이어가 슬렌더맨을 보고 있는지 확인
@@ -123,8 +130,10 @@ public class AISlenderMan : NetworkBehaviour
     [TargetRpc]
     private void PlayEffect(NetworkConnectionToClient target)
     {
+        if (playerCamera == null)
+            return;
+            
         // 여기서 시각적 또는 음향 효과를 추가할 수 있음
-        lookAtTargetPosition = player.position + transform.forward;
         float proportion = Vector3.Distance(player.position, transform.position) / teleportMaxDistance;
 
         playerCamera.GetComponent<NoiseAndGrain>().softness = Random.Range(1f - proportion / 2, 1f);;
@@ -206,8 +215,6 @@ public class AISlenderMan : NetworkBehaviour
     private IEnumerator TriggerSurvive()
     {
         // 생존 로직 구현
-        Debug.Log("플레이어가 생존했습니다!");
-
         float proportion = lookTime / deathTime;
         Teleport(1f - proportion - deathDistanceProportion);
 
@@ -233,8 +240,7 @@ public class AISlenderMan : NetworkBehaviour
     private IEnumerator TriggerDeath()
     {
         // 사망 로직 구현
-        Debug.Log("플레이어가 사망했습니다!");
-        animator.SetTrigger("Attack");
+        networkAnimator.animator.SetTrigger("Attack");
         
         Teleport(0.08f);
 
@@ -252,7 +258,8 @@ public class AISlenderMan : NetworkBehaviour
 
             yield return null; // 한 프레임 대기
         }
-        
+
+        player.GetComponent<PlayerDataController>().ChangeHp(-9999); // 플레이어 사망 처리
         player.rotation = Quaternion.identity; // 플레이어 회전 초기화
         playerCamera.GetComponent<NoiseAndGrain>().softness = 0;
         NetworkServer.Destroy(gameObject); // AI 제거
@@ -265,11 +272,12 @@ public class AISlenderMan : NetworkBehaviour
         curDir = Vector3.RotateTowards(curDir, lookAtTargetPosition - head.position, towards * Time.deltaTime, float.PositiveInfinity);
         lookAtPosition = head.position + curDir;
         lookAtWeight = Mathf.MoveTowards(lookAtWeight, 1, Time.deltaTime / blendTime);
-        animator.SetLookAtWeight(lookAtWeight * weightMul, weight.x, weight.y, weight.z, clampWeight);
-        animator.SetLookAtPosition(lookAtPosition);
+        networkAnimator.animator.SetLookAtWeight(lookAtWeight * weightMul, weight.x, weight.y, weight.z, clampWeight);
+        networkAnimator.animator.SetLookAtPosition(lookAtPosition);
     }
+
     public void Scream()
     {
-        AudioSource.PlayClipAtPoint(ScreamSE,transform.position,3.0f);
+        AudioSource.PlayClipAtPoint(ScreamSE, transform.position, 3.0f);
     }
 }

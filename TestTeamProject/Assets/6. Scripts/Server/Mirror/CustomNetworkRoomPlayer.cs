@@ -123,6 +123,7 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
                         roomPlayerStatus.transform.Find("Ready").GetComponentInChildren<TMP_Text>().text = "Start Game";
                         roomPlayerStatus.transform.Find("Ready").GetComponent<Button>().onClick.AddListener(() =>
                         {
+                            roomPlayerStatus.transform.Find("Ready").GetComponent<Button>().interactable = false;
                             room.ServerChangeScene(room.GameplayScene);
                         });
                     }

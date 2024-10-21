@@ -25,7 +25,12 @@ public class PlayerMovementController : NetworkBehaviour
     [Header("Jumping")]
     [Range(-10f, 10f)]
     public float jumpForce; // 점프 힘
-    private float jumpSpeed;
+    public float jumpSpeed;
+
+    public int heal;
+    public float healCooldown;
+    private float lastHealTime = 0f;
+
 
     //애니메이터 플래그
     public bool isTorch = false;
@@ -36,7 +41,6 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip jumping;
     public AudioClip equipTorch;
     public AudioClip disarmTorch;
-    // Torch 테스트
     public GameObject Torch;
 
     Vector3 direction;
@@ -57,7 +61,10 @@ public class PlayerMovementController : NetworkBehaviour
         walkSpeed = 2.5f;
         crouchSpeed = 1f;
         runSpeedMultiplier = 2f;
-        jumpForce = 4f;
+        jumpForce = 6f;
+
+        heal = 100;
+        healCooldown = 5f;
 
         characterController.skinWidth = 0.02f;
         characterController.minMoveDistance = 0f;
@@ -80,9 +87,10 @@ public class PlayerMovementController : NetworkBehaviour
     void Update()
     {
         // 로컬 플레이어 인지 확인
-        if (!isLocalPlayer)
+        if (!isLocalPlayer
+            || GetComponent<PlayerDataController>().isDead)
             return;
-        
+
         // 일시정지 상태가 아니면 이동, 점프, 업데이트
         if (!GameUIController.IsPaused)
         {
@@ -96,8 +104,11 @@ public class PlayerMovementController : NetworkBehaviour
             direction = Vector3.zero;
         }
 
+        // 힐링
+        CheckHeal();
+
         // 중력 적용
-        jumpSpeed += Physics.gravity.y * Time.deltaTime / 2;
+        jumpSpeed += Physics.gravity.y * Time.deltaTime;
 
         // 방향에 y축 속도를 추가
         direction.y = Mathf.Clamp(jumpSpeed, Physics.gravity.y, jumpForce);
@@ -159,8 +170,6 @@ public class PlayerMovementController : NetworkBehaviour
 
     void HandlerItem()
     {
-        Torch = FindChildWithName(transform,"Torch").gameObject;
-
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
@@ -168,11 +177,23 @@ public class PlayerMovementController : NetworkBehaviour
         }
     }
 
+    [Command]
+    void CheckHeal()
+    {
+        if (gameObject.GetComponent<PlayerDataController>().stamina >= 1000
+            && Time.time - lastHealTime > healCooldown)
+        {
+            lastHealTime = Time.time;
+            gameObject.GetComponent<PlayerDataController>().ChangeHp(heal);
+        }
+    }
+
     void AnimationUpdate()
     {
         if (!GameUIController.IsPaused)
         {
-            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift));
+            networkAnimator.animator.SetBool("isRun", Input.GetKey(KeyCode.LeftShift)
+            && gameObject.GetComponent<PlayerDataController>().stamina > 0);
             networkAnimator.animator.SetBool("isCrouch", Input.GetKey(KeyCode.LeftControl));
             networkAnimator.animator.SetFloat("speedX", Input.GetAxis("Horizontal"));
             networkAnimator.animator.SetFloat("speedY", Input.GetAxis("Vertical"));
@@ -206,7 +227,11 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void SETorch()
     {
-        AudioSource.PlayClipAtPoint(equipTorch, transform.position,0.1f);
+        AudioSource.PlayClipAtPoint(equipTorch, transform.position, 0.1f);
+    }
+    public void LightOffTorch()
+    {
+        AudioSource.PlayClipAtPoint(disarmTorch, transform.position, 0.1f);
     }
 
     // SoundEmitter 객체 생성 함수
@@ -218,27 +243,5 @@ public class PlayerMovementController : NetworkBehaviour
         // SoundEmitter의 설정 (감지 범위 및 지속 시간)
         SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
         emitter.duration = audioClip.length * 3;
-    }
-    Transform FindChildWithName(Transform parent, string name)
-    {
-        foreach (Transform child in parent)
-        {
-            if (child.name == name)
-            {
-                return child; // 찾은 자식 반환
-            }
-
-            // 자식의 자식에서 재귀적으로 탐색
-            Transform found = FindChildWithName(child, name);
-            if (found != null)
-            {
-                return found; // 재귀 호출에서 찾은 경우 반환
-            }
-        }
-        return null; // 찾지 못했을 경우 null 반환
-    }
-    public void LightOffTorch()
-    {
-        AudioSource.PlayClipAtPoint(disarmTorch, transform.position,0.1f);
     }
 }

@@ -54,6 +54,7 @@ public class EnemyObject : NetworkBehaviour
     public AudioClip rangedAttackSound; // 원거리 공격 사운드
 
     protected NavMeshAgent agent; // NavMeshAgent 컴포넌트
+    public NetworkAnimator networkAnimator; // 네트워크 애니메이터 컴포넌트
     public Animator animator; // 애니메이터 컴포넌트
     public AudioClip footstep; // 발소리 클립
 
@@ -87,6 +88,9 @@ public class EnemyObject : NetworkBehaviour
 
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        networkAnimator = GetComponent<NetworkAnimator>();
+        if(animator != null)
+            networkAnimator.animator = animator;
     }
 
     // AI 시작
@@ -360,8 +364,8 @@ public class EnemyObject : NetworkBehaviour
     //애니메이션 업데이트
     public virtual void AnimationUpdate()
     {
-        animator.SetBool("isMove", agent.velocity.magnitude > 0);
-        animator.SetBool("isChase", currentState == EnemyState.Chasing);
+        networkAnimator.animator.SetBool("isMove", agent.velocity.magnitude > 0);
+        networkAnimator.animator.SetBool("isChase", currentState == EnemyState.Chasing);
     }
     //발소리
     public virtual void FootStep()

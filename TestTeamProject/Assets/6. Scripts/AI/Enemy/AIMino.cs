@@ -109,7 +109,7 @@ public class MinotaurAI : EnemyObject
     public override IEnumerator Attack()
     {
 
-        animator.SetTrigger("Attack");
+        networkAnimator.animator.SetTrigger("Attack");
 
         Debug.Log("MINO Attack!");
 
@@ -125,6 +125,6 @@ public class MinotaurAI : EnemyObject
     public override void AnimationUpdate()
     {
         base.AnimationUpdate();
-        animator.SetBool("isCharge", isDashing);
+        networkAnimator.animator.SetBool("isCharge", isDashing);
     }
 }

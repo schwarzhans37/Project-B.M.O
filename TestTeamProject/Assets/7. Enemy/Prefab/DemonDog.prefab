@@ -831,6 +831,7 @@ GameObject:
   - component: {fileID: -7224173146144130917}
   - component: {fileID: -8111092786401220419}
   - component: {fileID: -491297467782211118}
+  - component: {fileID: 70554504507151920}
   - component: {fileID: 7937564840321168694}
   m_Layer: 0
   m_Name: DemonDog
@@ -977,6 +978,23 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &70554504507151920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2608406151542785269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 1170350492810089484}
 --- !u!114 &7937564840321168694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1020,6 +1038,7 @@ MonoBehaviour:
   chaseSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   meleeAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   rangedAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  networkAnimator: {fileID: 70554504507151920}
   animator: {fileID: 1170350492810089484}
   footstep: {fileID: 8300000, guid: 1300a1f7bbbf3f140aee0da44ba85694, type: 3}
 --- !u!1 &2623013319242237936

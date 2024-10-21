@@ -8,13 +8,11 @@ public class PlayerCamera : NetworkBehaviour
     [Header("Sensitivity")]
     [Range(1f, 200f)]
     public float mouseSensitivity;
+    private float xRotation = 0f; // 수직 회전을 제한하기 위한 변수
 
-    // 수직 회전을 제한하기 위한 변수
-    private float xRotation = 0f;
-
-    public float crouchHeight = 1.2f; // 앉았을 때 카메라가 내려갈 높이
-    public float standHeight = 1.65f;  // 서 있을 때 카메라의 기본 높이
-    public float crouchSpeed = 10f;    // 카메라가 이동하는 속도
+    public float crouchHeight; // 앉았을 때 카메라가 내려갈 높이
+    public float standHeight;  // 서 있을 때 카메라의 기본 높이
+    public float crouchSpeed;    // 카메라가 이동하는 속도
 
     private bool isCrouching = false; // 앉기 상태를 확인하는 변수
     private Vector3 cameraOriginalPosition; // 카메라의 원래 위치
@@ -27,6 +25,10 @@ public class PlayerCamera : NetworkBehaviour
         base.OnValidate();
 
         mouseSensitivity = 50f;
+        crouchHeight = 1.25f;
+        standHeight = 1.65f;
+        crouchSpeed = 10f;
+        playerCamera.gameObject.SetActive(false);
         this.enabled = false;
     }
 
@@ -39,14 +41,6 @@ public class PlayerCamera : NetworkBehaviour
         this.enabled = true;
     }
 
-    public override void OnStopAuthority()
-    {
-        base.OnStopAuthority();
-
-        playerCamera.gameObject.SetActive(false);
-        this.enabled = false;
-    }
-
     void Start()
     {
         if (playerCamera == null)
@@ -54,9 +48,8 @@ public class PlayerCamera : NetworkBehaviour
 
         // 카메라 설정
         playerCamera.orthographic = false;
-        playerCamera.transform.SetParent(transform);
-        playerCamera.transform.localPosition = new Vector3(0, 1.65f, 0.2f);
-        playerCamera.transform.localRotation = Quaternion.identity;
+        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.4f);
+        playerCamera.transform.localRotation =  Quaternion.Euler(0f, 0f, 0f);
 
         cameraOriginalPosition = playerCamera.transform.localPosition;
     }
@@ -64,7 +57,8 @@ public class PlayerCamera : NetworkBehaviour
     void Update()
     {
         // 로컬 플레이어 인지 확인
-        if (!isLocalPlayer)
+        if (!isLocalPlayer
+            || GetComponent<PlayerDataController>().isDead)
             return;
         // 커서가 잠겨있지 않으면 함수 종료
         if (GameUIController.IsPaused)
@@ -85,7 +79,8 @@ public class PlayerCamera : NetworkBehaviour
         transform.Rotate(Vector3.up * mouseX);
 
         // 앉기 상태일 때 카메라 높이 조절
-        isCrouching = Input.GetKey(KeyCode.LeftControl) && GetComponent<CharacterController>().isGrounded;
+        isCrouching = (Input.GetKey(KeyCode.LeftControl) && GetComponent<CharacterController>().isGrounded) 
+            || (GetComponent<PlayerMovementController>().jumpSpeed < 0 && !GetComponent<CharacterController>().isGrounded) ;
 
         float targetHeight = isCrouching ? crouchHeight : standHeight;
 

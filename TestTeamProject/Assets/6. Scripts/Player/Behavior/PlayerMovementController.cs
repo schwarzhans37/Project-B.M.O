@@ -34,6 +34,7 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip footstep;
     public AudioClip landing;
     public AudioClip jumping;
+    public AudioClip equipTorch;
     public AudioClip disarmTorch;
     // Torch 테스트
     public GameObject Torch;
@@ -192,7 +193,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void FootStep()
     {
-        AudioSource.PlayClipAtPoint(footstep, transform.position);
+        AudioSource.PlayClipAtPoint(footstep, transform.position,0.3f);
         CreateSoundEmitter(footstep);
     }
 
@@ -205,7 +206,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void SETorch()
     {
-        Debug.Log("Torch equipped sound played");
+        AudioSource.PlayClipAtPoint(equipTorch, transform.position,0.1f);
     }
 
     // SoundEmitter 객체 생성 함수
@@ -238,6 +239,6 @@ public class PlayerMovementController : NetworkBehaviour
     }
     public void LightOffTorch()
     {
-        AudioSource.PlayClipAtPoint(disarmTorch, transform.position);
+        AudioSource.PlayClipAtPoint(disarmTorch, transform.position,0.1f);
     }
 }

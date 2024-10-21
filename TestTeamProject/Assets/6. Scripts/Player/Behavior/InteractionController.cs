@@ -86,7 +86,7 @@ public class InteractionController : NetworkBehaviour
                 return;
             }
 
-            if (Input.GetKey(KeyCode.V))
+            if (Input.GetKey(KeyCode.E))
             {
                 HandleTriggerStay(obj);
             }

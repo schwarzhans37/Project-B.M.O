@@ -79,8 +79,7 @@ public class PlayerCamera : NetworkBehaviour
         transform.Rotate(Vector3.up * mouseX);
 
         // 앉기 상태일 때 카메라 높이 조절
-        isCrouching = (Input.GetKey(KeyCode.LeftControl) && GetComponent<CharacterController>().isGrounded) 
-            || (GetComponent<PlayerMovementController>().jumpSpeed < 0 && !GetComponent<CharacterController>().isGrounded) ;
+        isCrouching = (Input.GetKey(KeyCode.LeftControl) && GetComponent<CharacterController>().isGrounded);
 
         float targetHeight = isCrouching ? crouchHeight : standHeight;
 

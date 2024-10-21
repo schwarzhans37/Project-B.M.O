@@ -1899,7 +1899,7 @@ CharacterController:
   m_Height: 1.8
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.5
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0.9, z: 0}
@@ -1931,8 +1931,9 @@ MonoBehaviour:
   footstep: {fileID: 8300000, guid: 551d550ab98e3cc4bb7793e752fe8628, type: 3}
   landing: {fileID: 8300000, guid: 6aeefb601c305f64487cebdfacae5b6c, type: 3}
   jumping: {fileID: 8300000, guid: 984d316ed8be3ac4da9e31768a8b1fa9, type: 3}
-  disarmTorch: {fileID: 0}
-  Torch: {fileID: 0}
+  equipTorch: {fileID: 8300000, guid: c42182d27084eb14e8ff4196bb17b8a5, type: 3}
+  disarmTorch: {fileID: 8300000, guid: b83ba2db2e6e49b4797dca9fe73633c5, type: 3}
+  Torch: {fileID: 8210145798874237385}
   soundEmitterPrefab: {fileID: 6014819235235811063, guid: e32b1b86cc02b34449e1e711587acdef, type: 3}
 --- !u!114 &3175953933186764191
 MonoBehaviour:

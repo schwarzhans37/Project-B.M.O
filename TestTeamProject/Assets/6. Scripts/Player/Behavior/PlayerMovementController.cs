@@ -41,7 +41,6 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip jumping;
     public AudioClip equipTorch;
     public AudioClip disarmTorch;
-    // Torch 테스트
     public GameObject Torch;
 
     Vector3 direction;
@@ -171,8 +170,6 @@ public class PlayerMovementController : NetworkBehaviour
 
     void HandlerItem()
     {
-        Torch = FindChildWithName(transform,"Torch").gameObject;
-
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
@@ -230,7 +227,11 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void SETorch()
     {
-        AudioSource.PlayClipAtPoint(equipTorch, transform.position,0.1f);
+        AudioSource.PlayClipAtPoint(equipTorch, transform.position, 0.1f);
+    }
+    public void LightOffTorch()
+    {
+        AudioSource.PlayClipAtPoint(disarmTorch, transform.position, 0.1f);
     }
 
     // SoundEmitter 객체 생성 함수
@@ -242,27 +243,5 @@ public class PlayerMovementController : NetworkBehaviour
         // SoundEmitter의 설정 (감지 범위 및 지속 시간)
         SoundEmitter emitter = soundEmitter.GetComponent<SoundEmitter>();
         emitter.duration = audioClip.length * 3;
-    }
-    Transform FindChildWithName(Transform parent, string name)
-    {
-        foreach (Transform child in parent)
-        {
-            if (child.name == name)
-            {
-                return child; // 찾은 자식 반환
-            }
-
-            // 자식의 자식에서 재귀적으로 탐색
-            Transform found = FindChildWithName(child, name);
-            if (found != null)
-            {
-                return found; // 재귀 호출에서 찾은 경우 반환
-            }
-        }
-        return null; // 찾지 못했을 경우 null 반환
-    }
-    public void LightOffTorch()
-    {
-        AudioSource.PlayClipAtPoint(disarmTorch, transform.position,0.1f);
     }
 }

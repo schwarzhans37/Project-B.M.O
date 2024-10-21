@@ -278,6 +278,6 @@ public class AISlenderMan : NetworkBehaviour
 
     public void Scream()
     {
-        AudioSource.PlayClipAtPoint(ScreamSE, transform.position, 10.0f);
+        AudioSource.PlayClipAtPoint(ScreamSE, transform.position, 3.0f);
     }
 }

@@ -48,8 +48,8 @@ public class PlayerCamera : NetworkBehaviour
 
         // 카메라 설정
         playerCamera.orthographic = false;
-        playerCamera.transform.localPosition = new Vector3(0f, 0f, 0f);
-        playerCamera.transform.localRotation = Quaternion.Euler(90f, -90f, 0f);
+        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.4f);
+        playerCamera.transform.localRotation =  Quaternion.Euler(0f, 0f, 0f);
 
         cameraOriginalPosition = playerCamera.transform.localPosition;
     }
@@ -73,18 +73,18 @@ public class PlayerCamera : NetworkBehaviour
         xRotation = Mathf.Clamp(xRotation, -90f, 60f); // 수직 회전 각도 제한
 
         // 카메라 회전 적용
-        playerCamera.transform.localRotation = Quaternion.Euler(xRotation + 90f, -90f, 0f);
+        playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         // 플레이어의 수평 회전 적용
         transform.Rotate(Vector3.up * mouseX);
 
         // 앉기 상태일 때 카메라 높이 조절
-        // isCrouching = (Input.GetKey(KeyCode.LeftControl) && GetComponent<CharacterController>().isGrounded) 
-        //     || (GetComponent<PlayerMovementController>().jumpSpeed < 0 && !GetComponent<CharacterController>().isGrounded) ;
+        isCrouching = (Input.GetKey(KeyCode.LeftControl) && GetComponent<CharacterController>().isGrounded) 
+            || (GetComponent<PlayerMovementController>().jumpSpeed < 0 && !GetComponent<CharacterController>().isGrounded) ;
 
-        // float targetHeight = isCrouching ? crouchHeight : standHeight;
+        float targetHeight = isCrouching ? crouchHeight : standHeight;
 
-        // playerCamera.transform.localPosition = Vector3.Lerp(playerCamera.transform.localPosition,
-        //     new Vector3(cameraOriginalPosition.x, targetHeight, cameraOriginalPosition.z), Time.deltaTime * crouchSpeed);
+        playerCamera.transform.localPosition = Vector3.Lerp(playerCamera.transform.localPosition,
+            new Vector3(cameraOriginalPosition.x, targetHeight, cameraOriginalPosition.z), Time.deltaTime * crouchSpeed);
     }
 }

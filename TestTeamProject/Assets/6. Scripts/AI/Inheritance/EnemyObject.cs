@@ -153,12 +153,32 @@ public class EnemyObject : NetworkBehaviour
         currentState = EnemyState.Patrolling;
         yield return new WaitForSeconds(patrolWaitTime);
 
-        Vector3 randomDirection = transform.position + Random.insideUnitSphere * patrolRange;
-        randomDirection.y = transform.position.y;
-
-        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, patrolRange, NavMesh.AllAreas))
+        for (int i = 0; i < 30; i++)
         {
-            patrolTarget = navHit.position;
+            Vector3 randomDirection = transform.position + Random.insideUnitSphere * patrolRange;
+            randomDirection.y = transform.position.y;
+
+            Vector3 dirToTarget = (randomDirection - transform.position).normalized;
+            
+            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            {
+                float distanceToTarget = Vector3.Distance(transform.position, randomDirection);
+
+                if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask)
+                    && NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, 4f, NavMesh.AllAreas))
+                {
+                    patrolTarget = navHit.position;
+                    yield break;
+                }
+            }
+
+            yield return null;
+        }
+
+        Vector3 positionBehind = transform.position - transform.forward * 2f;
+        if (NavMesh.SamplePosition(positionBehind, out NavMeshHit navHit2, 4f, NavMesh.AllAreas))
+        {
+            patrolTarget = navHit2.position;
         }
     }
 
@@ -178,6 +198,9 @@ public class EnemyObject : NetworkBehaviour
 
         foreach (Collider target in targets)
         {
+            if (target.GetComponent<PlayerDataController>().isDead)
+                continue;
+
             Transform targetTransform = target.transform;
             Vector3 dirToTarget = (targetTransform.position - transform.position).normalized;
 
@@ -303,6 +326,9 @@ public class EnemyObject : NetworkBehaviour
         
         foreach (Collider target in targets)
         {
+            if (target.GetComponent<PlayerDataController>().isDead)
+                continue;
+                
             // 타겟이 시야각 내에 있는지 확인
             Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
 

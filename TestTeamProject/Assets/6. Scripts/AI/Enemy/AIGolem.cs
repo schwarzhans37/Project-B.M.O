@@ -24,13 +24,13 @@ public class AIGolem : EnemyObject
         base.OnValidate();
 
         meleeRange = 3f; // 근접 공격을 선택할 거리
-        meleeAttackCooldown = 3f; // 근접 공격 쿨타임
+        meleeAttackCooldown = 5f; // 근접 공격 쿨타임
         rangedAttackRange = 40f; // 원거리 공격을 선택할 거리
         rangedAttackForce = 40f; // 원거리 공격 힘
         rangedAttackDamage = 750; // 원거리 공격 데미지
         shockwaveRadius = 4f; // 충격파 범위
         shockwaveDamage = 200; // 충격파 데미지
-        rangedAttackCooldown = 10f; // 원거리 공격 쿨타임
+        rangedAttackCooldown = 15f; // 원거리 공격 쿨타임
     }
 
     public override void Setting()
@@ -51,11 +51,11 @@ public class AIGolem : EnemyObject
 
         attackAngle = 180f; // 공격각(0 ~ 360도)
         attackRange = rangedAttackRange; // 공격 범위
-        attackDamage = 700; // 공격 데미지
+        attackDamage = 800; // 공격 데미지
         attackCooldown = 0f; // 공격 쿨타임
 
-        viewAngle = 60f; // 시야각(0 ~ 360도)
-        detectionRange = 40f; // 감지 범위
+        viewAngle = 90f; // 시야각(0 ~ 360도)
+        detectionRange = 30f; // 감지 범위
         soundDetectionRange = 0f; // 소리 감지 범위
         timeToChaseLostTarget = 3f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }

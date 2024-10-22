@@ -58,6 +58,9 @@ public class AIWeepAngel : EnemyObject
 
         foreach (Collider player in players)
         {
+            if (player.GetComponent<PlayerDataController>().isDead)
+                continue;
+
             // 플레이어의 카메라를 가져오기
             Transform playerCam = player.GetComponentInChildren<Camera>(true).transform;
             Vector3 dirToPlayer = (transform.position - playerCam.position).normalized;

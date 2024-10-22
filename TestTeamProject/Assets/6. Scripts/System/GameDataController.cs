@@ -51,12 +51,16 @@ public class GameDataController : NetworkBehaviour
         if (!isServer)
             yield break;
 
-        gameDataView.ShowTime();
-        gameDataView.SetSunMovement(true);
-
         forestSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
         forestSpawner.GetComponent<SlenderManSpawner>().currentLevel = (int)day/3;
         dungeonSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
+        dungeonSpawner.GetComponent<ItemSpawner>().SpawnItems((int)day/3);
+
+        gameDataView.FadeOutBlackScreen();
+        gameDataView.ShowTime();
+        yield return new WaitForSeconds(3f);
+
+        gameDataView.SetSunMovement(true);
 
         float elapsedTime = 0f;
         while (isDay)
@@ -77,14 +81,16 @@ public class GameDataController : NetworkBehaviour
         if (!isServer)
             yield break;
 
-        gameDataView.HideTime();
-        gameDataView.SetSunMovement(false);
         isDay = false;
-
         forestSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
         forestSpawner.GetComponent<SlenderManSpawner>().RemoveSlenderMan();
         dungeonSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
-        
+        dungeonSpawner.GetComponent<ItemSpawner>().RemoveItems();
+
+        gameDataView.FadeOutBlackScreen();
+        gameDataView.HideTime();
+        gameDataView.SetSunMovement(false);
+
         yield return new WaitForSeconds(3f);
 
         forestSpawner.GetComponent<FieldPlayerKiller>().KillPlayer();
@@ -99,15 +105,17 @@ public class GameDataController : NetworkBehaviour
             player.GetComponent<PlayerDataController>().isDead = true;
         }
 
+        StartCoroutine(AdvanceDay(players, 4));
         yield return null;
-        
-        AdvanceDay(players);
     }
 
-    public void AdvanceDay(List<GameObject> deathPlayers)
+    public IEnumerator AdvanceDay(List<GameObject> deathPlayers, int palyerConunt)
     {
         if (!isServer)
-            return;
+            yield break;
+
+        gameDataView.FadeOutBlackScreen();
+        yield return new WaitForSeconds(1f);
 
         day++;
         isDay = true;
@@ -123,6 +131,10 @@ public class GameDataController : NetworkBehaviour
             deathPlayer.transform.position = spawnPoints[Random.Range(0, spawnPoints.Count)].position;
             deathPlayer.GetComponent<PlayerDataController>().isDead = false;
         }
+
+        yield return new WaitForSeconds(3f);
+
+        money -= Mathf.RoundToInt(money * deathPlayers.Count / palyerConunt);
     }
 
     public void AddMoney(int amount)
@@ -137,7 +149,7 @@ public class GameDataController : NetworkBehaviour
 
     public void OnMoneyChanged(int oldMoney, int newMoney)
     {
-        gameDataView.OnMoneyChanged(oldMoney, newMoney);
+        StartCoroutine(gameDataView.OnMoneyChanged(oldMoney, newMoney));
     }
     public void OnDayChanged(int oldDay, int newDay) { }
     public void OnTimeChanged(int oldTime, int newTime)

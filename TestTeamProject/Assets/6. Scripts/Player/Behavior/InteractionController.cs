@@ -72,8 +72,11 @@ public class InteractionController : NetworkBehaviour
 
         if (hit.collider.CompareTag("ItemObject"))
         {
-            HideUI();
-            return;
+            ShowguideLine("줍기 : [우클릭]");
+            if (Input.GetMouseButtonDown(1))
+            {
+                GetComponent<InventoryController>().PickUpItem(obj);
+            }
         }
         else if (hit.collider.CompareTag("InteractableObject"))
         {
@@ -149,6 +152,6 @@ public class InteractionController : NetworkBehaviour
     void InteractWithObject(GameObject obj, GameObject player)
     {
         // 상호작용 로직
-        obj.GetComponent<InteractableObject>().InteractWithObject(player);
+        StartCoroutine(obj.GetComponent<InteractableObject>().InteractWithObject(player));
     }
 }

@@ -10,6 +10,7 @@ public class PlayerMovementController : NetworkBehaviour
 {
     public CharacterController characterController;
     public NetworkAnimator networkAnimator;
+    public Animator Animator;
 
     [Header("Movement")]
     [Range(1f, 10f)]
@@ -57,6 +58,11 @@ public class PlayerMovementController : NetworkBehaviour
 
         if (networkAnimator == null)
             networkAnimator = GetComponent<NetworkAnimator>();
+
+        if (Animator == null)
+            Animator = GetComponent<Animator>();
+        
+        networkAnimator.animator = Animator;
 
         walkSpeed = 2.5f;
         crouchSpeed = 1f;
@@ -144,7 +150,7 @@ public class PlayerMovementController : NetworkBehaviour
             && gameObject.GetComponent<PlayerDataController>().stamina > 0
             && (horizontal != 0 || vertical != 0))
         {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-7);
+            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-10);
             moveSpeedMultiplier *= runSpeedMultiplier;
         }
         else
@@ -153,7 +159,7 @@ public class PlayerMovementController : NetworkBehaviour
         }
 
         // 원하는 지상 속도로 곱셈
-        direction *= moveSpeedMultiplier;
+        direction *= moveSpeedMultiplier * GetComponent<InventoryController>().weightSlowdownFactor;
     }
 
     void HandleJumping()
@@ -215,12 +221,13 @@ public class PlayerMovementController : NetworkBehaviour
     public void FootStep()
     {
         AudioSource.PlayClipAtPoint(footstep, transform.position,0.3f);
-        CreateSoundEmitter(footstep);
+        
+        if (!networkAnimator.animator.GetBool("isCrouch"))
+            CreateSoundEmitter(footstep);
     }
 
     public void SEJump()
     {
-        Debug.Log("Jump sound played");
         AudioSource.PlayClipAtPoint(jumping, transform.position);
         CreateSoundEmitter(jumping);
     }

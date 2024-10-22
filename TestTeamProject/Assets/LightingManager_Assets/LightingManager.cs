@@ -13,7 +13,7 @@ public class LightingManager : MonoBehaviour
         //Hopefully this modified version is useful to you
     #region Parameters
         //Scene References
-        [SerializeField] private Light SunDirectionalLight;
+        [SerializeField] public Light SunDirectionalLight;
         [SerializeField] private LightingPreset Preset;
 
         //Rotation axis

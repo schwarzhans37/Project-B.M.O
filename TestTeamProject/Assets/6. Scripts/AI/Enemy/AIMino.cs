@@ -16,9 +16,9 @@ public class MinotaurAI : EnemyObject
     {
         base.OnValidate();
 
-        dashDistance = 10f; // 대쉬 거리
+        dashDistance = 20f; // 대쉬 거리
         dashSpeed = 10f; // 대쉬 속도
-        dashCooldown = 10f; // 대쉬 쿨타임
+        dashCooldown = 20f; // 대쉬 쿨타임
     }
 
     public override void Setting()
@@ -34,12 +34,12 @@ public class MinotaurAI : EnemyObject
         chaseSpeed = 3f; // 추적 속도
 
         patrolRange = 15f ; // 배회 범위
-        patrolWaitTime = 2f; // 배회 대기 시간
+        patrolWaitTime = 0f; // 배회 대기 시간
 
         attackAngle = 90f; // 공격각(0 ~ 360도)
         attackRange = 2f; // 공격 범위
-        attackDamage = 500; // 공격 데미지
-        attackCooldown = 1f; // 공격 쿨타임
+        attackDamage = 490; // 공격 데미지
+        attackCooldown = 3f; // 공격 쿨타임
 
         viewAngle = 120f; // 시야각(0 ~ 360도)
         detectionRange = 15f; // 감지 범위
@@ -62,7 +62,6 @@ public class MinotaurAI : EnemyObject
         if (!isDashing && Time.time - lastDashTime > dashCooldown)
         {
             StartCoroutine(Dash());
-            lastDashTime = Time.time;
         }
     }
 
@@ -87,9 +86,16 @@ public class MinotaurAI : EnemyObject
             Vector3 nextPosition = transform.position + dashDirection * moveDistance;
 
             // 충돌 감지 (돌진 방향으로 레이캐스트)
-            if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask)
-             || Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
+            if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask))
             {
+                lastDashTime = Time.time;
+                isDashing = false;
+                yield return new WaitForSeconds(3f);
+                break;
+            }
+            if (Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
+            {
+                MeleeAttack();
                 break;
             }
 
@@ -103,19 +109,14 @@ public class MinotaurAI : EnemyObject
         }
 
         // 돌진 종료 후 NavMeshAgent 재활성화
+        lastDashTime = Time.time;
         isDashing = false;
         ResumeMoving();
     }
     public override IEnumerator Attack()
     {
-
         networkAnimator.animator.SetTrigger("Attack");
-
-        Debug.Log("MINO Attack!");
-
         yield return base.Attack();
-
-        Debug.Log("MINO Attack End!");
     }
     public void PlayDashSound()
     {

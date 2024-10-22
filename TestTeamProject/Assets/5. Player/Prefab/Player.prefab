@@ -178,7 +178,7 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 17.137775
+  m_FocalLength: 10.069196
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -191,9 +191,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.02
+  near clip plane: 0.01
   far clip plane: 1000
-  field of view: 70.00001
+  field of view: 100
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -1737,6 +1737,7 @@ GameObject:
   - component: {fileID: 5689283909801136270}
   - component: {fileID: 3175953933186764191}
   - component: {fileID: 1706635197024375664}
+  - component: {fileID: -5885222542916277801}
   - component: {fileID: 5872262619836083960}
   m_Layer: 6
   m_Name: Player
@@ -1975,6 +1976,33 @@ MonoBehaviour:
   progressBar: {fileID: 0}
   holdTime: 0
   waitTime: 0.5
+--- !u!114 &-5885222542916277801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2333372401886679167}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36bda1259eb142840b9af89035710e4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  items:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  totalWeight: 0
+  inventoryUI: {fileID: 0}
+  selectedItemIndex: 0
+  normalSprite: {fileID: 21300000, guid: 4f033cdd2b09f9a43b139729d09d002c, type: 3}
+  seletedSprite: {fileID: 21300000, guid: 711fb7a2b8e1ff54da609e52c3e729b8, type: 3}
 --- !u!114 &5872262619836083960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3711,7 +3739,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 1, g: 0.63566893, b: 0.3066038, a: 1}
   m_Intensity: 2
-  m_Range: 5
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

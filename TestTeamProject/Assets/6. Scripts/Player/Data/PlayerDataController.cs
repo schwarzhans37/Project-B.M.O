@@ -1,4 +1,6 @@
+using System.Collections;
 using Mirror;
+using Sydewa;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +17,12 @@ public class PlayerDataController : NetworkBehaviour
     public int hp = 1000;
     public int stamina = 1000;
 
+    public GameObject playerUI;
+    public GameObject interactiveUI;
+    public GameObject deathUI;
     public GameObject hpBar;
     public GameObject staminaBar;
+    public GameObject deathCam;
 
     void Start()
     {
@@ -25,8 +31,12 @@ public class PlayerDataController : NetworkBehaviour
 
         SetNickname(CustomNetworkRoomManager.Nickname != null && CustomNetworkRoomManager.Nickname != ""
             ? CustomNetworkRoomManager.Nickname : "No Nickname");
+        playerUI = GameObject.Find("PlayerUI");
+        interactiveUI = GameObject.Find("InteractiveUI");
+        deathUI = GameObject.Find("DeathUI");
         hpBar = GameObject.Find("HPBar");
         staminaBar = GameObject.Find("StaminaBar");
+        deathCam = GameObject.Find("DeathStateCamera");
     }
 
     [Command]
@@ -71,6 +81,28 @@ public class PlayerDataController : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
+        playerUI.SetActive(!newDead);
+        interactiveUI.SetActive(!newDead);
+        deathUI.SetActive(newDead);
+        GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled = true;
+
+        StartCoroutine(ChangedDeadState(newDead));
+    }
+
+    public IEnumerator ChangedDeadState(bool newDead)
+    {
+        if (newDead)
+        {
+            deathCam.SetActive(true);
+            GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
+        }
+        else
+        {
+            GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(true);
+            deathCam.SetActive(false);
+        }
+
+        yield break;
     }
 
     public void OnHpChanged(int oldHp, int newHp)

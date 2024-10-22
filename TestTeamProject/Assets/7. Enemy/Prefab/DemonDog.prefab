@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 2319991263502963226}
   - component: {fileID: 4339476477961678562}
   - component: {fileID: 5624950823427905377}
-  - component: {fileID: 5108045221421431952}
+  - component: {fileID: 1500949415677188434}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -380,7 +380,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 671684376353684114}
   m_Mesh: {fileID: 2959467708922500008, guid: 055d3fd7bd3901042a44bb13f3160e0e, type: 3}
---- !u!64 &5108045221421431952
+--- !u!64 &1500949415677188434
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -850,7 +850,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2319991263502963226}

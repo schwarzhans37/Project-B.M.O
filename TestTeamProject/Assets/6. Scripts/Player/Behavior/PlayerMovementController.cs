@@ -173,7 +173,8 @@ public class PlayerMovementController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
-            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);          
+            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);
+            GetComponent<PlayerDataController>().TorchIconControl();
         }
     }
 

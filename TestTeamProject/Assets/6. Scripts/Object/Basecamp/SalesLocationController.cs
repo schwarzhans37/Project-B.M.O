@@ -24,11 +24,14 @@ public class SalesLocationController : InteractableObject
             .Where(x => x.CompareTag("ItemObject"))
             .ToArray();
 
-        if (colliders.Length == 0)
+        if (colliders.Length == 0){
+            particle.Play();
+            AudioSource.PlayClipAtPoint(soundEffect, transform.position);
             return;
+        }
+            
 
-        particle.Play();
-        AudioSource.PlayClipAtPoint(soundEffect, transform.position);
+
 
         foreach (Collider collider in colliders)
         {

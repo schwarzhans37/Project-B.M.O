@@ -32,6 +32,8 @@ public class WagonController : InteractableObject
             return;
         }
 
+        // 웨건 사운드 출력
+        
         // 플레이어와 아이템을 모두 웨건으로 이동
         foreach (Collider item in items)
         {
@@ -51,6 +53,9 @@ public class WagonController : InteractableObject
             StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame());
         else
             StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame());
+
+        AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
+        Debug.Log("wagon sound played");
     }
 
     [TargetRpc]

@@ -17,12 +17,11 @@ public class PlayerDataController : NetworkBehaviour
     public int hp = 1000;
     public int stamina = 1000;
 
-    public GameObject playerUI;
-    public GameObject interactiveUI;
-    public GameObject deathedUI;
     public GameObject hpBar;
     public GameObject staminaBar;
-    public GameObject deathCam;
+
+    public bool isInteractionLock = false;
+    public bool isMoveLock = false;
 
     void Start()
     {
@@ -31,12 +30,8 @@ public class PlayerDataController : NetworkBehaviour
 
         SetNickname(CustomNetworkRoomManager.Nickname != null && CustomNetworkRoomManager.Nickname != ""
             ? CustomNetworkRoomManager.Nickname : "No Nickname");
-        playerUI = GameObject.Find("PlayerUI");
-        interactiveUI = GameObject.Find("InteractiveUI");
-        deathedUI = GameObject.Find("DeatedhUI");
         hpBar = GameObject.Find("HPBar");
         staminaBar = GameObject.Find("StaminaBar");
-        deathCam = GameObject.Find("DeathStateCamera");
     }
 
     [Command]
@@ -81,9 +76,9 @@ public class PlayerDataController : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        playerUI.SetActive(!newDead);
-        interactiveUI.SetActive(!newDead);
-        deathedUI.SetActive(newDead);
+        GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetPlayerUIActive(!newDead);
+        GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetInteractiveUIActive(!newDead);
+        StartCoroutine(GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathedUIActive(newDead));
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled = true;
 
         StartCoroutine(ChangedDeadState(newDead));
@@ -93,13 +88,15 @@ public class PlayerDataController : NetworkBehaviour
     {
         if (newDead)
         {
-            deathCam.SetActive(true);
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(true, transform);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
+            yield return new WaitForSeconds(1f);
+            transform.position = Vector3.zero;
         }
         else
         {
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(true);
-            deathCam.SetActive(false);
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(false);
         }
 
         yield break;

@@ -19,6 +19,9 @@ public class GameDataController : NetworkBehaviour
     public GameObject forestSpawner;
     public GameObject dungeonSpawner;
 
+    [SyncVar(hook = nameof(OnAllocatedAmountChanged))]
+    public int allocatedAmount;
+
     [SyncVar(hook = nameof(OnMoneyChanged))]
     public int money; // 플레이어의 돈
 
@@ -44,6 +47,16 @@ public class GameDataController : NetworkBehaviour
         startTime = (int)GetComponent<LightingManager>().StartTime;
 
         maxGameTime = 900f;
+    }
+
+    IEnumerator Start()
+    {
+        if (!isServer)
+            yield break;
+
+        yield return new WaitForSeconds(5f);
+
+        SetAllocatedAmount();
     }
 
     // 게임 시작 시 호출
@@ -109,6 +122,9 @@ public class GameDataController : NetworkBehaviour
 
         foreach (GameObject player in players)
         {
+            if (player == null)
+                continue;
+
             if (!SurvivedPlayers.Contains(player))
                 player.GetComponent<PlayerDataController>().isDead = true;
         }
@@ -124,7 +140,7 @@ public class GameDataController : NetworkBehaviour
     {
 
         List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
-        StartCoroutine(AdvanceDay(players, players.Count));
+        StartCoroutine(AdvanceDay(players));
         
         yield return new WaitForSeconds(1f);
         gameDataView.HideTime();
@@ -141,7 +157,7 @@ public class GameDataController : NetworkBehaviour
         dungeonSpawner.GetComponent<ItemSpawner>().RemoveItems();
     }
 
-    public IEnumerator AdvanceDay(List<GameObject> deathPlayers, int palyerConunt)
+    public IEnumerator AdvanceDay(List<GameObject> players)
     {
         if (!isServer)
             yield break;
@@ -154,26 +170,79 @@ public class GameDataController : NetworkBehaviour
         time = startTime * 60;
         gameDataView.SetSunTimePosition(startTime);
 
-        List<Transform> spawnPoints = new List<Transform>();
-        foreach (Transform transform in spawnPoint.transform)
-            spawnPoints.Add(transform);
-
-        for (int i = 0; i < deathPlayers.Count; i++)
+        List<string> dailyReportNickname = new List<string>();
+        List<bool> dailyReportIsDead = new List<bool>();
+        int deathedPlayersCount = 0;
+        for (int i = 0; i < players.Count; i++)
         {
-            deathPlayers[i].GetComponent<PlayerDataController>().isDead = false;
-            MoveToSpawnPoint(deathPlayers[i].GetComponent<NetworkIdentity>().connectionToClient, deathPlayers[i], spawnPoints[i]);
+            if (players[i] == null)
+            {
+                players.RemoveAt(i);
+                i--;
+                continue;
+            }
+
+            dailyReportNickname.Add(players[i].GetComponent<PlayerDataController>().nickname);
+            dailyReportIsDead.Add(players[i].GetComponent<PlayerDataController>().isDead);
+
+            if (!players[i].GetComponent<PlayerDataController>().isDead)
+                continue;
+
+            deathedPlayersCount++;
+            players[i].GetComponent<PlayerDataController>().isDead = false;
+            players[i].GetComponent<PlayerDataController>().hp = 1000;
+            players[i].GetComponent<InventoryController>().ClearItems();
+            MoveToSpawnPoint(players[i].GetComponent<NetworkIdentity>().connectionToClient, players[i], spawnPoint.transform.GetChild(i).position);
         }
+
+        yield return new WaitForSeconds(1f);
+
+        gameDataView.ShowDailyReport(dailyReportNickname, dailyReportIsDead);
+
+        yield return new WaitForSeconds(6f + dailyReportIsDead.Count * 0.5f);
+
+        money -= Mathf.RoundToInt(money * deathedPlayersCount / players.Count);
 
         yield return new WaitForSeconds(3f);
 
-        money -= Mathf.RoundToInt(money * deathPlayers.Count / palyerConunt);
+        if (day % 3 != 0)
+            yield break;
+
+        if (allocatedAmount < money)
+        {
+            gameDataView.ShowGameView("생존 성공");
+            yield return new WaitForSeconds(3.1f);
+            money -= allocatedAmount;
+            SetAllocatedAmount();
+        }
+        else
+        {
+            gameDataView.ShowGameView("할당량이 부족합니다.");
+            yield return new WaitForSeconds(3.1f);
+            gameDataView.ShowGameView("Game Over");
+            yield return new WaitForSeconds(1f);
+            players = GameObject.FindGameObjectsWithTag("Player").ToList();
+            foreach (GameObject player in players)
+                MoveToSpawnPoint(player.GetComponent<NetworkIdentity>().connectionToClient, player, transform.position);
+        }
     }
 
     [TargetRpc]
-    public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, Transform spawnPoint)
+    public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, Vector3 spawnPoint)
     {
-        player.transform.position = spawnPoint.position;
-        player.transform.rotation = spawnPoint.rotation;
+        player.transform.position = spawnPoint;
+        player.transform.rotation = Quaternion.identity;
+    }
+
+    public void SetAllocatedAmount()
+    {
+        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        allocatedAmount = (int)(Random.Range(150, 180) * players.Count * (1 + 0.2 * day / 3));
+    }
+
+    public void OnAllocatedAmountChanged(int oldAmount, int newAmount)
+    {
+        gameDataView.ShowGameView("새로운 할당량:\n$" + newAmount);
     }
 
     public void AddMoney(int amount)

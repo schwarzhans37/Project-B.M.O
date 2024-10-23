@@ -48,7 +48,7 @@ public class PlayerCamera : NetworkBehaviour
 
         // 카메라 설정
         playerCamera.orthographic = false;
-        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.4f);
+        playerCamera.transform.localPosition = new Vector3(0f, 1.65f, 0.46f);
         playerCamera.transform.localRotation =  Quaternion.Euler(0f, 0f, 0f);
 
         cameraOriginalPosition = playerCamera.transform.localPosition;

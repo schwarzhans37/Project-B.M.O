@@ -20,22 +20,28 @@ public class SleepingPointContoller : InteractableObject
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
         List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
 
-        List<GameObject> deathPlayers = new List<GameObject>();
+        int deathedPlayersCount = 0;
         foreach (GameObject playerObject in players)
         {
+            if (playerObject == null)
+            {
+                players.Remove(playerObject);
+                break;
+            }
+
             if (playerObject.GetComponent<PlayerDataController>().isDead)
-                deathPlayers.Add(playerObject);
+                deathedPlayersCount++;
             
             playerObject.GetComponent<PlayerDataController>().hp = 1000;
         }
 
-        if (colliders.Length != players.Count - deathPlayers.Count)
+        if (colliders.Length != players.Count - deathedPlayersCount)
         {
             StartCoroutine(ShowMessage("모든 플레이어가 수면해야 합니다."));
             yield break;
         }
 
-        StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().AdvanceDay(deathPlayers, players.Count));
+        StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().AdvanceDay(players));
         yield return null;
     }
 

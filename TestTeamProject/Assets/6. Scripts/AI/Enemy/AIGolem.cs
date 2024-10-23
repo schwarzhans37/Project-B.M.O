@@ -44,7 +44,7 @@ public class AIGolem : EnemyObject
         detectionInterval = 0.5f; // 감지 주기
 
         patrolSpeed = 1f; // 배회 속도
-        chaseSpeed = 2f; // 추적 속도
+        chaseSpeed = 3f; // 추적 속도
 
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 3f; // 배회 대기 시간
@@ -84,8 +84,8 @@ public class AIGolem : EnemyObject
             targetPosition = targetTransform.position + Vector3.up * 2f;
 
             
-            yield return base.Attack();
             networkAnimator.animator.SetTrigger("rock");
+            yield return base.Attack();
         }
     }
 

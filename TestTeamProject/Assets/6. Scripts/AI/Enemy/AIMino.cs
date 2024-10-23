@@ -17,7 +17,7 @@ public class MinotaurAI : EnemyObject
         base.OnValidate();
 
         dashDistance = 20f; // 대쉬 거리
-        dashSpeed = 7f; // 대쉬 속도
+        dashSpeed = 8f; // 대쉬 속도
         dashCooldown = 20f; // 대쉬 쿨타임
     }
 
@@ -31,7 +31,7 @@ public class MinotaurAI : EnemyObject
         detectionInterval = 0.1f; // 감지 주기
 
         patrolSpeed = 2f; // 배회 속도
-        chaseSpeed = 3f; // 추적 속도
+        chaseSpeed = 4f; // 추적 속도
 
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 0f; // 배회 대기 시간

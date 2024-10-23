@@ -44,8 +44,10 @@ public class InventoryController : NetworkBehaviour
     void Update()
     {
         if (!isLocalPlayer
-            || GameUIController.IsPaused
             || GetComponent<PlayerDataController>().isDead)
+            return;
+
+        if (GameUIController.IsPaused)
             return;
 
         for (int i = 0; i < items.Count; i++)

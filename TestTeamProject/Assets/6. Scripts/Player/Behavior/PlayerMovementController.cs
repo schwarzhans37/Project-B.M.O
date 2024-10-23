@@ -170,7 +170,22 @@ public class PlayerMovementController : NetworkBehaviour
         }
         // 토치기능
         if (Input.GetKeyDown(KeyCode.F))
-            isTorch = !isTorch;          
+        {
+            isTorch = !isTorch;
+            CmdTorch(isTorch);
+        }
+    }
+
+    [Command]
+    void CmdTorch(bool isTorch)
+    {
+        RpcTorch(isTorch);
+    }
+
+    [ClientRpc]
+    void RpcTorch(bool isTorch)
+    {
+        Torch.transform.GetChild(0).gameObject.SetActive(isTorch);
     }
 
     [Command]
@@ -225,14 +240,10 @@ public class PlayerMovementController : NetworkBehaviour
     public void SETorch()
     {
         AudioSource.PlayClipAtPoint(equipTorch, transform.position, 0.1f);
-
-        Torch.transform.GetChild(0).gameObject.SetActive(true);
     }
     public void LightOffTorch()
     {
         AudioSource.PlayClipAtPoint(disarmTorch, transform.position, 0.1f);
-
-        Torch.transform.GetChild(0).gameObject.SetActive(false);
     }
 
     // SoundEmitter 객체 생성 함수

@@ -52,7 +52,12 @@ public class WagonController : InteractableObject
         yield return new WaitForSeconds(1f);
 
         foreach (Collider collider in colliders)
+        {
+            if (collider == null)
+                continue;
+                
             MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
+        }
         
         yield return null;
     }

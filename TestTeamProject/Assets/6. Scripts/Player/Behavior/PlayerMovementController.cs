@@ -101,14 +101,11 @@ public class PlayerMovementController : NetworkBehaviour
         if (!GameUIController.IsPaused)
         {
             HandleMove();
-            HandleJumping();
-            HandlerItem();
+            HandleBehavior();
         }
         else
-        {
-            // 일시정지 상태이면 속도를 0으로 설정
-            direction = Vector3.zero;
-        }
+            direction = Vector3.zero; // 일시정지 상태이면 속도를 0으로 설정
+        
 
         // 힐링
         CheckHeal();
@@ -162,7 +159,7 @@ public class PlayerMovementController : NetworkBehaviour
         direction *= moveSpeedMultiplier * GetComponent<InventoryController>().weightSlowdownFactor;
     }
 
-    void HandleJumping()
+    void HandleBehavior()
     { 
         // 점프기능
         if (Input.GetKeyDown(KeyCode.Space)
@@ -171,16 +168,9 @@ public class PlayerMovementController : NetworkBehaviour
             jumpSpeed = jumpForce;
             networkAnimator.SetTrigger("Jump");
         }
-        
-    }
-
-    void HandlerItem()
-    {
+        // 토치기능
         if (Input.GetKeyDown(KeyCode.F))
-        {
-            isTorch = !isTorch;
-            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);          
-        }
+            isTorch = !isTorch;          
     }
 
     [Command]
@@ -235,10 +225,14 @@ public class PlayerMovementController : NetworkBehaviour
     public void SETorch()
     {
         AudioSource.PlayClipAtPoint(equipTorch, transform.position, 0.1f);
+
+        Torch.transform.GetChild(0).gameObject.SetActive(true);
     }
     public void LightOffTorch()
     {
         AudioSource.PlayClipAtPoint(disarmTorch, transform.position, 0.1f);
+
+        Torch.transform.GetChild(0).gameObject.SetActive(false);
     }
 
     // SoundEmitter 객체 생성 함수

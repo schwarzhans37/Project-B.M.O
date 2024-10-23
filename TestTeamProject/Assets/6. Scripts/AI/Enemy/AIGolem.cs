@@ -27,9 +27,9 @@ public class AIGolem : EnemyObject
         meleeAttackCooldown = 5f; // 근접 공격 쿨타임
         rangedAttackRange = 40f; // 원거리 공격을 선택할 거리
         rangedAttackForce = 40f; // 원거리 공격 힘
-        rangedAttackDamage = 750; // 원거리 공격 데미지
+        rangedAttackDamage = 1000; // 원거리 공격 데미지
         shockwaveRadius = 4f; // 충격파 범위
-        shockwaveDamage = 200; // 충격파 데미지
+        shockwaveDamage = 500; // 충격파 데미지
         rangedAttackCooldown = 15f; // 원거리 공격 쿨타임
     }
 
@@ -51,7 +51,7 @@ public class AIGolem : EnemyObject
 
         attackAngle = 180f; // 공격각(0 ~ 360도)
         attackRange = rangedAttackRange; // 공격 범위
-        attackDamage = 800; // 공격 데미지
+        attackDamage = 900; // 공격 데미지
         attackCooldown = 0f; // 공격 쿨타임
 
         viewAngle = 90f; // 시야각(0 ~ 360도)

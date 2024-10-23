@@ -23,23 +23,16 @@ public class WagonController : InteractableObject
         .Where(collider => collider.CompareTag("ItemObject")).ToArray();
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
+        List<GameObject> boardedPlayers = colliders.Select(collider => collider.gameObject).ToList();
+        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
 
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-
-        if (colliders.Length != players.Length && gameObject.name == "BasecampWagon")
+        if (boardedPlayers.Count != players.Count && gameObject.name == "BasecampWagon")
         {
             StartCoroutine(ShowMessage("모든 플레이어가 웨건에 탑승해야 합니다."));
             yield break;
         }
 
-        if (gameObject.name == "BasecampWagon")
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame());
-        else
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame());
-
-        yield return new WaitForSeconds(1f);
-
-        // 플레이어와 아이템을 모두 웨건으로 이동
+        // 아이템을 모두 웨건으로 이동
         foreach (Collider item in items)
         {
             item.transform.SetParent(transform, true);
@@ -50,6 +43,13 @@ public class WagonController : InteractableObject
             item.transform.localRotation = localRotation;
             item.transform.SetParent(null, true);
         }
+
+        if (gameObject.name == "BasecampWagon")
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame(players));
+        else
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame(boardedPlayers, players));
+
+        yield return new WaitForSeconds(1f);
 
         foreach (Collider collider in colliders)
             MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);

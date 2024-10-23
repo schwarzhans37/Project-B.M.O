@@ -19,7 +19,7 @@ public class AIDemonDog : EnemyObject
         attackAngle = 90f; // 공격각(0 ~ 360도)
         attackRange = 1.5f; // 공격 범위
         attackDamage = 200; // 공격 데미지
-        attackCooldown = 1f; // 공격 쿨타임
+        attackCooldown = 0.8f; // 공격 쿨타임
 
         viewAngle = 120f; // 시야각(0 ~ 360도)
         detectionRange = 5f; // 감지 범위

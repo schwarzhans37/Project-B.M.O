@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using Sydewa;
 using UnityEngine;
@@ -46,7 +47,7 @@ public class GameDataController : NetworkBehaviour
     }
 
     // 게임 시작 시 호출
-    public IEnumerator StartGame()
+    public IEnumerator StartGame(List<GameObject> players)
     {
         if (!isServer)
             yield break;
@@ -57,11 +58,12 @@ public class GameDataController : NetworkBehaviour
         dungeonSpawner.GetComponent<ItemSpawner>().SpawnItems((int)day/3);
 
         gameDataView.FadeOutBlackScreen();
-        gameDataView.ShowTime();
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(2f);
 
+        gameDataView.ShowTime();
         gameDataView.SetSunMovement(true);
 
+        List<GameObject> SurvivedPlayers = players;
         float elapsedTime = 0f;
         while (isDay)
         {
@@ -71,42 +73,72 @@ public class GameDataController : NetworkBehaviour
             if (time > 1140 || true)
                 forestSpawner.GetComponent<SlenderManSpawner>().SpawnSlenderMan();
 
+            foreach (GameObject player in SurvivedPlayers)
+            {
+                if (player == null)
+                {
+                    SurvivedPlayers.Remove(player);
+                    break;
+                }
+                if (player.GetComponent<PlayerDataController>().isDead)
+                {
+                    SurvivedPlayers.Remove(player);
+                    break;
+                }
+            }
+
+            if (SurvivedPlayers.Count == 0)
+            {
+                StartCoroutine(OnAllPlayersDead());
+                break;
+            }
+            
             yield return null;
         }
     }
 
     // 게임 종료 시 호출
-    public IEnumerator EndGame()
+    public IEnumerator EndGame(List<GameObject> SurvivedPlayers, List<GameObject> players)
     {
         if (!isServer)
             yield break;
 
         isDay = false;
-        forestSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
-        forestSpawner.GetComponent<SlenderManSpawner>().RemoveSlenderMan();
-        dungeonSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
-        dungeonSpawner.GetComponent<ItemSpawner>().RemoveItems();
 
         gameDataView.FadeOutBlackScreen();
+
+        foreach (GameObject player in players)
+        {
+            if (!SurvivedPlayers.Contains(player))
+                player.GetComponent<PlayerDataController>().isDead = true;
+        }
+
+        yield return new WaitForSeconds(1f);
         gameDataView.HideTime();
         gameDataView.SetSunMovement(false);
-
-        yield return new WaitForSeconds(3f);
-
-        forestSpawner.GetComponent<FieldPlayerKiller>().KillPlayer();
-        dungeonSpawner.GetComponent<FieldPlayerKiller>().KillPlayer();
+        InitializeFields();
     }
+
 
     public IEnumerator OnAllPlayersDead()
     {
-        List<GameObject> players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
-        foreach (GameObject player in players)
-        {
-            player.GetComponent<PlayerDataController>().isDead = true;
-        }
 
-        StartCoroutine(AdvanceDay(players, 4));
-        yield return null;
+        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        StartCoroutine(AdvanceDay(players, players.Count));
+        
+        yield return new WaitForSeconds(1f);
+        gameDataView.HideTime();
+        gameDataView.SetSunMovement(false);
+        InitializeFields();
+    }
+
+    public void InitializeFields()
+    {
+        forestSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
+        forestSpawner.GetComponent<SlenderManSpawner>().RemoveSlenderMan();
+        forestSpawner.GetComponent<ItemSpawner>().RemoveItems();
+        dungeonSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
+        dungeonSpawner.GetComponent<ItemSpawner>().RemoveItems();
     }
 
     public IEnumerator AdvanceDay(List<GameObject> deathPlayers, int palyerConunt)
@@ -125,16 +157,23 @@ public class GameDataController : NetworkBehaviour
         List<Transform> spawnPoints = new List<Transform>();
         foreach (Transform transform in spawnPoint.transform)
             spawnPoints.Add(transform);
-        
-        foreach (GameObject deathPlayer in deathPlayers)
+
+        for (int i = 0; i < deathPlayers.Count; i++)
         {
-            deathPlayer.transform.position = spawnPoints[Random.Range(0, spawnPoints.Count)].position;
-            deathPlayer.GetComponent<PlayerDataController>().isDead = false;
+            deathPlayers[i].GetComponent<PlayerDataController>().isDead = false;
+            MoveToSpawnPoint(deathPlayers[i].GetComponent<NetworkIdentity>().connectionToClient, deathPlayers[i], spawnPoints[i]);
         }
 
         yield return new WaitForSeconds(3f);
 
         money -= Mathf.RoundToInt(money * deathPlayers.Count / palyerConunt);
+    }
+
+    [TargetRpc]
+    public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, Transform spawnPoint)
+    {
+        player.transform.position = spawnPoint.position;
+        player.transform.rotation = spawnPoint.rotation;
     }
 
     public void AddMoney(int amount)

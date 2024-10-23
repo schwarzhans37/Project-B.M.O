@@ -269,6 +269,13 @@ public class EnemyObject : NetworkBehaviour
             return;
         }
 
+        if (targetTransform.CompareTag("Player")
+            && targetTransform.GetComponent<PlayerDataController>().isDead)
+        {
+            currentState = EnemyState.Patrolling;
+            return;
+        }
+
         agent.speed = chaseSpeed;
         agent.SetDestination(targetTransform.position);
 

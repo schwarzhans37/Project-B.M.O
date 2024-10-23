@@ -17,7 +17,7 @@ public class MinotaurAI : EnemyObject
         base.OnValidate();
 
         dashDistance = 20f; // 대쉬 거리
-        dashSpeed = 10f; // 대쉬 속도
+        dashSpeed = 7f; // 대쉬 속도
         dashCooldown = 20f; // 대쉬 쿨타임
     }
 

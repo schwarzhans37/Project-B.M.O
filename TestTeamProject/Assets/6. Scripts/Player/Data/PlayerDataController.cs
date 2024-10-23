@@ -19,7 +19,7 @@ public class PlayerDataController : NetworkBehaviour
 
     public GameObject playerUI;
     public GameObject interactiveUI;
-    public GameObject deathUI;
+    public GameObject deathedUI;
     public GameObject hpBar;
     public GameObject staminaBar;
     public GameObject deathCam;
@@ -33,7 +33,7 @@ public class PlayerDataController : NetworkBehaviour
             ? CustomNetworkRoomManager.Nickname : "No Nickname");
         playerUI = GameObject.Find("PlayerUI");
         interactiveUI = GameObject.Find("InteractiveUI");
-        deathUI = GameObject.Find("DeathUI");
+        deathedUI = GameObject.Find("DeatedhUI");
         hpBar = GameObject.Find("HPBar");
         staminaBar = GameObject.Find("StaminaBar");
         deathCam = GameObject.Find("DeathStateCamera");
@@ -83,7 +83,7 @@ public class PlayerDataController : NetworkBehaviour
 
         playerUI.SetActive(!newDead);
         interactiveUI.SetActive(!newDead);
-        deathUI.SetActive(newDead);
+        deathedUI.SetActive(newDead);
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled = true;
 
         StartCoroutine(ChangedDeadState(newDead));

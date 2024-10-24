@@ -1,3 +1,4 @@
+using System;
 using kcp2k;
 using Mirror;
 using UnityEngine;
@@ -37,6 +38,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     //사운드 테스트
     public AudioClip footstep;
+    public AudioClip footstepDungeon;
     public AudioClip landing;
     public AudioClip jumping;
     public AudioClip equipTorch;
@@ -173,7 +175,8 @@ public class PlayerMovementController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
-            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);          
+            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);
+            GetComponent<PlayerDataController>().TorchIconControl();
         }
     }
 
@@ -214,8 +217,24 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void FootStep()
     {
-        AudioSource.PlayClipAtPoint(footstep, transform.position,0.3f);
-        CreateSoundEmitter(footstep);
+        String tag;
+        RaycastHit hit;
+        Physics.Raycast(transform.position, Vector3.down,out hit);
+        Debug.Log(hit.collider.name);
+        tag = hit.collider.tag;
+
+        if (tag == "Forest")
+        {
+            Debug.Log("Forest FootStep Play");
+            AudioSource.PlayClipAtPoint(footstep,transform.position,0.3f);
+            CreateSoundEmitter(footstep);
+        }
+        else
+        {
+            Debug.Log("Forest FootStep Play");
+            AudioSource.PlayClipAtPoint(footstepDungeon, transform.position, 0.3f);
+            CreateSoundEmitter(footstepDungeon);
+        }
     }
 
     public void SEJump()

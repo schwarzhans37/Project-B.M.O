@@ -1,4 +1,5 @@
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,11 @@ public class PlayerDataController : NetworkBehaviour
 
     public GameObject hpBar;
     public GameObject staminaBar;
+    public GameObject useTorch;
+    public Animator animator;
+
+    //횃불 토글 변수
+    public bool isTorch = false;
 
     void Start()
     {
@@ -27,6 +33,8 @@ public class PlayerDataController : NetworkBehaviour
             ? CustomNetworkRoomManager.Nickname : "No Nickname");
         hpBar = GameObject.Find("HPBar");
         staminaBar = GameObject.Find("StaminaBar");
+        useTorch = GameObject.Find("useTorch");
+        isTorch = GetComponent<PlayerMovementController>().isTorch;
     }
 
     [Command]
@@ -46,6 +54,7 @@ public class PlayerDataController : NetworkBehaviour
         {
             hp = 0;
             isDead = true;
+            animator.SetBool("isDead",true);
         }
     }
 
@@ -80,5 +89,19 @@ public class PlayerDataController : NetworkBehaviour
 
         if (hpBar != null)
             hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
+    }
+    public void TorchIconControl()
+    {
+        isTorch = GetComponent<PlayerMovementController>().isTorch;
+        if(isTorch)
+        {
+            useTorch.GetComponent<Image>().color = new Color(0,255,0,255);
+            Debug.Log("torch icon color changed");
+        }
+        else 
+        {
+            useTorch.GetComponent<Image>().color = new Color(0, 255, 0, 0);
+            Debug.Log("torch icon color changed");
+        }
     }
 }

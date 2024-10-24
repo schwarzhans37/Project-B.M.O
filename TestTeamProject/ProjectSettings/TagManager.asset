@@ -15,6 +15,9 @@ TagManager:
   - Fire
   - InteractableDoor
   - EntranceDoor
+  - Dungeon
+  - Forest
+  - Water
   layers:
   - Default
   - TransparentFX

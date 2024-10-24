@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerUIController : MonoBehaviour
 {
@@ -42,5 +43,11 @@ public class PlayerUIController : MonoBehaviour
     {
         deathCam.GetComponent<DeathCamera>().targetPlayer = target;
         deathCam.SetActive(active);
+    }
+    
+    public void SetTorchState(bool isTorch)
+    {
+        playerUI.transform.GetChild(2).GetComponent<Image>().color = isTorch
+            ? Color.green : Color.white;
     }
 }

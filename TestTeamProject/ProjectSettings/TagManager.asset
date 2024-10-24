@@ -6,16 +6,12 @@ TagManager:
   tags:
   - PasswordField
   - TeleportTest
-  - Ground
   - InteractableObject
   - ItemObject
-  - MinoWeapon
   - PlayerCam
-  - DogHearSound
   - Fire
   - InteractableDoor
   - EntranceDoor
-  - Dungeon
   - Forest
   - Water
   layers:

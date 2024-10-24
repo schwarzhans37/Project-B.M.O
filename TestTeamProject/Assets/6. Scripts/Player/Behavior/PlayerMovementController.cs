@@ -39,9 +39,11 @@ public class PlayerMovementController : NetworkBehaviour
 
     //사운드 테스트
     public AudioClip footstep;
-    public AudioClip footstepDungeon;
-    public AudioClip landing;
+    public AudioClip forestFootstep;
+    public AudioClip waterFootstep;
     public AudioClip jumping;
+    public AudioClip forestJumping;
+    public AudioClip waterJumping;
     public AudioClip equipTorch;
     public AudioClip disarmTorch;
     public GameObject Torch;
@@ -176,7 +178,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             isTorch = !isTorch;
             CmdTorch(isTorch);
-            GetComponent<PlayerDataController>().TorchIconControl();
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(isTorch);
         }
     }
 
@@ -229,25 +231,19 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void FootStep()
     {        
+        Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
 
-        String tag;
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.down,out hit);
-        Debug.Log(hit.collider.name);
-        tag = hit.collider.tag;
+        if (hit.collider == null)
+            return;
 
-        if (tag == "Forest")
-        {
-            Debug.Log("Forest FootStep Play");
-            AudioSource.PlayClipAtPoint(footstep, transform.position, 0.3f);
-            CreateSoundEmitter(footstep);
-        }
+        Debug.Log(hit.collider.tag);
+
+        if (hit.collider.CompareTag("Forest"))
+            AudioSource.PlayClipAtPoint(forestFootstep, transform.position, 0.3f);
+        else if (hit.collider.CompareTag("Water"))
+            AudioSource.PlayClipAtPoint(waterFootstep, transform.position, 0.3f);
         else
-        {
-            Debug.Log("Forest FootStep Play");
-            AudioSource.PlayClipAtPoint(footstepDungeon, transform.position, 0.3f);
-            CreateSoundEmitter(footstepDungeon);
-        }
+            AudioSource.PlayClipAtPoint(footstep, transform.position, 0.3f);
 
         if (!networkAnimator.animator.GetBool("isCrouch"))
             CreateSoundEmitter(footstep);
@@ -255,7 +251,20 @@ public class PlayerMovementController : NetworkBehaviour
 
     public void SEJump()
     {
-        AudioSource.PlayClipAtPoint(jumping, transform.position);
+        Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
+
+        if (hit.collider == null)
+            return;
+
+        Debug.Log(hit.collider.tag);
+
+        if (hit.collider.CompareTag("Forest"))
+            AudioSource.PlayClipAtPoint(forestJumping, transform.position, 0.3f);
+        else if (hit.collider.CompareTag("Water"))
+            AudioSource.PlayClipAtPoint(waterJumping, transform.position, 0.3f);
+        else
+            AudioSource.PlayClipAtPoint(jumping, transform.position, 0.3f);
+
         CreateSoundEmitter(jumping);
     }
 

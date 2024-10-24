@@ -72,6 +72,7 @@ public class WagonController : InteractableObject
         player.transform.localPosition = localPosition;
         player.transform.localRotation = localRotation;
         player.transform.SetParent(null, true);
+        AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
     }
 
     void OnDrawGizmos()

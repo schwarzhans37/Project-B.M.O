@@ -57,12 +57,19 @@ public class GameDataController : NetworkBehaviour
         if (!isServer)
             yield break;
 
-        yield return new WaitForSeconds(5f);
-
+        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        List<NetworkRoomPlayer> roomPlayers = GameObject.FindObjectsOfType<NetworkRoomPlayer>().ToList();
+        while (players.Count != roomPlayers.Count)
+        {
+            Debug.Log(players.Count);
+            players = GameObject.FindGameObjectsWithTag("Player").ToList();
+            yield return null;
+        }
+        yield return new WaitForSeconds(1f);
         gameDataView.ShowGameView("게임 시작합니다.");
-        yield return new WaitForSeconds(3.1f);
+        yield return new WaitForSeconds(3.2f);
         gameDataView.ShowGameView("할당량을 확인하세요.");
-        yield return new WaitForSeconds(3.1f);
+        yield return new WaitForSeconds(3.2f);
         SetAllocatedAmount();
     }
 
@@ -218,14 +225,14 @@ public class GameDataController : NetworkBehaviour
         if (allocatedAmount < money)
         {
             gameDataView.ShowGameView("생존 성공");
-            yield return new WaitForSeconds(3.1f);
+            yield return new WaitForSeconds(3.02f);
             money -= allocatedAmount;
             SetAllocatedAmount();
         }
         else
         {
             gameDataView.ShowGameView("할당량이 부족합니다.");
-            yield return new WaitForSeconds(3.1f);
+            yield return new WaitForSeconds(3.2f);
             gameDataView.ShowGameView("Game Over");
             yield return new WaitForSeconds(1f);
             gameDataView.FadeOutBlackScreen();
@@ -272,9 +279,9 @@ public class GameDataController : NetworkBehaviour
         yield return new WaitForSeconds(3f);
 
         gameDataView.ShowGameView("게임 시작합니다.");
-        yield return new WaitForSeconds(3.1f);
+        yield return new WaitForSeconds(3.2f);
         gameDataView.ShowGameView("할당량을 확인하세요.");
-        yield return new WaitForSeconds(3.1f);
+        yield return new WaitForSeconds(3.2f);
         SetAllocatedAmount();
     }
 
@@ -289,12 +296,10 @@ public class GameDataController : NetworkBehaviour
     {
         List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
         allocatedAmount = (int)(Random.Range(150, 180) * players.Count * (1 + 0.2 * day / 3));
+        gameDataView.ShowGameView("새로운 할당량:\n$" + allocatedAmount);
     }
 
-    public void OnAllocatedAmountChanged(int oldAmount, int newAmount)
-    {
-        gameDataView.ShowGameView("새로운 할당량:\n$" + newAmount);
-    }
+    public void OnAllocatedAmountChanged(int oldAmount, int newAmount) { }
 
     public void AddMoney(int amount)
     {

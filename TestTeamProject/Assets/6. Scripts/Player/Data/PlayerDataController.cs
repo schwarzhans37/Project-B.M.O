@@ -80,8 +80,7 @@ public class PlayerDataController : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
-
-        GetComponent<NetworkAnimator>().animator.SetBool("isDead", newDead);
+            
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetPlayerUIActive(!newDead);
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetInteractiveUIActive(!newDead);
         StartCoroutine(GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathedUIActive(newDead));

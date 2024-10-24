@@ -236,8 +236,6 @@ public class PlayerMovementController : NetworkBehaviour
         if (hit.collider == null)
             return;
 
-        Debug.Log(hit.collider.tag);
-
         if (hit.collider.CompareTag("Forest"))
             AudioSource.PlayClipAtPoint(forestFootstep, transform.position, 0.3f);
         else if (hit.collider.CompareTag("Water"))
@@ -255,8 +253,6 @@ public class PlayerMovementController : NetworkBehaviour
 
         if (hit.collider == null)
             return;
-
-        Debug.Log(hit.collider.tag);
 
         if (hit.collider.CompareTag("Forest"))
             AudioSource.PlayClipAtPoint(forestJumping, transform.position, 0.3f);

@@ -97,7 +97,7 @@ public class GameDataController : NetworkBehaviour
             elapsedTime += Time.deltaTime;
             time = Mathf.RoundToInt(elapsedTime) + startTime * 60;
 
-            if (time > 1140 || true)
+            if (time > 1140)
                 forestSpawner.GetComponent<SlenderManSpawner>().SpawnSlenderMan();
 
             foreach (GameObject player in SurvivedPlayers)

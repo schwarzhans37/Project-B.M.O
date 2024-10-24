@@ -12,7 +12,6 @@ public class OutsideDoorController : InteractableObject
     {
         base.OnValidate();
         
-        guideText = "들어가기 : [E]";
         holdTime = 1.0f;
         isInteractable = true;
     }
@@ -28,6 +27,7 @@ public class OutsideDoorController : InteractableObject
     void MoveToDoor(NetworkConnectionToClient target, GameObject player)
     {
         player.transform.position = teleportPoint.position + teleportPoint.forward;
+        player.transform.rotation = Quaternion.LookRotation(teleportPoint.forward);
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled =
             !GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled;
     }

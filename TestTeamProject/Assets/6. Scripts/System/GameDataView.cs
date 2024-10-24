@@ -89,6 +89,8 @@ public class GameDataView : NetworkBehaviour
 
     public IEnumerator ApplyDailyReportEffect(List<bool> dailyReportIsDead, int deathedPlayersCount)
     {
+        GameDataController.isinteractionLocked = true;
+
         while (DailyReportPanel.GetComponent<CanvasGroup>().alpha < 1)
             DailyReportPanel.GetComponent<CanvasGroup>().alpha += Time.deltaTime;
         
@@ -124,6 +126,8 @@ public class GameDataView : NetworkBehaviour
         DailyReportPanel.GetComponent<CanvasGroup>().alpha = 0;
 
         yield return new WaitForSeconds(1f);
+
+        GameDataController.isinteractionLocked = false;
     }
 
     [ClientRpc]
@@ -134,6 +138,8 @@ public class GameDataView : NetworkBehaviour
 
     public IEnumerator ApplyGameViewEffect(string message)
     {
+        GameDataController.isinteractionLocked = true;
+
         // 텍스트 초기 설정
         gameView.GetComponentInChildren<TMP_Text>().text = message;
 
@@ -165,6 +171,8 @@ public class GameDataView : NetworkBehaviour
 
         // 완전히 투명하게 설정
         gameView.alpha = 0;
+
+        GameDataController.isinteractionLocked = false;
     }
 
 
@@ -200,6 +208,9 @@ public class GameDataView : NetworkBehaviour
 
     public IEnumerator ApplyBlackScreenEffect()
     {
+        GameDataController.isinteractionLocked = true;
+        GameDataController.isMoveLocked = true;
+
         // alpha 값을 0에서 1로 증가
         dlackScreen.alpha = 0f;
         while (dlackScreen.alpha < 1)
@@ -218,6 +229,9 @@ public class GameDataView : NetworkBehaviour
             elapsed += Time.deltaTime;
             yield return null;
         }
+
+        GameDataController.isinteractionLocked = false;
+        GameDataController.isMoveLocked = false;
 
         // alpha 값을 1에서 0으로 감소
         while (dlackScreen.alpha > 0)

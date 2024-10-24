@@ -53,6 +53,7 @@ public class InteractionController : NetworkBehaviour
             return;
 
         if (GameUIController.IsPaused
+            || GameDataController.isinteractionLocked
             || Time.time - lastWaitTime < waitTime)
         {
             HideUI();

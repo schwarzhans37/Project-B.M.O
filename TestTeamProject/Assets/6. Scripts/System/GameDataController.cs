@@ -40,6 +40,9 @@ public class GameDataController : NetworkBehaviour
     [SyncVar(hook = nameof(OnIsPausedChanged))]
     public bool isPaused = false; // 게임 일시정지 여부
 
+    public static bool isinteractionLocked = true;
+    public static bool isMoveLocked = false;
+
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -56,6 +59,10 @@ public class GameDataController : NetworkBehaviour
 
         yield return new WaitForSeconds(5f);
 
+        gameDataView.ShowGameView("게임 시작합니다.");
+        yield return new WaitForSeconds(3.1f);
+        gameDataView.ShowGameView("할당량을 확인하세요.");
+        yield return new WaitForSeconds(3.1f);
         SetAllocatedAmount();
     }
 
@@ -221,10 +228,54 @@ public class GameDataController : NetworkBehaviour
             yield return new WaitForSeconds(3.1f);
             gameDataView.ShowGameView("Game Over");
             yield return new WaitForSeconds(1f);
+            gameDataView.FadeOutBlackScreen();
+            yield return new WaitForSeconds(1f);
             players = GameObject.FindGameObjectsWithTag("Player").ToList();
             foreach (GameObject player in players)
                 MoveToSpawnPoint(player.GetComponent<NetworkIdentity>().connectionToClient, player, transform.position);
         }
+    }
+
+    public IEnumerator InitializeGame()
+    {
+        if (!isServer)
+            yield break;
+
+        gameDataView.FadeOutBlackScreen();
+        yield return new WaitForSeconds(1f);
+
+        day = 0;
+        time = startTime * 60;
+        money = 0;
+        isDay = true;
+
+        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (players[i] == null)
+            {
+                players.RemoveAt(i);
+                i--;
+                continue;
+            }
+
+            players[i].GetComponent<PlayerDataController>().isDead = false;
+            players[i].GetComponent<PlayerDataController>().hp = 1000;
+            players[i].GetComponent<InventoryController>().ClearItems();
+            MoveToSpawnPoint(players[i].GetComponent<NetworkIdentity>().connectionToClient, players[i], spawnPoint.transform.GetChild(i).position);
+        }
+
+        List<GameObject> items = GameObject.FindGameObjectsWithTag("ItemObject").ToList();
+        foreach (GameObject item in items)
+            NetworkServer.Destroy(item);
+
+        yield return new WaitForSeconds(3f);
+
+        gameDataView.ShowGameView("게임 시작합니다.");
+        yield return new WaitForSeconds(3.1f);
+        gameDataView.ShowGameView("할당량을 확인하세요.");
+        yield return new WaitForSeconds(3.1f);
+        SetAllocatedAmount();
     }
 
     [TargetRpc]

@@ -98,7 +98,8 @@ public class PlayerMovementController : NetworkBehaviour
             return;
 
         // 일시정지 상태가 아니면 이동, 점프, 업데이트
-        if (!GameUIController.IsPaused)
+        if (!GameUIController.IsPaused
+            && !GameDataController.isMoveLocked)
         {
             HandleMove();
             HandleBehavior();

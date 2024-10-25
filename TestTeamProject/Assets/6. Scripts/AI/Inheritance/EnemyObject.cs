@@ -48,15 +48,13 @@ public class EnemyObject : NetworkBehaviour
     public LayerMask soundMask; // 소리 레이어
     public LayerMask obstacleMask; // 장애물 레이어
 
-    public AudioClip patrolSound; // 배회 사운드
-    public AudioClip chaseSound; // 추적 사운드
+    public AudioClip footstep; // 발소리 클립
     public AudioClip meleeAttackSound; // 근접 공격 사운드
     public AudioClip rangedAttackSound; // 원거리 공격 사운드
 
     protected NavMeshAgent agent; // NavMeshAgent 컴포넌트
     public NetworkAnimator networkAnimator; // 네트워크 애니메이터 컴포넌트
     public Animator animator; // 애니메이터 컴포넌트
-    public AudioClip footstep; // 발소리 클립
 
     protected override void OnValidate()
     {
@@ -153,12 +151,32 @@ public class EnemyObject : NetworkBehaviour
         currentState = EnemyState.Patrolling;
         yield return new WaitForSeconds(patrolWaitTime);
 
-        Vector3 randomDirection = transform.position + Random.insideUnitSphere * patrolRange;
-        randomDirection.y = transform.position.y;
-
-        if (NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, patrolRange, NavMesh.AllAreas))
+        for (int i = 0; i < 30; i++)
         {
-            patrolTarget = navHit.position;
+            Vector3 randomDirection = transform.position + Random.insideUnitSphere * patrolRange;
+            randomDirection.y = transform.position.y;
+
+            Vector3 dirToTarget = (randomDirection - transform.position).normalized;
+            
+            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            {
+                float distanceToTarget = Vector3.Distance(transform.position, randomDirection);
+
+                if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask)
+                    && NavMesh.SamplePosition(randomDirection, out NavMeshHit navHit, 4f, NavMesh.AllAreas))
+                {
+                    patrolTarget = navHit.position;
+                    yield break;
+                }
+            }
+
+            yield return null;
+        }
+
+        Vector3 positionBehind = transform.position - transform.forward * 2f;
+        if (NavMesh.SamplePosition(positionBehind, out NavMeshHit navHit2, 4f, NavMesh.AllAreas))
+        {
+            patrolTarget = navHit2.position;
         }
     }
 
@@ -178,6 +196,9 @@ public class EnemyObject : NetworkBehaviour
 
         foreach (Collider target in targets)
         {
+            if (target.GetComponent<PlayerDataController>().isDead)
+                continue;
+
             Transform targetTransform = target.transform;
             Vector3 dirToTarget = (targetTransform.position - transform.position).normalized;
 
@@ -246,6 +267,13 @@ public class EnemyObject : NetworkBehaviour
             return;
         }
 
+        if (targetTransform.CompareTag("Player")
+            && targetTransform.GetComponent<PlayerDataController>().isDead)
+        {
+            currentState = EnemyState.Patrolling;
+            return;
+        }
+
         agent.speed = chaseSpeed;
         agent.SetDestination(targetTransform.position);
 
@@ -303,6 +331,9 @@ public class EnemyObject : NetworkBehaviour
         
         foreach (Collider target in targets)
         {
+            if (target.GetComponent<PlayerDataController>().isDead)
+                continue;
+                
             // 타겟이 시야각 내에 있는지 확인
             Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
 
@@ -342,14 +373,9 @@ public class EnemyObject : NetworkBehaviour
         }
     }
 
-    public virtual void PlayPatrolSound()
+    public virtual void FootStep()
     {
-        AudioSource.PlayClipAtPoint(patrolSound, transform.position);
-    }
-
-    public virtual void PlayChaseSound()
-    {
-        AudioSource.PlayClipAtPoint(chaseSound, transform.position);
+        AudioSource.PlayClipAtPoint(footstep, transform.position);
     }
 
     public virtual void PlayMeleeAttackSound()
@@ -361,15 +387,10 @@ public class EnemyObject : NetworkBehaviour
     {
         AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position);
     }
-    //애니메이션 업데이트
+
     public virtual void AnimationUpdate()
     {
         networkAnimator.animator.SetBool("isMove", agent.velocity.magnitude > 0);
         networkAnimator.animator.SetBool("isChase", currentState == EnemyState.Chasing);
-    }
-    //발소리
-    public virtual void FootStep()
-    {
-        AudioSource.PlayClipAtPoint(footstep, transform.position);
     }
 }

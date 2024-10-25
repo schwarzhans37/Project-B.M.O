@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 74bdd88279bbeea479f1068bffe6e751, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028656, g: 0.22571698, b: 0.30692577, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: ebc5f630a24b52a4081f98e9ecab3d95, type: 2}
+  m_NavMeshData: {fileID: 0}
 --- !u!1 &23798560
 GameObject:
   m_ObjectHideFlags: 0
@@ -6381,9 +6381,14 @@ MonoBehaviour:
   autoCreatePlayer: 1
   playerSpawnMethod: 1
   spawnPrefabs:
+  - {fileID: 5438920566465948936, guid: 7c574e02def2a1a4fbedeae8588ed85d, type: 3}
+  - {fileID: 557551655402398567, guid: 5b9f1b1cfa3fb4843989d693f426c272, type: 3}
   - {fileID: 2608406151542785269, guid: 9c1699db7ecc30a4ea0b420eedd793e6, type: 3}
   - {fileID: 3543955170667400224, guid: b8c93829d972b2948ba9dc5712e71ae1, type: 3}
   - {fileID: 6496405698498005963, guid: 69d42339d824ffe4893b53b378bdf7b1, type: 3}
+  - {fileID: 8684135488462327334, guid: 05c852eb071915f418042d8391694131, type: 3}
+  - {fileID: 4216946900925363422, guid: c4a01340af8a28b40a062f62879ed15c, type: 3}
+  - {fileID: 7892560796043296051, guid: 22d8349ae9646e7429609617211c6bd0, type: 3}
   - {fileID: 2312813396087673156, guid: 6e2f78ae1e942e2408e9e12a483cec5d, type: 3}
   - {fileID: 1382692366143680594, guid: a6014508926c6bd4abfc46027105cb5f, type: 3}
   - {fileID: 1390733072016787747, guid: a7204784b8d83b64e95261f483949130, type: 3}

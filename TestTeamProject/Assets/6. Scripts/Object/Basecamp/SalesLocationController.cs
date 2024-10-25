@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SalesLocationController : InteractableObject
@@ -12,34 +14,44 @@ public class SalesLocationController : InteractableObject
     {
         base.OnValidate();
         
-        guideText = "판매하기 : [V]";
+        guideText = "판매하기 : [E]";
         holdTime = 3f;
         isInteractable = true;
         particle = transform.GetChild(0).GetComponent<ParticleSystem>();
     }
 
-    public override void InteractWithObject(GameObject player)
+    public override IEnumerator InteractWithObject(GameObject player)
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius)
             .Where(x => x.CompareTag("ItemObject"))
             .ToArray();
 
-        if (colliders.Length == 0){
-            particle.Play();
-            AudioSource.PlayClipAtPoint(soundEffect, transform.position);
-            return;
-        }
-            
+        if (colliders.Length == 0)
+            yield break;
+        
+        isInteractable = false;
+        PlayEffect();
+        
+        yield return new WaitForSeconds(particle.main.duration);
 
-
-
+        int totalMoney = 0;
         foreach (Collider collider in colliders)
         {
-            // 아이템을 판매
-            GameObject.Find("GameDataManager").GetComponent<GameDataController>().AddMoney(collider.gameObject.GetComponent<ItemObject>().itemPrice);
-            Destroy(collider.gameObject);
-            collider.transform.GetChild(0).GetComponent<ParticleSystem>().Play();
+            // 아이템을 판매하고 돈을 얻음
+            totalMoney += collider.GetComponent<ItemObject>().itemPrice;
+            NetworkServer.Destroy(collider.gameObject);
         }
+
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().AddMoney(totalMoney);
+
+        isInteractable = true;
+    }
+
+    [ClientRpc]
+    public override void PlayEffect()
+    {
+        base.PlayEffect();
+        particle.Play();
     }
 
     void OnDrawGizmos()

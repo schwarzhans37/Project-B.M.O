@@ -1,4 +1,6 @@
+using System.Collections;
 using Mirror;
+using Org.BouncyCastle.Utilities.Encoders;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkIdentity))]
@@ -15,7 +17,23 @@ public class InteractableObject : NetworkBehaviour
 
     public AudioClip soundEffect;
 
-    public virtual void InteractWithObject(GameObject player) {}
+    public virtual IEnumerator InteractWithObject(GameObject player) 
+    {
+        yield break;
+    }
+    [ClientRpc]
+    public virtual void PlayEffect()
+    {
+        if (soundEffect != null)
+            AudioSource.PlayClipAtPoint(soundEffect, transform.position);
+    }
+    public virtual IEnumerator ShowMessage(string message, float time = 3f)
+    {
+        string text = guideText;
+        guideText = message;
+        yield return new WaitForSeconds(time);
+        guideText = text;
+    }
     public virtual void OnGuideTextChanged(string oldText, string newText) {}
     public virtual void OnHoldTimeChanged(float oldTime, float newTime) {}
     public virtual void OnInteractableChanged(bool oldInteractable, bool newInteractable) {}

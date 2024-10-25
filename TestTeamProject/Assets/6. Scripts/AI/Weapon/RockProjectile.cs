@@ -38,7 +38,8 @@ public class RockProjectile : NetworkBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             // 피격 대상에게 데미지를 입힘
-            other.GetComponent<PlayerDataController>().ChangeHp(-damage);
+            if (!other.GetComponent<PlayerDataController>().isDead)
+                other.GetComponent<PlayerDataController>().ChangeHp(-damage);
         }
 
         // 충격파 생성
@@ -46,6 +47,9 @@ public class RockProjectile : NetworkBehaviour
 
         foreach (Collider target in targets)
         {
+            if (target.GetComponent<PlayerDataController>().isDead)
+                continue;
+
             target.GetComponent<PlayerDataController>().ChangeHp(-shockwaveDamage);
         }
 

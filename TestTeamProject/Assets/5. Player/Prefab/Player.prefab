@@ -178,7 +178,7 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 17.137775
+  m_FocalLength: 10.069196
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -191,9 +191,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.02
+  near clip plane: 0.01
   far clip plane: 1000
-  field of view: 70.00001
+  field of view: 100
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -1737,6 +1737,7 @@ GameObject:
   - component: {fileID: 5689283909801136270}
   - component: {fileID: 3175953933186764191}
   - component: {fileID: 1706635197024375664}
+  - component: {fileID: -5885222542916277801}
   - component: {fileID: 5872262619836083960}
   m_Layer: 6
   m_Name: Player
@@ -1920,6 +1921,7 @@ MonoBehaviour:
   syncInterval: 0
   characterController: {fileID: 1577366111843385037}
   networkAnimator: {fileID: 4876641215936650510}
+  Animator: {fileID: 2753262902278887060}
   walkSpeed: 2.5
   crouchSpeed: 1
   runSpeedMultiplier: 2
@@ -1928,10 +1930,12 @@ MonoBehaviour:
   heal: 100
   healCooldown: 5
   isTorch: 0
-  footstep: {fileID: 8300000, guid: 551d550ab98e3cc4bb7793e752fe8628, type: 3}
-  footstepDungeon: {fileID: 8300000, guid: 5e265270fb85126479eef52d8fce3b08, type: 3}
-  landing: {fileID: 8300000, guid: 6aeefb601c305f64487cebdfacae5b6c, type: 3}
-  jumping: {fileID: 8300000, guid: 984d316ed8be3ac4da9e31768a8b1fa9, type: 3}
+  footstep: {fileID: 8300000, guid: 5e265270fb85126479eef52d8fce3b08, type: 3}
+  forestFootstep: {fileID: 8300000, guid: 551d550ab98e3cc4bb7793e752fe8628, type: 3}
+  waterFootstep: {fileID: 8300000, guid: 352456aba9356534c84a656a5e94ce1d, type: 3}
+  jumping: {fileID: 8300000, guid: df49938a1860650418b6d5654ed436be, type: 3}
+  forestJumping: {fileID: 8300000, guid: 984d316ed8be3ac4da9e31768a8b1fa9, type: 3}
+  waterJumping: {fileID: 8300000, guid: 15022a33ccea24f45aa7071adf3ba492, type: 3}
   equipTorch: {fileID: 8300000, guid: c42182d27084eb14e8ff4196bb17b8a5, type: 3}
   disarmTorch: {fileID: 8300000, guid: b83ba2db2e6e49b4797dca9fe73633c5, type: 3}
   Torch: {fileID: 8210145798874237385}
@@ -1976,6 +1980,33 @@ MonoBehaviour:
   progressBar: {fileID: 0}
   holdTime: 0
   waitTime: 0.5
+--- !u!114 &-5885222542916277801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2333372401886679167}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36bda1259eb142840b9af89035710e4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  items:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  totalWeight: 0
+  inventoryUI: {fileID: 0}
+  selectedItemIndex: 0
+  normalSprite: {fileID: 21300000, guid: 4f033cdd2b09f9a43b139729d09d002c, type: 3}
+  seletedSprite: {fileID: 21300000, guid: 711fb7a2b8e1ff54da609e52c3e729b8, type: 3}
 --- !u!114 &5872262619836083960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1997,9 +2028,9 @@ MonoBehaviour:
   stamina: 1000
   hpBar: {fileID: 0}
   staminaBar: {fileID: 0}
-  useTorch: {fileID: 0}
-  animator: {fileID: 0}
   isTorch: 0
+  isInteractionLock: 0
+  isMoveLock: 0
 --- !u!1 &2521831079528097636
 GameObject:
   m_ObjectHideFlags: 0
@@ -3715,7 +3746,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 1, g: 0.63566893, b: 0.3066038, a: 1}
   m_Intensity: 2
-  m_Range: 5
+  m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

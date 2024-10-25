@@ -21,7 +21,7 @@ public class EnemySpawner : NetworkBehaviour
     public int baseEnemyCount; // 기본 스폰할 적 수
 
     public int currentLevel; // 현재 레벨에 따라 변경 (레벨 정보를 가져와서 업데이트)
-    float LevelMultiplier => 1f + (currentLevel * 0.2f); // 레벨 배율
+    float LevelMultiplier => 1f + (currentLevel * 0.25f); // 레벨 배율
 
     private readonly List<GameObject> spawnedEnemies = new(); // 현재 스폰된 적 리스트
 

@@ -11,6 +11,7 @@ public class PlayerMovementController : NetworkBehaviour
 {
     public CharacterController characterController;
     public NetworkAnimator networkAnimator;
+    public Animator Animator;
 
     [Header("Movement")]
     [Range(1f, 10f)]
@@ -38,12 +39,15 @@ public class PlayerMovementController : NetworkBehaviour
 
     //사운드 테스트
     public AudioClip footstep;
-    public AudioClip footstepDungeon;
-    public AudioClip landing;
+    public AudioClip forestFootstep;
+    public AudioClip waterFootstep;
     public AudioClip jumping;
+    public AudioClip forestJumping;
+    public AudioClip waterJumping;
     public AudioClip equipTorch;
     public AudioClip disarmTorch;
     public GameObject Torch;
+    private int soundEmitterCount;
 
     Vector3 direction;
     Vector3Int velocity;
@@ -59,6 +63,11 @@ public class PlayerMovementController : NetworkBehaviour
 
         if (networkAnimator == null)
             networkAnimator = GetComponent<NetworkAnimator>();
+
+        if (Animator == null)
+            Animator = GetComponent<Animator>();
+        
+        networkAnimator.animator = Animator;
 
         walkSpeed = 2.5f;
         crouchSpeed = 1f;
@@ -94,17 +103,15 @@ public class PlayerMovementController : NetworkBehaviour
             return;
 
         // 일시정지 상태가 아니면 이동, 점프, 업데이트
-        if (!GameUIController.IsPaused)
+        if (!GameUIController.IsPaused
+            && !GameDataController.isMoveLocked)
         {
             HandleMove();
-            HandleJumping();
-            HandlerItem();
+            HandleBehavior();
         }
         else
-        {
-            // 일시정지 상태이면 속도를 0으로 설정
-            direction = Vector3.zero;
-        }
+            direction = Vector3.zero; // 일시정지 상태이면 속도를 0으로 설정
+        
 
         // 힐링
         CheckHeal();
@@ -146,7 +153,7 @@ public class PlayerMovementController : NetworkBehaviour
             && gameObject.GetComponent<PlayerDataController>().stamina > 0
             && (horizontal != 0 || vertical != 0))
         {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-7);
+            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-10);
             moveSpeedMultiplier *= runSpeedMultiplier;
         }
         else
@@ -155,10 +162,10 @@ public class PlayerMovementController : NetworkBehaviour
         }
 
         // 원하는 지상 속도로 곱셈
-        direction *= moveSpeedMultiplier;
+        direction *= moveSpeedMultiplier * GetComponent<InventoryController>().weightSlowdownFactor;
     }
 
-    void HandleJumping()
+    void HandleBehavior()
     { 
         // 점프기능
         if (Input.GetKeyDown(KeyCode.Space)
@@ -167,17 +174,25 @@ public class PlayerMovementController : NetworkBehaviour
             jumpSpeed = jumpForce;
             networkAnimator.SetTrigger("Jump");
         }
-        
-    }
-
-    void HandlerItem()
-    {
+        // 토치기능
         if (Input.GetKeyDown(KeyCode.F))
         {
             isTorch = !isTorch;
-            Torch.transform.GetChild(0).gameObject.SetActive(isTorch);
-            GetComponent<PlayerDataController>().TorchIconControl();
+            CmdTorch(isTorch);
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(isTorch);
         }
+    }
+
+    [Command]
+    void CmdTorch(bool isTorch)
+    {
+        RpcTorch(isTorch);
+    }
+
+    [ClientRpc]
+    void RpcTorch(bool isTorch)
+    {
+        Torch.transform.GetChild(0).gameObject.SetActive(isTorch);
     }
 
     [Command]
@@ -216,31 +231,41 @@ public class PlayerMovementController : NetworkBehaviour
     }
 
     public void FootStep()
-    {
-        String tag;
-        RaycastHit hit;
-        Physics.Raycast(transform.position, Vector3.down,out hit);
-        Debug.Log(hit.collider.name);
-        tag = hit.collider.tag;
+    {        
+        Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
 
-        if (tag == "Forest")
+        if (hit.collider == null)
+            return;
+
+        if (hit.collider.CompareTag("Forest"))
+            AudioSource.PlayClipAtPoint(forestFootstep, transform.position, 0.3f);
+        else if (hit.collider.CompareTag("Water"))
         {
-            Debug.Log("Forest FootStep Play");
-            AudioSource.PlayClipAtPoint(footstep,transform.position,0.3f);
-            CreateSoundEmitter(footstep);
+            soundEmitterCount++;
+            if (soundEmitterCount % 2 == 0)
+                AudioSource.PlayClipAtPoint(waterFootstep, transform.position, 0.2f);
         }
         else
-        {
-            Debug.Log("Forest FootStep Play");
-            AudioSource.PlayClipAtPoint(footstepDungeon, transform.position, 0.3f);
-            CreateSoundEmitter(footstepDungeon);
-        }
+            AudioSource.PlayClipAtPoint(footstep, transform.position, 0.3f);
+
+        if (!networkAnimator.animator.GetBool("isCrouch"))
+            CreateSoundEmitter(footstep);
     }
 
     public void SEJump()
     {
-        Debug.Log("Jump sound played");
-        AudioSource.PlayClipAtPoint(jumping, transform.position);
+        Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
+
+        if (hit.collider == null)
+            return;
+
+        if (hit.collider.CompareTag("Forest"))
+            AudioSource.PlayClipAtPoint(forestJumping, transform.position, 0.3f);
+        else if (hit.collider.CompareTag("Water"))
+            AudioSource.PlayClipAtPoint(waterJumping, transform.position, 0.2f);
+        else
+            AudioSource.PlayClipAtPoint(jumping, transform.position, 0.3f);
+
         CreateSoundEmitter(jumping);
     }
 

@@ -13,28 +13,26 @@ public class WagonController : InteractableObject
     {
         base.OnValidate();
         
-        guideText = "출발하기 : [V]";
+        guideText = "출발하기 : [E]";
         holdTime = 3f;
     }
 
-    public override void InteractWithObject(GameObject player)
+    public override IEnumerator InteractWithObject(GameObject player)
     {
         Collider[] items = Physics.OverlapSphere(transform.position, radius)
         .Where(collider => collider.CompareTag("ItemObject")).ToArray();
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
+        List<GameObject> boardedPlayers = colliders.Select(collider => collider.gameObject).ToList();
+        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
 
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-
-        if (colliders.Length != players.Length && gameObject.name == "BasecampWagon")
+        if (boardedPlayers.Count != players.Count && gameObject.name == "BasecampWagon")
         {
             StartCoroutine(ShowMessage("모든 플레이어가 웨건에 탑승해야 합니다."));
-            return;
+            yield break;
         }
 
-        // 웨건 사운드 출력
-        
-        // 플레이어와 아이템을 모두 웨건으로 이동
+        // 아이템을 모두 웨건으로 이동
         foreach (Collider item in items)
         {
             item.transform.SetParent(transform, true);
@@ -46,16 +44,22 @@ public class WagonController : InteractableObject
             item.transform.SetParent(null, true);
         }
 
-        foreach (Collider collider in colliders)
-            MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
-
         if (gameObject.name == "BasecampWagon")
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame());
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame(players));
         else
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame());
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame(boardedPlayers, players));
 
-        AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
-        Debug.Log("wagon sound played");
+        yield return new WaitForSeconds(1f);
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider == null)
+                continue;
+                
+            MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
+        }
+        
+        yield return null;
     }
 
     [TargetRpc]
@@ -68,13 +72,7 @@ public class WagonController : InteractableObject
         player.transform.localPosition = localPosition;
         player.transform.localRotation = localRotation;
         player.transform.SetParent(null, true);
-    }
-
-    IEnumerator ShowMessage(string message)
-    {
-        guideText = message;
-        yield return new WaitForSeconds(3f);
-        guideText = "출발하기 : [V]";
+        AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
     }
 
     void OnDrawGizmos()

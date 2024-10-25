@@ -48,15 +48,13 @@ public class EnemyObject : NetworkBehaviour
     public LayerMask soundMask; // 소리 레이어
     public LayerMask obstacleMask; // 장애물 레이어
 
-    public AudioClip patrolSound; // 배회 사운드
-    public AudioClip chaseSound; // 추적 사운드
+    public AudioClip footstep; // 발소리 클립
     public AudioClip meleeAttackSound; // 근접 공격 사운드
     public AudioClip rangedAttackSound; // 원거리 공격 사운드
 
     protected NavMeshAgent agent; // NavMeshAgent 컴포넌트
     public NetworkAnimator networkAnimator; // 네트워크 애니메이터 컴포넌트
     public Animator animator; // 애니메이터 컴포넌트
-    public AudioClip footstep; // 발소리 클립
 
     protected override void OnValidate()
     {
@@ -375,14 +373,9 @@ public class EnemyObject : NetworkBehaviour
         }
     }
 
-    public virtual void PlayPatrolSound()
+    public virtual void FootStep()
     {
-        AudioSource.PlayClipAtPoint(patrolSound, transform.position);
-    }
-
-    public virtual void PlayChaseSound()
-    {
-        AudioSource.PlayClipAtPoint(chaseSound, transform.position);
+        AudioSource.PlayClipAtPoint(footstep, transform.position);
     }
 
     public virtual void PlayMeleeAttackSound()
@@ -394,15 +387,10 @@ public class EnemyObject : NetworkBehaviour
     {
         AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position);
     }
-    //애니메이션 업데이트
+
     public virtual void AnimationUpdate()
     {
         networkAnimator.animator.SetBool("isMove", agent.velocity.magnitude > 0);
         networkAnimator.animator.SetBool("isChase", currentState == EnemyState.Chasing);
-    }
-    //발소리
-    public virtual void FootStep()
-    {
-        AudioSource.PlayClipAtPoint(footstep, transform.position);
     }
 }

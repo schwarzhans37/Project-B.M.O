@@ -85,6 +85,8 @@ public class PlayerDataController : NetworkBehaviour
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetInteractiveUIActive(!newDead);
         StartCoroutine(GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathedUIActive(newDead));
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled = true;
+        RenderSettings.skybox = GameObject.Find("GameDataManager").GetComponent<LightingManager>().skyboxMat;
+        DynamicGI.UpdateEnvironment();
 
         StartCoroutine(ChangedDeadState(newDead));
     }

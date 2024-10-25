@@ -18,7 +18,7 @@ public class AIWeepAngel : EnemyObject
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 3f; // 배회 대기 시간
 
-        attackAngle = 90f; // 공격각(0 ~ 360도)
+        attackAngle = 180f; // 공격각(0 ~ 360도)
         attackRange = 1f; // 공격 범위
         attackDamage = 2000; // 공격 데미지
         attackCooldown = 1f; // 공격 쿨타임
@@ -47,6 +47,7 @@ public class AIWeepAngel : EnemyObject
     {
         lastAttackTime = Time.time;
 
+        MeleeAttack();
         StopMoving();
         yield return new WaitForSeconds(attackCooldown);
         ResumeMoving();

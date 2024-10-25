@@ -10,8 +10,6 @@ TagManager:
   - ItemObject
   - PlayerCam
   - Fire
-  - InteractableDoor
-  - EntranceDoor
   - Forest
   - Water
   layers:

@@ -1932,11 +1932,10 @@ MonoBehaviour:
   isTorch: 0
   footstep: {fileID: 8300000, guid: 5e265270fb85126479eef52d8fce3b08, type: 3}
   forestFootstep: {fileID: 8300000, guid: 551d550ab98e3cc4bb7793e752fe8628, type: 3}
-  dungeonFootstep: {fileID: 8300000, guid: 5e265270fb85126479eef52d8fce3b08, type: 3}
-  waterFootstep: {fileID: 8300000, guid: 518cdd508d673124da33c3a5cdd93f05, type: 3}
+  waterFootstep: {fileID: 8300000, guid: 352456aba9356534c84a656a5e94ce1d, type: 3}
   jumping: {fileID: 8300000, guid: df49938a1860650418b6d5654ed436be, type: 3}
   forestJumping: {fileID: 8300000, guid: 984d316ed8be3ac4da9e31768a8b1fa9, type: 3}
-  waterJumping: {fileID: 8300000, guid: 3992630b0c74ca045bca8125f360aa4a, type: 3}
+  waterJumping: {fileID: 8300000, guid: 15022a33ccea24f45aa7071adf3ba492, type: 3}
   equipTorch: {fileID: 8300000, guid: c42182d27084eb14e8ff4196bb17b8a5, type: 3}
   disarmTorch: {fileID: 8300000, guid: b83ba2db2e6e49b4797dca9fe73633c5, type: 3}
   Torch: {fileID: 8210145798874237385}
@@ -2029,7 +2028,6 @@ MonoBehaviour:
   stamina: 1000
   hpBar: {fileID: 0}
   staminaBar: {fileID: 0}
-  animator: {fileID: 0}
   isTorch: 0
   isInteractionLock: 0
   isMoveLock: 0

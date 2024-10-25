@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Mirror;
 using Sydewa;
 using UnityEngine;
@@ -7,6 +6,7 @@ using UnityEngine;
 public class OutsideDoorController : InteractableObject
 {
     public Transform teleportPoint;
+    public Vector3 lookDirection;
 
     protected override void OnValidate()
     {
@@ -26,10 +26,16 @@ public class OutsideDoorController : InteractableObject
     [TargetRpc]
     void MoveToDoor(NetworkConnectionToClient target, GameObject player)
     {
-        player.transform.position = teleportPoint.position + teleportPoint.forward;
-        player.transform.rotation = Quaternion.LookRotation(teleportPoint.forward);
+        player.transform.position = teleportPoint.position;
+        player.transform.rotation = Quaternion.LookRotation(teleportPoint.GetComponent<OutsideDoorController>().lookDirection);
+
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled =
             !GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled;
+
+        RenderSettings.skybox = RenderSettings.skybox != GameObject.Find("GameDataManager").GetComponent<LightingManager>().dungeonSkyboxMat ?
+            GameObject.Find("GameDataManager").GetComponent<LightingManager>().dungeonSkyboxMat : GameObject.Find("GameDataManager").GetComponent<LightingManager>().defultSkyboxMat;
+
+        DynamicGI.UpdateEnvironment();
     }
 
     [ClientRpc]

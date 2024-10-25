@@ -47,6 +47,7 @@ public class PlayerMovementController : NetworkBehaviour
     public AudioClip equipTorch;
     public AudioClip disarmTorch;
     public GameObject Torch;
+    private int soundEmitterCount;
 
     Vector3 direction;
     Vector3Int velocity;
@@ -239,7 +240,11 @@ public class PlayerMovementController : NetworkBehaviour
         if (hit.collider.CompareTag("Forest"))
             AudioSource.PlayClipAtPoint(forestFootstep, transform.position, 0.3f);
         else if (hit.collider.CompareTag("Water"))
-            AudioSource.PlayClipAtPoint(waterFootstep, transform.position, 0.3f);
+        {
+            soundEmitterCount++;
+            if (soundEmitterCount % 2 == 0)
+                AudioSource.PlayClipAtPoint(waterFootstep, transform.position, 0.2f);
+        }
         else
             AudioSource.PlayClipAtPoint(footstep, transform.position, 0.3f);
 
@@ -257,7 +262,7 @@ public class PlayerMovementController : NetworkBehaviour
         if (hit.collider.CompareTag("Forest"))
             AudioSource.PlayClipAtPoint(forestJumping, transform.position, 0.3f);
         else if (hit.collider.CompareTag("Water"))
-            AudioSource.PlayClipAtPoint(waterJumping, transform.position, 0.3f);
+            AudioSource.PlayClipAtPoint(waterJumping, transform.position, 0.2f);
         else
             AudioSource.PlayClipAtPoint(jumping, transform.position, 0.3f);
 

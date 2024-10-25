@@ -118,6 +118,11 @@ public class MinotaurAI : EnemyObject
         networkAnimator.animator.SetTrigger("Attack");
         yield return base.Attack();
     }
+
+    public override void FootStep()
+    {
+        AudioSource.PlayClipAtPoint(footstep, transform.position, 0.3f);
+    }
     public void PlayDashSound()
     {
         AudioSource.PlayClipAtPoint(DashSound, transform.position);

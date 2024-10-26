@@ -70,7 +70,7 @@ public class AIWeepAngel : EnemyObject
             float dotProduct = Vector3.Dot(playerCam.forward, dirToPlayer);
 
             // 내적이 0.5보다 크다면, 카메라가 AI를 바라보고 있는 것
-            if (dotProduct > 0.5f)
+            if (dotProduct > 0.55f)
             {
                 float distanceToPlayer = Vector3.Distance(playerCam.position, transform.position);
 
@@ -94,7 +94,6 @@ public class AIWeepAngel : EnemyObject
 
     public void OnPlayerLookedAtMe()
     {
-        Debug.Log("Player Looked At Me");
         // 플레이어가 AI를 바라보고 있을 때 실행할 로직
         if (!agent.isStopped)
         {

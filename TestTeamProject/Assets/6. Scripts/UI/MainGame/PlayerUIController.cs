@@ -33,7 +33,7 @@ public class PlayerUIController : MonoBehaviour
                 deathedUI.transform.GetChild(0).GetComponent<CanvasGroup>().alpha += Time.deltaTime;
                 yield return null;
             }
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             deathedUI.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0;
             deathedUI.transform.GetChild(1).GetComponent<CanvasGroup>().alpha = 1;
         }

@@ -2014,7 +2014,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2333372401886679167}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af2eae05e3897704db2562fb558d90fa, type: 3}
   m_Name: 
@@ -2028,9 +2028,6 @@ MonoBehaviour:
   stamina: 1000
   hpBar: {fileID: 0}
   staminaBar: {fileID: 0}
-  isTorch: 0
-  isInteractionLock: 0
-  isMoveLock: 0
 --- !u!1 &2521831079528097636
 GameObject:
   m_ObjectHideFlags: 0

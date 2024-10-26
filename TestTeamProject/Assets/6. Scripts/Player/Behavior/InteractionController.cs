@@ -27,7 +27,7 @@ public class InteractionController : NetworkBehaviour
     {
         base.OnStartAuthority();
 
-        // 권한이 있으면 상호작용 컨트롤러를 활성화
+        // 권한이 있으면 활성화
         this.enabled = true;
     }
 
@@ -53,7 +53,7 @@ public class InteractionController : NetworkBehaviour
             return;
 
         if (GameUIController.IsPaused
-            || GameDataController.isinteractionLocked
+            || GameDataController.IsinteractionLocked
             || Time.time - lastWaitTime < waitTime)
         {
             HideUI();

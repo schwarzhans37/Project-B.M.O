@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Mirror;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SalesLocationController : InteractableObject
@@ -42,7 +40,7 @@ public class SalesLocationController : InteractableObject
             NetworkServer.Destroy(collider.gameObject);
         }
 
-        GameObject.Find("GameDataManager").GetComponent<GameDataController>().AddMoney(totalMoney);
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().money += totalMoney;
 
         isInteractable = true;
     }

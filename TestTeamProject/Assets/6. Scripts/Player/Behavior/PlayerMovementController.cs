@@ -89,7 +89,7 @@ public class PlayerMovementController : NetworkBehaviour
     {
         base.OnStartAuthority();
 
-        // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
+        // 로컬 플레이어인 경우 활성화
         GetComponent<Collider>().enabled = false;
         characterController.enabled = true;
         this.enabled = true;
@@ -104,7 +104,7 @@ public class PlayerMovementController : NetworkBehaviour
 
         // 일시정지 상태가 아니면 이동, 점프, 업데이트
         if (!GameUIController.IsPaused
-            && !GameDataController.isMoveLocked)
+            && !GameDataController.IsMoveLocked)
         {
             HandleMove();
             HandleBehavior();

@@ -13,7 +13,6 @@ public class WagonController : InteractableObject
     {
         base.OnValidate();
         
-        guideText = "출발하기 : [E]";
         holdTime = 3f;
     }
 
@@ -22,16 +21,46 @@ public class WagonController : InteractableObject
         Collider[] items = Physics.OverlapSphere(transform.position, radius)
         .Where(collider => collider.CompareTag("ItemObject")).ToArray();
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
-        List<GameObject> boardedPlayers = colliders.Select(collider => collider.gameObject).ToList();
-        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        List<GameObject> boardedPlayers = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"))
+            .Select(collider => collider.gameObject).ToList();
 
-        if (boardedPlayers.Count != players.Count && gameObject.name == "BasecampWagon")
+        if (boardedPlayers.Count != NetworkServer.connections.Count && gameObject.name == "BasecampWagon")
         {
             StartCoroutine(ShowMessage("모든 플레이어가 웨건에 탑승해야 합니다."));
             yield break;
         }
 
+        if (gameObject.name == "ForestWagon")
+        {
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+            {
+                if (conn.identity == null)
+                    continue;
+
+                if (!boardedPlayers.Contains(conn.identity.gameObject))
+                    conn.identity.GetComponent<PlayerDataController>().isDead = true;
+            }
+        }
+
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsInteractionLocked(true);
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsMoveLocked(true);
+
+        GameObject.Find("GameDataManager").GetComponent<GameDataView>().FadeOutBlackScreen();
+        yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn.identity == null)
+                continue;
+
+            if (boardedPlayers.Contains(conn.identity.gameObject))
+            {
+                MoveToWagon(conn, conn.identity.gameObject);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+            }
+        }
+        
         // 아이템을 모두 웨건으로 이동
         foreach (Collider item in items)
         {
@@ -45,21 +74,9 @@ public class WagonController : InteractableObject
         }
 
         if (gameObject.name == "BasecampWagon")
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame(players));
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame(boardedPlayers));
         else
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame(boardedPlayers, players));
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (Collider collider in colliders)
-        {
-            if (collider == null)
-                continue;
-                
-            MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
-        }
-        
-        yield return null;
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame());
     }
 
     [TargetRpc]
@@ -73,6 +90,7 @@ public class WagonController : InteractableObject
         player.transform.localRotation = localRotation;
         player.transform.SetParent(null, true);
         AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
+        NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 
     void OnDrawGizmos()

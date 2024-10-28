@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Mirror;
 using UnityEngine;
 
 [RequireComponent(typeof(CreateHostView))]
@@ -23,18 +24,27 @@ public class CreateHostController : MonoBehaviour
 
     void HandleCreateHostAttempt(string title, string nickname)
     {
+        CustomNetworkRoomManager roomManager = NetworkManager.singleton as CustomNetworkRoomManager;
         if (IsValidIpAddress(title))
         {
             CustomNetworkRoomManager.Nickname = nickname;
-            CustomNetworkRoomManager.singleton.StartClient(new System.Uri(title));
+            if (maxPlayerCount == 1)
+            {
+                roomManager.networkAddress = title;
+                roomManager.StartClient();
+                return;
+            }
+            
+            roomManager.maxConnections = maxPlayerCount;
+            roomManager.StartHost();
             return;
         }
 
         HostModel.Instance.SetHost(title, nickname);
         CustomNetworkRoomManager.RoomTitle = title;
         CustomNetworkRoomManager.Nickname = nickname;
-        CustomNetworkRoomManager.singleton.maxConnections = maxPlayerCount;
-        CustomNetworkRoomManager.singleton.StartHost();
+        roomManager.maxConnections = maxPlayerCount;
+        roomManager.StartHost();
         networkDiscovery.AdvertiseServer();
     }
 

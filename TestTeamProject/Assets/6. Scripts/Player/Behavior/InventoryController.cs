@@ -59,7 +59,7 @@ public class InventoryController : NetworkBehaviour
         float scrollValue = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scrollValue) > 0.07f) // 작은 움직임을 무시하는 조건
         {
-            if (scrollValue > 0)
+            if (scrollValue < 0)
             {
                 inventoryUI.transform.GetChild(selectedItemIndex).GetComponent<Image>().sprite = normalSprite;
                 selectedItemIndex = (selectedItemIndex + 1) % 6;
@@ -125,7 +125,11 @@ public class InventoryController : NetworkBehaviour
     public void CmdPickUpItem(GameObject item, int index)
     {
         items[index] = item;
-        totalWeight += item.GetComponent<ItemObject>().itemPrice;
+
+        if (items[index] == null)
+            return;
+
+        totalWeight += items[index].GetComponent<ItemObject>().itemPrice;
         item.SetActive(false);
     }
 
@@ -134,6 +138,10 @@ public class InventoryController : NetworkBehaviour
     {
         GameObject item = items[index];
         items[index] = null;
+
+        if (items[index] != null)
+            return;
+            
         totalWeight -= item.GetComponent<ItemObject>().itemPrice;
         item.transform.position = transform.position + transform.up;
         item.SetActive(true);
@@ -142,6 +150,10 @@ public class InventoryController : NetworkBehaviour
 
     public void ClearItems()
     {
+        foreach (var item in items)
+            if (item != null) 
+                NetworkServer.Destroy(item);
+
         items = new List<GameObject>(new GameObject[6]);
         totalWeight = 0;
     }

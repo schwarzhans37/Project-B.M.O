@@ -5,7 +5,8 @@ public class MinotaurAI : EnemyObject
 {
 
     public float dashDistance; // 대쉬 거리
-    public float dashSpeed; // 대쉬 속도
+    public float dashSpeedMultiple; // 대쉬 속도 배수
+    public int dashDamage; // 대쉬 데미지
     public float dashCooldown; // 대쉬 쿨타임
     private float lastDashTime; // 마지막 대쉬 시간
     private bool isDashing = false; // 대쉬 중인지 여부
@@ -16,8 +17,9 @@ public class MinotaurAI : EnemyObject
     {
         base.OnValidate();
 
-        dashDistance = 20f; // 대쉬 거리
-        dashSpeed = 8f; // 대쉬 속도
+        dashDistance = 30f; // 대쉬 거리
+        dashSpeedMultiple = 10f; // 대쉬 속도 배수
+        dashDamage = 900; // 대쉬 데미지
         dashCooldown = 20f; // 대쉬 쿨타임
     }
 
@@ -36,8 +38,8 @@ public class MinotaurAI : EnemyObject
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 0f; // 배회 대기 시간
 
-        attackAngle = 90f; // 공격각(0 ~ 360도)
-        attackRange = 2f; // 공격 범위
+        attackAngle = 120f; // 공격각(0 ~ 360도)
+        attackRange = 2.5f; // 공격 범위
         attackDamage = 490; // 공격 데미지
         attackCooldown = 3f; // 공격 쿨타임
 
@@ -55,11 +57,21 @@ public class MinotaurAI : EnemyObject
         base.UpdateState();
     }
 
+    public override void Detect()
+    {
+        if (isDashing)
+            return;
+
+        base.Detect();
+    }
+
     public override void OnPlayerDetected(Collider target)
     {
         base.OnPlayerDetected(target);
 
-        if (!isDashing && Time.time - lastDashTime > dashCooldown)
+        if (!isDashing
+            && Time.time - lastDashTime > dashCooldown
+            && !Physics.Raycast(transform.position, (targetTransform.position - transform.position).normalized, detectionRange, obstacleMask))
         {
             StartCoroutine(Dash());
         }
@@ -67,52 +79,56 @@ public class MinotaurAI : EnemyObject
 
     public IEnumerator Dash()
     {
-        Debug.Log("Dash!");
         isDashing = true;
-        StopMoving();
+
+        Vector3 dashTarget = (targetTransform.position - transform.position).normalized;
+        if (Physics.Raycast(transform.position, dashTarget, out RaycastHit hit, dashDistance, obstacleMask))
+            dashTarget = hit.transform.position;
+        else
+            dashTarget = transform.position + dashTarget * dashDistance;
+        
+        agent.SetDestination(dashTarget);
         PlayDashSound();
-        // 돌진 방향 계산
-        Vector3 dashDirection = (targetTransform.position - transform.position).normalized;
 
-        // 충돌 체크 및 이동 처리
-        float distanceTravelled = 0f;
-
-        while (distanceTravelled < dashDistance)
+        while (Vector3.Distance(transform.position, dashTarget) < 0.1f)
         {
-            // 이동할 거리 계산
-            float moveDistance = dashSpeed * Time.deltaTime;
+            agent.speed = dashSpeedMultiple * Time.deltaTime;
 
-            // 다음 위치 계산
-            Vector3 nextPosition = transform.position + dashDirection * moveDistance;
-
-            // 충돌 감지 (돌진 방향으로 레이캐스트)
-            if (Physics.Raycast(transform.position, dashDirection, moveDistance, obstacleMask))
+            if (Physics.Raycast(transform.position, (targetTransform.position - transform.position).normalized, 1f, obstacleMask))
             {
-                lastDashTime = Time.time;
-                isDashing = false;
-                yield return new WaitForSeconds(3f);
-                break;
-            }
-            if (Physics.Raycast(transform.position, dashDirection, moveDistance, playerMask))
-            {
-                MeleeAttack();
-                break;
+                StopMoving();
+                yield return new WaitForSeconds(1f);
+                ResumeMoving();
             }
 
-            // 위치 업데이트
-            transform.position = nextPosition;
+            Collider[] players = Physics.OverlapSphere(transform.position, 1f, playerMask);
+            foreach (Collider target in players)
+            {
+                if (target.GetComponent<PlayerDataController>().isDead)
+                    continue;
+                    
+                // 타겟이 시야각 내에 있는지 확인
+                Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
 
-            // 이동한 거리 업데이트
-            distanceTravelled += moveDistance;
+                if (Vector3.Angle(transform.forward, directionToTarget) <= attackAngle / 2)
+                {
+                    // 2. 타겟이 정면 각도 내에 있으면 공격
+                    target.GetComponent<PlayerDataController>().ChangeHp(-dashDamage); // 타겟의 체력 감소
+                }
+            }
+
+            if (players.Length > 0)
+                break;
 
             yield return null; // 다음 프레임 대기
         }
 
         // 돌진 종료 후 NavMeshAgent 재활성화
+        agent.SetDestination(targetTransform.position);
         lastDashTime = Time.time;
         isDashing = false;
-        ResumeMoving();
     }
+
     public override IEnumerator Attack()
     {
         networkAnimator.animator.SetTrigger("Attack");

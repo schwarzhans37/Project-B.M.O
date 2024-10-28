@@ -24,23 +24,22 @@ public class AIWeepAngel : EnemyObject
         attackCooldown = 1f; // 공격 쿨타임
 
         viewAngle = 360; // 시야각(0 ~ 360도)
-        detectionRange = 40f; // 감지 범위
+        detectionRange = 50f; // 감지 범위
         soundDetectionRange = 0f; // 소리 감지 범위
         timeToChaseLostTarget = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
+    }
+
+    public override void UpdateState()
+    {
+        if (isPlayerLooking)
+            return;
+        base.UpdateState();
     }
 
     public override void Detect()
     {
         DetectPlayer();
         IsPlayerLookingAtMe();
-    }
-
-    public override void Chase()
-    {
-        if (isPlayerLooking)
-            return;
-
-        base.Chase();
     }
 
     public override IEnumerator Attack()
@@ -70,7 +69,7 @@ public class AIWeepAngel : EnemyObject
             float dotProduct = Vector3.Dot(playerCam.forward, dirToPlayer);
 
             // 내적이 0.5보다 크다면, 카메라가 AI를 바라보고 있는 것
-            if (dotProduct > 0.55f)
+            if (dotProduct > 0.6f)
             {
                 float distanceToPlayer = Vector3.Distance(playerCam.position, transform.position);
 
@@ -103,8 +102,6 @@ public class AIWeepAngel : EnemyObject
         isPlayerLooking = true;
         StopMoving();
     }
-    public override void AnimationUpdate()
-    {
-
-    }
+    
+    public override void AnimationUpdate() { }
 }

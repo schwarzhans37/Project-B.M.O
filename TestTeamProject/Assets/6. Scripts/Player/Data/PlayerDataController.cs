@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Mirror;
 using Sydewa;
@@ -115,8 +116,24 @@ public class PlayerDataController : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        if (hpBar != null)
-            hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
+        if (hpBar == null)
+            return;
+        
+        StartCoroutine(PlayHpChangeEffect(oldHp, newHp));
+    }
+
+    IEnumerator PlayHpChangeEffect(float oldHp, float newHp)
+    {
+        float elapsedTime = 0;
+        while (elapsedTime < 1f)
+        {
+            if (newHp != hp)
+                break;
+            elapsedTime += Time.deltaTime * 2;
+            hpBar.GetComponent<Image>().fillAmount = Mathf.Lerp(oldHp / 1000, newHp / 1000, elapsedTime);
+            yield return null;
+        }
+        hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
     }
 
     public void OnIsDeadChanged(bool oldDead, bool newDead)
@@ -136,6 +153,9 @@ public class PlayerDataController : NetworkBehaviour
         {
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(true, transform);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
+
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(false);
+            GetComponent<PlayerMovementController>().CmdTorch(false);
         }
         else
         {

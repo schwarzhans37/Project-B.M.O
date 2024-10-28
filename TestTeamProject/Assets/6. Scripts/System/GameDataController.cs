@@ -224,6 +224,8 @@ public class GameDataController : NetworkBehaviour
             dailyReportNickname.Add(conn.identity.GetComponent<PlayerDataController>().nickname);
             if (conn.identity.GetComponent<PlayerDataController>().isDead)
             {
+                conn.identity.GetComponent<InventoryController>().ClearItems();
+                
                 MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
                 conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
                 yield return ConfirmClientsComplete(10f);
@@ -236,7 +238,6 @@ public class GameDataController : NetworkBehaviour
 
             conn.identity.GetComponent<PlayerDataController>().isDead = false;
             conn.identity.GetComponent<PlayerDataController>().hp = 1000;
-            conn.identity.GetComponent<InventoryController>().ClearItems();
         }
 
         SetIsMoveLocked(false);

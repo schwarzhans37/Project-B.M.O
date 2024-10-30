@@ -87,7 +87,7 @@ public class EnemySpawner : NetworkBehaviour
         if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
         {
             Vector3 spawnPosition = hit.position;
-            if (IsValidPosition(spawnPosition))
+            if (IsValidPosition(spawnPosition) && IsInNoSpawnZone(spawnPosition))
             {
                 return spawnPosition;
             }
@@ -106,6 +106,13 @@ public class EnemySpawner : NetworkBehaviour
             }
         }
         return true;
+    }
+
+    // 소환 금지 구역 체크 함수
+    bool IsInNoSpawnZone(Vector3 position)
+    {
+        Collider[] colliders = Physics.OverlapSphere(position, 1f, LayerMask.GetMask("NoSpawnZone"));
+        return colliders.Length == 0; // 금지 구역이 없으면 true
     }
 
     // 스폰할 적 유형 선택

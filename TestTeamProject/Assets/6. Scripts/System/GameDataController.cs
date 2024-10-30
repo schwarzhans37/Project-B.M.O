@@ -105,6 +105,14 @@ public class GameDataController : NetworkBehaviour
             
             yield return null;
         }
+
+        foreach (var conn in NetworkServer.connections.Values)
+        {
+            if (conn.identity == null)
+                continue;
+            if (!completedClients.Contains(conn.connectionId))
+                completedClients.Add(conn.connectionId);
+        }
     }
 
     // 게임 시작 시 호출

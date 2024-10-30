@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 public class MinotaurAI : EnemyObject
 {
@@ -18,7 +19,7 @@ public class MinotaurAI : EnemyObject
         base.OnValidate();
 
         dashDistance = 30f; // 대쉬 거리
-        dashSpeedMultiple = 10f; // 대쉬 속도 배수
+        dashSpeedMultiple = 5f; // 대쉬 속도 배수
         dashDamage = 900; // 대쉬 데미지
         dashCooldown = 20f; // 대쉬 쿨타임
     }
@@ -70,8 +71,7 @@ public class MinotaurAI : EnemyObject
         base.OnPlayerDetected(target);
 
         if (!isDashing
-            && Time.time - lastDashTime > dashCooldown
-            && !Physics.Raycast(transform.position, (targetTransform.position - transform.position).normalized, detectionRange, obstacleMask))
+            && Time.time - lastDashTime > dashCooldown)
         {
             StartCoroutine(Dash());
         }
@@ -79,28 +79,25 @@ public class MinotaurAI : EnemyObject
 
     public IEnumerator Dash()
     {
-        isDashing = true;
-
         Vector3 dashTarget = (targetTransform.position - transform.position).normalized;
+
+        if (Physics.Raycast(transform.position, dashTarget, detectionRange, obstacleMask))
+            yield break;
+
         if (Physics.Raycast(transform.position, dashTarget, out RaycastHit hit, dashDistance, obstacleMask))
             dashTarget = hit.transform.position;
         else
             dashTarget = transform.position + dashTarget * dashDistance;
         
+        isDashing = true;
         agent.SetDestination(dashTarget);
         PlayDashSound();
 
-        while (Vector3.Distance(transform.position, dashTarget) < 0.1f)
+        while (Vector3.Distance(transform.position, dashTarget) > 1f)
         {
-            agent.speed = dashSpeedMultiple * Time.deltaTime;
+            agent.speed += dashSpeedMultiple * Time.deltaTime;
 
-            if (Physics.Raycast(transform.position, (targetTransform.position - transform.position).normalized, 1f, obstacleMask))
-            {
-                StopMoving();
-                yield return new WaitForSeconds(1f);
-                ResumeMoving();
-            }
-
+            // 대쉬 도중 플레이어 충돌 확인
             Collider[] players = Physics.OverlapSphere(transform.position, 1f, playerMask);
             foreach (Collider target in players)
             {
@@ -122,6 +119,10 @@ public class MinotaurAI : EnemyObject
 
             yield return null; // 다음 프레임 대기
         }
+
+        StopMoving();
+        yield return new WaitForSeconds(1f);
+        ResumeMoving();
 
         // 돌진 종료 후 NavMeshAgent 재활성화
         agent.SetDestination(targetTransform.position);

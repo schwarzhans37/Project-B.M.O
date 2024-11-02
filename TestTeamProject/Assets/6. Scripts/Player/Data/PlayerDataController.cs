@@ -145,17 +145,22 @@ public class PlayerDataController : NetworkBehaviour
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetInteractiveUIActive(!newDead);
         StartCoroutine(GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathedUIActive(newDead));
 
-        GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled = true;
-        RenderSettings.skybox = GameObject.Find("GameDataManager").GetComponent<LightingManager>().skyboxMat;
-        DynamicGI.UpdateEnvironment();
+        // GameObject.Find("GameDataManager").GetComponent<LightingManager>().enabled = true;
 
         if (newDead)
         {
+            
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(true, transform);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
 
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(false);
             GetComponent<PlayerMovementController>().CmdTorch(false);
+
+            GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay =
+                GameObject.Find("GameDataManager").GetComponent<GameDataController>().time / 60f;
+            
+            GameObject.Find("GameDataManager").GetComponent<LightingManager>().UpdateLighting(
+                GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay / 24f);
         }
         else
         {

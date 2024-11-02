@@ -76,7 +76,7 @@ public class PlayerMovementController : NetworkBehaviour
         crouchSpeed = 1f;
         runSpeedMultiplier = 2f;
         jumpForce = 6f;
-        jumpCooldown = 1.4f;
+        jumpCooldown = 1.5f;
 
         heal = 100;
         healCooldown = 5f;

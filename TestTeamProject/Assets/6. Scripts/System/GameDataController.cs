@@ -69,6 +69,8 @@ public class GameDataController : NetworkBehaviour
             }
         }
 
+        yield return new WaitForSeconds(1f);
+
         StartCoroutine(StartSetting());
     }
 

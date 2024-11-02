@@ -2,6 +2,7 @@ using System.Collections;
 using Mirror;
 using Sydewa;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class OutsideDoorController : InteractableObject
 {
@@ -29,13 +30,18 @@ public class OutsideDoorController : InteractableObject
         player.transform.position = teleportPoint.position;
         player.transform.rotation = Quaternion.LookRotation(teleportPoint.GetComponent<OutsideDoorController>().lookDirection);
 
-        GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled =
-            !GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled;
+        // GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled =
+        //     !GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled;
 
-        RenderSettings.skybox = RenderSettings.skybox != GameObject.Find("GameDataManager").GetComponent<LightingManager>().dungeonSkyboxMat ?
-            GameObject.Find("GameDataManager").GetComponent<LightingManager>().dungeonSkyboxMat : GameObject.Find("GameDataManager").GetComponent<LightingManager>().defultSkyboxMat;
+        bool isDayCycleOn = !GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn;
 
-        DynamicGI.UpdateEnvironment();
+        GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn = isDayCycleOn;
+
+        GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay =
+            isDayCycleOn ? GameObject.Find("GameDataManager").GetComponent<GameDataController>().time / 60f : 0;
+
+        GameObject.Find("GameDataManager").GetComponent<LightingManager>().UpdateLighting(
+            GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay / 24f);
     }
 
     [ClientRpc]

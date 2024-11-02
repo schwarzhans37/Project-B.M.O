@@ -19,7 +19,7 @@ public class EnvironmentalDamage : NetworkBehaviour
         if (other.CompareTag("Player"))
         {
             other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            PlaySound(other.transform.position);
+            // PlaySound(other.transform.position);
         }
     }
 
@@ -35,7 +35,7 @@ public class EnvironmentalDamage : NetworkBehaviour
         {
             other.GetComponent<PlayerDataController>().ChangeHp(-damage);
             lastTime = Time.time;
-            PlaySound(other.transform.position);
+            // PlaySound(other.transform.position);
         }
     }
 
@@ -47,7 +47,7 @@ public class EnvironmentalDamage : NetworkBehaviour
         if (other.CompareTag("Player"))
         {
             other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            PlaySound(other.transform.position);
+            // PlaySound(other.transform.position);
         }
     }
 

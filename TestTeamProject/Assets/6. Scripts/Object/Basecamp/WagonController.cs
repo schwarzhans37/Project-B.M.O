@@ -59,9 +59,14 @@ public class WagonController : InteractableObject
 
             if (boardedPlayers.Contains(conn.identity.gameObject))
             {
-                MoveToWagon(conn, conn.identity.gameObject);
-                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+                while (Vector3.Distance(conn.identity.gameObject.transform.position, wagonPoint.position) > radius * 2
+                    && conn.identity != null)
+                {
+                    MoveToWagon(conn, conn.identity.gameObject);
+                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                    yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+                    yield return new WaitForSeconds(0.1f);
+                }
             }
         }
 

@@ -8,6 +8,7 @@ public class OutsideDoorController : InteractableObject
 {
     public Transform teleportPoint;
     public Vector3 lookDirection;
+    public bool isLightOn;
 
     protected override void OnValidate()
     {
@@ -29,19 +30,11 @@ public class OutsideDoorController : InteractableObject
     {
         player.transform.position = teleportPoint.position;
         player.transform.rotation = Quaternion.LookRotation(teleportPoint.GetComponent<OutsideDoorController>().lookDirection);
-
-        // GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled =
-        //     !GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled;
-
-        bool isDayCycleOn = !GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn;
-
-        GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn = isDayCycleOn;
+        
+        GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn = isLightOn;
 
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay =
-            isDayCycleOn ? GameObject.Find("GameDataManager").GetComponent<GameDataController>().time / 60f : 0;
-
-        GameObject.Find("GameDataManager").GetComponent<LightingManager>().UpdateLighting(
-            GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay / 24f);
+            isLightOn ? GameObject.Find("GameDataManager").GetComponent<GameDataController>().time / 60f : 0;
     }
 
     [ClientRpc]

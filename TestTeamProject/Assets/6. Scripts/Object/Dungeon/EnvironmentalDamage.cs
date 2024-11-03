@@ -13,19 +13,19 @@ public class EnvironmentalDamage : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isEnter && !isServer)
+        if (!isEnter || !isServer)
             return;
         
         if (other.CompareTag("Player"))
         {
             other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            // PlaySound(other.transform.position);
+            PlaySound(other.transform.position);
         }
     }
 
     void OnTriggerStay(Collider other)
     {
-        if (!isStay && !isServer)
+        if (!isStay || !isServer)
             return;
         
         if (Time.time - lastTime < 1f)
@@ -35,19 +35,19 @@ public class EnvironmentalDamage : NetworkBehaviour
         {
             other.GetComponent<PlayerDataController>().ChangeHp(-damage);
             lastTime = Time.time;
-            // PlaySound(other.transform.position);
+            PlaySound(other.transform.position);
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (!isExit && !isServer)
+        if (!isExit || !isServer)
             return;
         
         if (other.CompareTag("Player"))
         {
             other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            // PlaySound(other.transform.position);
+            PlaySound(other.transform.position);
         }
     }
 
@@ -56,6 +56,7 @@ public class EnvironmentalDamage : NetworkBehaviour
     {
         if (environmentalSound == null)
             return;
+            
         AudioSource.PlayClipAtPoint(environmentalSound, other);
     }
 }

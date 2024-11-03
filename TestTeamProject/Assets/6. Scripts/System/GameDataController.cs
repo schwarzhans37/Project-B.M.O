@@ -71,6 +71,13 @@ public class GameDataController : NetworkBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        for (int i = 0; i < startTime + 1; i++)
+        {
+            gameDataView.SetSunTimePosition(i);
+            yield return ConfirmClientsComplete(10f);
+            yield return new WaitForSeconds(0.1f);
+        }
+
         StartCoroutine(StartSetting());
     }
 
@@ -122,7 +129,6 @@ public class GameDataController : NetworkBehaviour
     {
         if (!isServer)
             yield break;
-
         forestSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
         forestSpawner.GetComponent<SlenderManSpawner>().currentLevel = (int)day/3;
         dungeonSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
@@ -236,9 +242,14 @@ public class GameDataController : NetworkBehaviour
             {
                 conn.identity.GetComponent<InventoryController>().ClearItems();
                 
-                MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
-                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                yield return ConfirmClientsComplete(10f);
+                while (Vector3.Distance(conn.identity.gameObject.transform.position, spawnPoint.transform.GetChild(deathedPlayersCount).position) > 10f
+                    && conn.identity != null)
+                {
+                    MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
+                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                    yield return ConfirmClientsComplete(10f);
+                    yield return new WaitForSeconds(0.1f);
+                }
 
                 dailyReportIsDead.Add(true);
                 deathedPlayersCount++;
@@ -278,8 +289,6 @@ public class GameDataController : NetworkBehaviour
                 yield return ConfirmClientsComplete(10f);
                 gameDataView.ShowGameView("Game Over");
                 yield return ConfirmClientsComplete(10f);
-                gameDataView.FadeOutBlackScreen();
-                yield return ConfirmClientsComplete(10f);
                 yield return InitializeGame();
             }
         }
@@ -303,6 +312,11 @@ public class GameDataController : NetworkBehaviour
         if (!isServer)
             yield break;
 
+        SetIsMoveLocked(true);
+
+        gameDataView.FadeOutBlackScreen();
+        yield return ConfirmClientsComplete(10f);
+
         money = 0;
         day = 0;
         isDay = true;
@@ -322,12 +336,20 @@ public class GameDataController : NetworkBehaviour
             conn.identity.GetComponent<PlayerDataController>().hp = 1000;
             conn.identity.GetComponent<InventoryController>().ClearItems();
 
-            MoveTodeathPoint(conn, conn.identity.gameObject, index);
-            conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-            yield return ConfirmClientsComplete(10f);
+
+            while (Vector3.Distance(conn.identity.gameObject.transform.position, deathPoint.transform.GetChild(index).position) > 10f
+                && conn.identity != null)
+            {
+                MoveTodeathPoint(conn, conn.identity.gameObject, index);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return ConfirmClientsComplete(10f);
+                yield return new WaitForSeconds(0.1f);
+            }
 
             index++;
         }
+
+        SetIsMoveLocked(false);
         
         gameDataView.FadeOutBlackScreen();
         yield return ConfirmClientsComplete(10f);

@@ -145,8 +145,6 @@ public class PlayerDataController : NetworkBehaviour
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetInteractiveUIActive(!newDead);
         StartCoroutine(GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathedUIActive(newDead));
 
-        // GameObject.Find("GameDataManager").GetComponent<LightingManager>().enabled = true;
-
         if (newDead)
         {
             
@@ -158,9 +156,6 @@ public class PlayerDataController : NetworkBehaviour
 
             GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay =
                 GameObject.Find("GameDataManager").GetComponent<GameDataController>().time / 60f;
-            
-            GameObject.Find("GameDataManager").GetComponent<LightingManager>().UpdateLighting(
-                GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay / 24f);
         }
         else
         {

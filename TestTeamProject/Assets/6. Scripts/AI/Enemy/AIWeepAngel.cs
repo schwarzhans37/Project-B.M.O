@@ -69,7 +69,7 @@ public class AIWeepAngel : EnemyObject
             float dotProduct = Vector3.Dot(playerCam.forward, dirToPlayer);
 
             // 내적이 0.5보다 크다면, 카메라가 AI를 바라보고 있는 것
-            if (dotProduct > 0.6f)
+            if (dotProduct > 0.7f)
             {
                 float distanceToPlayer = Vector3.Distance(playerCam.position, transform.position);
 

@@ -132,7 +132,7 @@ public class MinotaurAI : EnemyObject
 
     public override IEnumerator Attack()
     {
-        networkAnimator.animator.SetTrigger("Attack");
+        networkAnimator.SetTrigger("Attack");
         yield return base.Attack();
     }
 

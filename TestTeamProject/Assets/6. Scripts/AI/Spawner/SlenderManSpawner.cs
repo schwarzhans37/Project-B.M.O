@@ -12,7 +12,7 @@ public class SlenderManSpawner : NetworkBehaviour
     public int currentLevel; // 현재 레벨에 따라 변경 (레벨 정보를 가져와서 업데이트)
     public float LevelMultiplier => 1f + (currentLevel * 0.2f); // 레벨 배율
     [Range(0, 1000f)] public float spawnRange; // 스폰 범위
-    [Range(0, 1f)] public float spawnProbability; // 스폰 확률 (50%)
+    [Range(0, 1f)] public float spawnProbability; // 스폰 확률
     [Range(0, 100f)] public float spawnDelay; // 스폰 딜레이
     private float spawnTimer; // 스폰 타이머
 
@@ -65,7 +65,6 @@ public class SlenderManSpawner : NetworkBehaviour
         // 스폰
         spawnedSlenderMan = Instantiate(slenderManPrefab, targetPlayer.transform.position + Vector3.back * 40, Quaternion.identity);
         spawnedSlenderMan.GetComponent<AISlenderMan>().player = targetPlayer.transform;
-        spawnedSlenderMan.GetComponent<AISlenderMan>().playerCamera = targetPlayer.GetComponentInChildren<Camera>(true).transform;
         NetworkServer.Spawn(spawnedSlenderMan);
 
         // 스폰 후 초기화

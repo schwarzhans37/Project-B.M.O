@@ -88,9 +88,10 @@ public class GameDataController : NetworkBehaviour
 
         totalClients = NetworkServer.connections.Count;
 
+        SetIsMoveLocked(false);
         SetIsInteractionLocked(true);
         yield return new WaitForSeconds(1f);
-        gameDataView.ShowGameView("게임 시작합니다.");
+        gameDataView.ShowGameView("게임을 시작합니다.");
         yield return ConfirmClientsComplete(10f);
         gameDataView.ShowGameView("할당량을 확인하세요.");
         yield return ConfirmClientsComplete(10f);
@@ -150,7 +151,7 @@ public class GameDataController : NetworkBehaviour
             elapsedTime += Time.deltaTime;
             time = Mathf.RoundToInt(elapsedTime) + startTime * 60;
 
-            if (time > 1140)
+            if (time > 1080)
                 forestSpawner.GetComponent<SlenderManSpawner>().SpawnSlenderMan();
 
             deathedPlayersCount = 0;
@@ -242,14 +243,9 @@ public class GameDataController : NetworkBehaviour
             {
                 conn.identity.GetComponent<InventoryController>().ClearItems();
                 
-                while (Vector3.Distance(conn.identity.gameObject.transform.position, spawnPoint.transform.GetChild(deathedPlayersCount).position) > 10f
-                    && conn.identity != null)
-                {
-                    MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
-                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                    yield return ConfirmClientsComplete(10f);
-                    yield return new WaitForSeconds(0.1f);
-                }
+                MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return ConfirmClientsComplete(10f);
 
                 dailyReportIsDead.Add(true);
                 deathedPlayersCount++;
@@ -336,15 +332,9 @@ public class GameDataController : NetworkBehaviour
             conn.identity.GetComponent<PlayerDataController>().hp = 1000;
             conn.identity.GetComponent<InventoryController>().ClearItems();
 
-
-            while (Vector3.Distance(conn.identity.gameObject.transform.position, deathPoint.transform.GetChild(index).position) > 10f
-                && conn.identity != null)
-            {
-                MoveTodeathPoint(conn, conn.identity.gameObject, index);
-                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                yield return ConfirmClientsComplete(10f);
-                yield return new WaitForSeconds(0.1f);
-            }
+            MoveTodeathPoint(conn, conn.identity.gameObject, index);
+            conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+            yield return ConfirmClientsComplete(10f);
 
             index++;
         }
@@ -358,16 +348,28 @@ public class GameDataController : NetworkBehaviour
     [TargetRpc]
     public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, int index)
     {
-        player.transform.position = spawnPoint.transform.GetChild(index).position;
-        player.transform.rotation = spawnPoint.transform.GetChild(index).rotation;
+        int count = 0;
+        while (Vector3.Distance(player.transform.position, spawnPoint.transform.GetChild(index).position) > 10f
+            && count < 1000)
+        {
+            player.transform.position = spawnPoint.transform.GetChild(index).position;
+            player.transform.rotation = spawnPoint.transform.GetChild(index).rotation;
+            count++;
+        }
         NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 
     [TargetRpc]
     public void MoveTodeathPoint(NetworkConnectionToClient target, GameObject player, int index)
     {
-        player.transform.position = deathPoint.transform.GetChild(index).position;
-        player.transform.rotation = deathPoint.transform.GetChild(index).rotation;
+        int count = 0;
+        while (Vector3.Distance(player.transform.position, deathPoint.transform.GetChild(index).position) > 10f
+            && count < 1000)
+        {
+            player.transform.position = deathPoint.transform.GetChild(index).position;
+            player.transform.rotation = deathPoint.transform.GetChild(index).rotation;
+            count++;
+        }
         NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 

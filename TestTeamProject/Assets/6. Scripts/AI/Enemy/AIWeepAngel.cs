@@ -10,10 +10,10 @@ public class AIWeepAngel : EnemyObject
         base.Setting();
 
         stateInterval = 0.1f; // 상태 전환 주기
-        detectionInterval = 0.1f; // 감지 주기
+        detectionInterval = 0.05f; // 감지 주기
 
         patrolSpeed = 1.5f; // 배회 속도
-        chaseSpeed = 10f; // 추적 속도
+        chaseSpeed = 8f; // 추적 속도
 
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 3f; // 배회 대기 시간
@@ -21,7 +21,7 @@ public class AIWeepAngel : EnemyObject
         attackAngle = 180f; // 공격각(0 ~ 360도)
         attackRange = 1f; // 공격 범위
         attackDamage = 2000; // 공격 데미지
-        attackCooldown = 1f; // 공격 쿨타임
+        attackCooldown = 1.5f; // 공격 쿨타임
 
         viewAngle = 360; // 시야각(0 ~ 360도)
         detectionRange = 50f; // 감지 범위

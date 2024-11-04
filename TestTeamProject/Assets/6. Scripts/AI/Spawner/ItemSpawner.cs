@@ -34,7 +34,9 @@ public class ItemSpawner : NetworkBehaviour
 
         currentLevel = level;
 
-        int totalItemsToSpawn = Mathf.CeilToInt(baseItemCount * LevelMultiplier);
+        float playerCountMultiplier = NetworkServer.connections.Count / 2 > 1 ? NetworkServer.connections.Count / 2 : 1; // 플레이어 수
+
+        int totalItemsToSpawn = Mathf.CeilToInt(baseItemCount * playerCountMultiplier * LevelMultiplier);
 
         // 각 아이템 유형의 스폰할 수 있는 수 계산
         Dictionary<GameObject, int> spawnLimits = CalculateSpawnLimits(totalItemsToSpawn);

@@ -80,6 +80,12 @@ public class PlayerDataController : NetworkBehaviour
         nickname = playerNickname;
     }
 
+    [Command]
+    public void CmdChangeHp(int amount)
+    {
+        ChangeHp(amount);
+    }
+
     public void ChangeHp(int amount)
     {
         hp += amount;

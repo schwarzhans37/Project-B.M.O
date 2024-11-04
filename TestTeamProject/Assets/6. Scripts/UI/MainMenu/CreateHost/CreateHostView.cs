@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class CreateHostView : MonoBehaviour
 {   
-    public TMP_InputField hostNameInput;
-    public TMP_InputField hostPasswordInput; 
+    public TMP_InputField hostTitleInput;
+    public TMP_InputField nicknameInput; 
     public List<Button> maxPlayerButtons;
     public Button createHostButton;
     public Button cancelButton;
@@ -29,7 +29,7 @@ public class CreateHostView : MonoBehaviour
         }
         createHostButton.onClick.AddListener(() =>
         {
-            OnCreateHostAttempt?.Invoke(hostNameInput.text, hostPasswordInput.text);
+            OnCreateHostAttempt?.Invoke(hostTitleInput.text, nicknameInput.text);
         });
         cancelButton.onClick.AddListener(OnCancelButton);
         gameObject.GetComponent<Button>().onClick.AddListener(OnCancelButton);
@@ -37,8 +37,8 @@ public class CreateHostView : MonoBehaviour
 
     void OnDisable()
     {
-        hostNameInput.text = "";
-        hostPasswordInput.text = "";
+        hostTitleInput.text = "";
+        nicknameInput.text = "";
     }
 
     void OnMaxPlayerButton(int index)

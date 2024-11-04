@@ -1220,9 +1220,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5972632889620679525}
   - component: {fileID: 5101025334272842819}
-  - component: {fileID: 1576258713510142927}
   - component: {fileID: 4747230186151029512}
   - component: {fileID: 4200019544799319960}
+  - component: {fileID: 2928859615917748921}
   m_Layer: 0
   m_Name: RockGolem
   m_TagString: Untagged
@@ -1268,31 +1268,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1576258713510142927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4633979070166697340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ca178e1191ebcb4f97e4982405f4086, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 500
-  moveSpeed: 2
-  chaseSpeed: 4
-  meleeAttackRange: 1
-  meleeAttackDamage: 50
-  meleeRange: 3
-  meleeAttackCooldown: 1
-  rockThrowRange: 10
-  rockDirectHitDamage: 100
-  rockAoEDamage: 40
-  rockAoERadius: 4
-  rockProjectilePrefab: {fileID: 6447173554606553117, guid: d3fb55eb5a998284dad6166c03017f03, type: 3}
-  rockThrowOrigin: {fileID: 7648673624560915764}
 --- !u!195 &4747230186151029512
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1338,6 +1313,33 @@ CapsuleCollider:
   m_Height: 3
   m_Direction: 1
   m_Center: {x: 0, y: 1.5, z: 0}
+--- !u!54 &2928859615917748921
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4633979070166697340}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &5452973851240263384
 GameObject:
   m_ObjectHideFlags: 0

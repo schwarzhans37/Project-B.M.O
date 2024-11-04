@@ -6,12 +6,12 @@ TagManager:
   tags:
   - PasswordField
   - TeleportTest
-  - Ground
   - InteractableObject
   - ItemObject
-  - MinoWeapon
   - PlayerCam
-  - DogHearSound
+  - Fire
+  - Forest
+  - Water
   layers:
   - Default
   - TransparentFX
@@ -19,10 +19,10 @@ TagManager:
   - PostProcessing
   - Water
   - UI
-  - LocalPlayer
-  - 
-  - 
-  - 
+  - Player
+  - Obstacle
+  - Sound
+  - NoSpawnZone
   - 
   - 
   - 

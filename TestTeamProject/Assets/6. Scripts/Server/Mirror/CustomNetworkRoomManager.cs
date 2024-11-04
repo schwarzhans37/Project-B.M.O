@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class CustomNetworkRoomManager : NetworkRoomManager
 {
+    public static string RoomTitle;
+    public static string Nickname;
+
     public override void Start()
     {
         base.Start();

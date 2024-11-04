@@ -16,9 +16,6 @@ public class LightingManager : MonoBehaviour
         [SerializeField] public Light SunDirectionalLight;
         [SerializeField] private LightingPreset Preset;
 
-        public Material defultSkyboxMat;
-        public Material dungeonSkyboxMat;
-
         //Rotation axis
         public enum RotationAxis{X,Y}
         [SerializeField] private RotationAxis rotationAxis = RotationAxis.X;
@@ -162,7 +159,7 @@ public class LightingManager : MonoBehaviour
             }
         }
 
-        private void UpdateLighting(float timePercent)
+        public void UpdateLighting(float timePercent)
         {
             //Set ambient and fog
             RenderSettings.ambientLight = Preset.AmbientColor.Evaluate(timePercent);

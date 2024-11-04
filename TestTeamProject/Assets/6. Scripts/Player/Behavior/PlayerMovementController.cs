@@ -28,6 +28,8 @@ public class PlayerMovementController : NetworkBehaviour
     [Range(-10f, 10f)]
     public float jumpForce; // 점프 힘
     public float jumpSpeed;
+    public float jumpCooldown;
+    private float lastJumpTime = 0f;
 
     public int heal;
     public float healCooldown;
@@ -35,6 +37,7 @@ public class PlayerMovementController : NetworkBehaviour
 
 
     //애니메이터 플래그
+    [SyncVar(hook = nameof(OnIsTorchChanged))]
     public bool isTorch = false;
 
     //사운드 테스트
@@ -73,6 +76,7 @@ public class PlayerMovementController : NetworkBehaviour
         crouchSpeed = 1f;
         runSpeedMultiplier = 2f;
         jumpForce = 6f;
+        jumpCooldown = 1.5f;
 
         heal = 100;
         healCooldown = 5f;
@@ -89,7 +93,7 @@ public class PlayerMovementController : NetworkBehaviour
     {
         base.OnStartAuthority();
 
-        // 로컬 플레이어인 경우 캐릭터 컨트롤러 활성화
+        // 로컬 플레이어인 경우 활성화
         GetComponent<Collider>().enabled = false;
         characterController.enabled = true;
         this.enabled = true;
@@ -104,14 +108,13 @@ public class PlayerMovementController : NetworkBehaviour
 
         // 일시정지 상태가 아니면 이동, 점프, 업데이트
         if (!GameUIController.IsPaused
-            && !GameDataController.isMoveLocked)
+            && !GameDataController.IsMoveLocked)
         {
             HandleMove();
             HandleBehavior();
         }
         else
             direction = Vector3.zero; // 일시정지 상태이면 속도를 0으로 설정
-        
 
         // 힐링
         CheckHeal();
@@ -169,30 +172,30 @@ public class PlayerMovementController : NetworkBehaviour
     { 
         // 점프기능
         if (Input.GetKeyDown(KeyCode.Space)
-            && characterController.isGrounded)
+            && characterController.isGrounded
+            && Time.time - lastJumpTime > jumpCooldown)
         {
+            lastJumpTime = Time.time;
             jumpSpeed = jumpForce;
             networkAnimator.SetTrigger("Jump");
         }
         // 토치기능
         if (Input.GetKeyDown(KeyCode.F))
         {
-            isTorch = !isTorch;
-            CmdTorch(isTorch);
-            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(isTorch);
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(!isTorch);
+            CmdTorch(!isTorch);
         }
     }
 
     [Command]
-    void CmdTorch(bool isTorch)
+    public void CmdTorch(bool isTorch)
     {
-        RpcTorch(isTorch);
+        this.isTorch = isTorch;
     }
 
-    [ClientRpc]
-    void RpcTorch(bool isTorch)
+    void OnIsTorchChanged(bool oldTorch, bool newTorch)
     {
-        Torch.transform.GetChild(0).gameObject.SetActive(isTorch);
+        Torch.transform.GetChild(0).gameObject.SetActive(newTorch);
     }
 
     [Command]
@@ -235,6 +238,9 @@ public class PlayerMovementController : NetworkBehaviour
         Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
 
         if (hit.collider == null)
+            return;
+
+        if (!characterController.isGrounded)
             return;
 
         if (hit.collider.CompareTag("Forest"))

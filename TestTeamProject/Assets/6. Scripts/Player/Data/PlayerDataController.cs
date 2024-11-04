@@ -1,7 +1,7 @@
+using System;
 using System.Collections;
 using Mirror;
 using Sydewa;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,22 +21,57 @@ public class PlayerDataController : NetworkBehaviour
     public GameObject hpBar;
     public GameObject staminaBar;
 
-    //횃불 토글 변수
-    public bool isTorch = false;
+    protected override void OnValidate()
+    {
+        base.OnValidate();
+        this.enabled = false;
+    }
 
-    public bool isInteractionLock = false;
-    public bool isMoveLock = false;
+    public override void OnStartAuthority()
+    {
+        base.OnStartAuthority();
+
+        // 권한이 있으면 활성화
+        this.enabled = true;
+    }
 
     void Start()
     {
         if (!isLocalPlayer)
             return;
 
-        SetNickname(CustomNetworkRoomManager.Nickname != null && CustomNetworkRoomManager.Nickname != ""
-            ? CustomNetworkRoomManager.Nickname : "No Nickname");
         hpBar = GameObject.Find("HPBar");
         staminaBar = GameObject.Find("StaminaBar");
-        isTorch = GetComponent<PlayerMovementController>().isTorch;
+
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().playerDataController = this;
+
+        SetNickname(CustomNetworkRoomManager.Nickname != null && CustomNetworkRoomManager.Nickname != ""
+            ? CustomNetworkRoomManager.Nickname : "No Nickname");
+    }
+    
+    public void CmdReportTaskWorking()
+    {
+        GameDataController gameDataController = GameObject.Find("GameDataManager").GetComponent<GameDataController>();
+
+        // 클라이언트의 연결 ID를 추가하여 작업 중임을 추적
+        if (gameDataController.completedClients.Contains(connectionToClient.connectionId))
+        {
+            gameDataController.completedClients.Remove(connectionToClient.connectionId);
+            Debug.Log($"Client {connectionToClient.connectionId} is working on the task.");
+        }
+    }
+
+    [Command]
+    public void CmdReportTaskComplete()
+    {
+        GameDataController gameDataController = GameObject.Find("GameDataManager").GetComponent<GameDataController>();
+
+        // 클라이언트의 연결 ID를 추가하여 완료 여부를 추적
+        if (!gameDataController.completedClients.Contains(connectionToClient.connectionId))
+        {
+            gameDataController.completedClients.Add(connectionToClient.connectionId);
+            Debug.Log($"Client {connectionToClient.connectionId} has completed the task.");
+        }
     }
 
     [Command]
@@ -76,6 +111,31 @@ public class PlayerDataController : NetworkBehaviour
             staminaBar.GetComponent<Image>().fillAmount = (float)stamina / 1000;
     }
 
+    public void OnHpChanged(int oldHp, int newHp)
+    {
+        if (!isLocalPlayer)
+            return;
+
+        if (hpBar == null)
+            return;
+        
+        StartCoroutine(PlayHpChangeEffect(oldHp, newHp));
+    }
+
+    IEnumerator PlayHpChangeEffect(float oldHp, float newHp)
+    {
+        float elapsedTime = 0;
+        while (elapsedTime < 1f)
+        {
+            if (newHp != hp)
+                break;
+            elapsedTime += Time.deltaTime * 2;
+            hpBar.GetComponent<Image>().fillAmount = Mathf.Lerp(oldHp / 1000, newHp / 1000, elapsedTime);
+            yield return null;
+        }
+        hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
+    }
+
     public void OnIsDeadChanged(bool oldDead, bool newDead)
     {
         if (!isLocalPlayer)
@@ -84,37 +144,23 @@ public class PlayerDataController : NetworkBehaviour
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetPlayerUIActive(!newDead);
         GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetInteractiveUIActive(!newDead);
         StartCoroutine(GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathedUIActive(newDead));
-        GameObject.Find("GameDataManager").GetComponent<LightingManager>().SunDirectionalLight.enabled = true;
-        RenderSettings.skybox = GameObject.Find("GameDataManager").GetComponent<LightingManager>().skyboxMat;
-        DynamicGI.UpdateEnvironment();
 
-        StartCoroutine(ChangedDeadState(newDead));
-    }
-
-    public IEnumerator ChangedDeadState(bool newDead)
-    {
         if (newDead)
         {
+            
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(true, transform);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
-            yield return new WaitForSeconds(1f);
-            transform.position = Vector3.zero;
+
+            GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetTorchState(false);
+            GetComponent<PlayerMovementController>().CmdTorch(false);
+
+            GameObject.Find("GameDataManager").GetComponent<LightingManager>().TimeOfDay =
+                GameObject.Find("GameDataManager").GetComponent<GameDataController>().time / 60f;
         }
         else
         {
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(true);
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(false);
         }
-
-        yield break;
-    }
-
-    public void OnHpChanged(int oldHp, int newHp)
-    {
-        if (!isLocalPlayer)
-            return;
-
-        if (hpBar != null)
-            hpBar.GetComponent<Image>().fillAmount = (float)newHp / 1000;
     }
 }

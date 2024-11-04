@@ -12,6 +12,7 @@ public class GameDataController : NetworkBehaviour
 {
     public GameDataView gameDataView;
 
+    public GameObject deathPoint;
     public GameObject spawnPoint;
     public GameObject sleepingPoint;
     public GameObject wagon;
@@ -32,24 +33,24 @@ public class GameDataController : NetworkBehaviour
     public int time; // 게임 진행 시간
 
     public int startTime; // 게임 시작 시간
-    private float maxGameTime; // 게임 진행 시간 상한
+    public int maxGameTime; // 게임 진행 시간 상한
 
     [SyncVar(hook = nameof(OnIsDayChanged))]
     public bool isDay = true; // 낮 밤 여부
 
-    [SyncVar(hook = nameof(OnIsPausedChanged))]
-    public bool isPaused = false; // 게임 일시정지 여부
+    public HashSet<int> completedClients = new HashSet<int>();
+    public int totalClients; 
+    public PlayerDataController playerDataController;
 
-    public static bool isinteractionLocked = true;
-    public static bool isMoveLocked = false;
+    public static bool IsinteractionLocked = true;
+    public static bool IsMoveLocked = false;
 
     protected override void OnValidate()
     {
         base.OnValidate();
         gameDataView = GetComponent<GameDataView>();
         startTime = (int)GetComponent<LightingManager>().StartTime;
-
-        maxGameTime = 900f;
+        maxGameTime = 900 + startTime * 60;
     }
 
     IEnumerator Start()
@@ -57,20 +58,70 @@ public class GameDataController : NetworkBehaviour
         if (!isServer)
             yield break;
 
-        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
-        List<NetworkRoomPlayer> roomPlayers = GameObject.FindObjectsOfType<NetworkRoomPlayer>().ToList();
-        while (players.Count != roomPlayers.Count)
+        CustomNetworkRoomManager roomManager = NetworkManager.singleton as CustomNetworkRoomManager;
+        while (completedClients.Count == roomManager.roomSlots.Count)
         {
-            Debug.Log(players.Count);
-            players = GameObject.FindGameObjectsWithTag("Player").ToList();
-            yield return null;
+            completedClients.Clear();
+            foreach (var conn in NetworkServer.connections.Values)
+            {
+                if (conn.identity != null)
+                    completedClients.Add(conn.connectionId);
+            }
         }
+
+        yield return new WaitForSeconds(1f);
+
+        for (int i = 0; i < startTime + 1; i++)
+        {
+            gameDataView.SetSunTimePosition(i);
+            yield return ConfirmClientsComplete(10f);
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        StartCoroutine(StartSetting());
+    }
+
+    public IEnumerator StartSetting()
+    {
+        if (!isServer)
+            yield break;
+
+        totalClients = NetworkServer.connections.Count;
+
+        SetIsInteractionLocked(true);
         yield return new WaitForSeconds(1f);
         gameDataView.ShowGameView("게임 시작합니다.");
-        yield return new WaitForSeconds(3.2f);
+        yield return ConfirmClientsComplete(10f);
         gameDataView.ShowGameView("할당량을 확인하세요.");
-        yield return new WaitForSeconds(3.2f);
+        yield return ConfirmClientsComplete(10f);
         SetAllocatedAmount();
+        yield return ConfirmClientsComplete(10f);
+        SetIsInteractionLocked(false);
+    }
+
+    public IEnumerator ConfirmClientsComplete(float timeoutDuration)
+    {
+        totalClients = NetworkServer.connections.Count;
+        if (completedClients.Count == totalClients)
+            completedClients.Clear();
+
+        float elapsedTime = 0f;
+        while (elapsedTime < timeoutDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            if (completedClients.Count == totalClients)
+                break;
+            
+            yield return null;
+        }
+
+        foreach (var conn in NetworkServer.connections.Values)
+        {
+            if (conn.identity == null)
+                continue;
+            if (!completedClients.Contains(conn.connectionId))
+                completedClients.Add(conn.connectionId);
+        }
     }
 
     // 게임 시작 시 호출
@@ -78,19 +129,21 @@ public class GameDataController : NetworkBehaviour
     {
         if (!isServer)
             yield break;
-
         forestSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
         forestSpawner.GetComponent<SlenderManSpawner>().currentLevel = (int)day/3;
         dungeonSpawner.GetComponent<EnemySpawner>().SpawnEnemies((int)day/3);
         dungeonSpawner.GetComponent<ItemSpawner>().SpawnItems((int)day/3);
 
+        SetIsInteractionLocked(false);
+        SetIsMoveLocked(false);
+
         gameDataView.FadeOutBlackScreen();
-        yield return new WaitForSeconds(2f);
+        yield return ConfirmClientsComplete(10f);
 
         gameDataView.ShowTime();
         gameDataView.SetSunMovement(true);
 
-        List<GameObject> SurvivedPlayers = players;
+        int deathedPlayersCount;
         float elapsedTime = 0f;
         while (isDay)
         {
@@ -100,21 +153,17 @@ public class GameDataController : NetworkBehaviour
             if (time > 1140)
                 forestSpawner.GetComponent<SlenderManSpawner>().SpawnSlenderMan();
 
-            foreach (GameObject player in SurvivedPlayers)
+            deathedPlayersCount = 0;
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
             {
-                if (player == null)
-                {
-                    SurvivedPlayers.Remove(player);
-                    break;
-                }
-                if (player.GetComponent<PlayerDataController>().isDead)
-                {
-                    SurvivedPlayers.Remove(player);
-                    break;
-                }
+                if (conn.identity == null)
+                    continue;
+                if (conn.identity.GetComponent<PlayerDataController>().isDead)
+                    deathedPlayersCount++;
             }
 
-            if (SurvivedPlayers.Count == 0)
+            if (deathedPlayersCount == NetworkServer.connections.Count
+                || time > maxGameTime)
             {
                 StartCoroutine(OnAllPlayersDead());
                 break;
@@ -125,43 +174,129 @@ public class GameDataController : NetworkBehaviour
     }
 
     // 게임 종료 시 호출
-    public IEnumerator EndGame(List<GameObject> SurvivedPlayers, List<GameObject> players)
+    public IEnumerator EndGame()
     {
         if (!isServer)
             yield break;
 
         isDay = false;
+        gameDataView.HideTime();
+        gameDataView.SetSunMovement(false);
+        InitializeFields();
+
+        SetIsInteractionLocked(false);
+        SetIsMoveLocked(false);
 
         gameDataView.FadeOutBlackScreen();
-
-        foreach (GameObject player in players)
-        {
-            if (player == null)
-                continue;
-
-            if (!SurvivedPlayers.Contains(player))
-                player.GetComponent<PlayerDataController>().isDead = true;
-        }
-
-        yield return new WaitForSeconds(1f);
-        gameDataView.HideTime();
-        gameDataView.SetSunMovement(false);
-        InitializeFields();
+        yield return ConfirmClientsComplete(10f);
     }
 
-
+    // 모든 플레이어가 사망 시 호출
     public IEnumerator OnAllPlayersDead()
     {
-
-        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
-        StartCoroutine(AdvanceDay(players));
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn.identity == null)
+                continue;
+            conn.identity.GetComponent<PlayerDataController>().isDead = true;
+        }
         
-        yield return new WaitForSeconds(1f);
+        SetIsInteractionLocked(true);
+        SetIsMoveLocked(true);
+
+        gameDataView.FadeOutBlackScreen();
+        yield return ConfirmClientsComplete(10f);
+
         gameDataView.HideTime();
         gameDataView.SetSunMovement(false);
         InitializeFields();
+
+        StartCoroutine(AdvanceDay());
     }
 
+    // 하루가 지날 때 호출
+    public IEnumerator AdvanceDay()
+    {
+        if (!isServer)
+            yield break;
+
+        day++;
+        isDay = true;
+        time = startTime * 60;
+
+        gameDataView.SetSunTimePosition(startTime);
+        yield return ConfirmClientsComplete(10f);
+
+        totalClients = NetworkServer.connections.Count;
+        List<string> dailyReportNickname = new List<string>();
+        List<bool> dailyReportIsDead = new List<bool>();
+
+        int deathedPlayersCount = 0;
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn.identity == null)
+                continue;
+
+            dailyReportNickname.Add(conn.identity.GetComponent<PlayerDataController>().nickname);
+            if (conn.identity.GetComponent<PlayerDataController>().isDead)
+            {
+                conn.identity.GetComponent<InventoryController>().ClearItems();
+                
+                while (Vector3.Distance(conn.identity.gameObject.transform.position, spawnPoint.transform.GetChild(deathedPlayersCount).position) > 10f
+                    && conn.identity != null)
+                {
+                    MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
+                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                    yield return ConfirmClientsComplete(10f);
+                    yield return new WaitForSeconds(0.1f);
+                }
+
+                dailyReportIsDead.Add(true);
+                deathedPlayersCount++;
+            }
+            else
+                dailyReportIsDead.Add(false);
+
+            conn.identity.GetComponent<PlayerDataController>().isDead = false;
+            conn.identity.GetComponent<PlayerDataController>().hp = 1000;
+        }
+
+        SetIsMoveLocked(false);
+
+        gameDataView.FadeOutBlackScreen();
+        yield return ConfirmClientsComplete(10f);
+
+        gameDataView.ShowDailyReport(dailyReportNickname, dailyReportIsDead);
+        yield return ConfirmClientsComplete(30f);
+
+        money -= Mathf.RoundToInt(money * deathedPlayersCount / totalClients);
+
+        yield return new WaitForSeconds(3f);
+
+        if (day % 3 == 0)
+        {
+            if (allocatedAmount < money)
+            {
+                gameDataView.ShowGameView("생존 성공");
+                yield return ConfirmClientsComplete(10f);
+                money -= allocatedAmount;
+                SetAllocatedAmount();
+                yield return ConfirmClientsComplete(10f);
+            }
+            else
+            {
+                gameDataView.ShowGameView("할당량이 부족합니다.");
+                yield return ConfirmClientsComplete(10f);
+                gameDataView.ShowGameView("Game Over");
+                yield return ConfirmClientsComplete(10f);
+                yield return InitializeGame();
+            }
+        }
+
+        SetIsInteractionLocked(false);
+    }
+
+    // 필드 초기화 시 호출
     public void InitializeFields()
     {
         forestSpawner.GetComponent<EnemySpawner>().RemoveEnemies();
@@ -171,155 +306,92 @@ public class GameDataController : NetworkBehaviour
         dungeonSpawner.GetComponent<ItemSpawner>().RemoveItems();
     }
 
-    public IEnumerator AdvanceDay(List<GameObject> players)
-    {
-        if (!isServer)
-            yield break;
-
-        gameDataView.FadeOutBlackScreen();
-        yield return new WaitForSeconds(1f);
-
-        day++;
-        isDay = true;
-        time = startTime * 60;
-        gameDataView.SetSunTimePosition(startTime);
-
-        List<string> dailyReportNickname = new List<string>();
-        List<bool> dailyReportIsDead = new List<bool>();
-        int deathedPlayersCount = 0;
-        for (int i = 0; i < players.Count; i++)
-        {
-            if (players[i] == null)
-            {
-                players.RemoveAt(i);
-                i--;
-                continue;
-            }
-
-            dailyReportNickname.Add(players[i].GetComponent<PlayerDataController>().nickname);
-            dailyReportIsDead.Add(players[i].GetComponent<PlayerDataController>().isDead);
-
-            if (!players[i].GetComponent<PlayerDataController>().isDead)
-                continue;
-
-            deathedPlayersCount++;
-            players[i].GetComponent<PlayerDataController>().isDead = false;
-            players[i].GetComponent<PlayerDataController>().hp = 1000;
-            players[i].GetComponent<InventoryController>().ClearItems();
-            MoveToSpawnPoint(players[i].GetComponent<NetworkIdentity>().connectionToClient, players[i], spawnPoint.transform.GetChild(i).position);
-        }
-
-        yield return new WaitForSeconds(1f);
-
-        gameDataView.ShowDailyReport(dailyReportNickname, dailyReportIsDead);
-
-        yield return new WaitForSeconds(6f + dailyReportIsDead.Count * 0.5f);
-
-        money -= Mathf.RoundToInt(money * deathedPlayersCount / players.Count);
-
-        yield return new WaitForSeconds(3f);
-
-        if (day % 3 != 0)
-            yield break;
-
-        if (allocatedAmount < money)
-        {
-            gameDataView.ShowGameView("생존 성공");
-            yield return new WaitForSeconds(3.02f);
-            money -= allocatedAmount;
-            SetAllocatedAmount();
-        }
-        else
-        {
-            gameDataView.ShowGameView("할당량이 부족합니다.");
-            yield return new WaitForSeconds(3.2f);
-            gameDataView.ShowGameView("Game Over");
-            yield return new WaitForSeconds(1f);
-            gameDataView.FadeOutBlackScreen();
-            yield return new WaitForSeconds(1f);
-            players = GameObject.FindGameObjectsWithTag("Player").ToList();
-            foreach (GameObject player in players)
-                MoveToSpawnPoint(player.GetComponent<NetworkIdentity>().connectionToClient, player, transform.position);
-        }
-    }
-
+    // 게임 초기화 시 호출
     public IEnumerator InitializeGame()
     {
         if (!isServer)
             yield break;
 
+        SetIsMoveLocked(true);
+
         gameDataView.FadeOutBlackScreen();
-        yield return new WaitForSeconds(1f);
+        yield return ConfirmClientsComplete(10f);
 
-        day = 0;
-        time = startTime * 60;
         money = 0;
+        day = 0;
         isDay = true;
-
-        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
-        for (int i = 0; i < players.Count; i++)
-        {
-            if (players[i] == null)
-            {
-                players.RemoveAt(i);
-                i--;
-                continue;
-            }
-
-            players[i].GetComponent<PlayerDataController>().isDead = false;
-            players[i].GetComponent<PlayerDataController>().hp = 1000;
-            players[i].GetComponent<InventoryController>().ClearItems();
-            MoveToSpawnPoint(players[i].GetComponent<NetworkIdentity>().connectionToClient, players[i], spawnPoint.transform.GetChild(i).position);
-        }
+        time = startTime * 60;
 
         List<GameObject> items = GameObject.FindGameObjectsWithTag("ItemObject").ToList();
         foreach (GameObject item in items)
             NetworkServer.Destroy(item);
+        
+        int index = 0;
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+        {
+            if (conn.identity == null)
+                continue;
+         
+            conn.identity.GetComponent<PlayerDataController>().isDead = false;
+            conn.identity.GetComponent<PlayerDataController>().hp = 1000;
+            conn.identity.GetComponent<InventoryController>().ClearItems();
 
-        yield return new WaitForSeconds(3f);
 
-        gameDataView.ShowGameView("게임 시작합니다.");
-        yield return new WaitForSeconds(3.2f);
-        gameDataView.ShowGameView("할당량을 확인하세요.");
-        yield return new WaitForSeconds(3.2f);
-        SetAllocatedAmount();
+            while (Vector3.Distance(conn.identity.gameObject.transform.position, deathPoint.transform.GetChild(index).position) > 10f
+                && conn.identity != null)
+            {
+                MoveTodeathPoint(conn, conn.identity.gameObject, index);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return ConfirmClientsComplete(10f);
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            index++;
+        }
+
+        SetIsMoveLocked(false);
+        
+        gameDataView.FadeOutBlackScreen();
+        yield return ConfirmClientsComplete(10f);
     }
 
     [TargetRpc]
-    public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, Vector3 spawnPoint)
+    public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, int index)
     {
-        player.transform.position = spawnPoint;
-        player.transform.rotation = Quaternion.identity;
+        player.transform.position = spawnPoint.transform.GetChild(index).position;
+        player.transform.rotation = spawnPoint.transform.GetChild(index).rotation;
+        NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
+    }
+
+    [TargetRpc]
+    public void MoveTodeathPoint(NetworkConnectionToClient target, GameObject player, int index)
+    {
+        player.transform.position = deathPoint.transform.GetChild(index).position;
+        player.transform.rotation = deathPoint.transform.GetChild(index).rotation;
+        NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 
     public void SetAllocatedAmount()
     {
-        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
-        allocatedAmount = (int)(Random.Range(150, 180) * players.Count * (1 + 0.2 * day / 3));
+        totalClients = NetworkServer.connections.Count;
+        allocatedAmount = (int)(Random.Range(150, 180) * totalClients * (1 + 0.2 * day / 3));
         gameDataView.ShowGameView("새로운 할당량:\n$" + allocatedAmount);
     }
 
     public void OnAllocatedAmountChanged(int oldAmount, int newAmount) { }
 
-    public void AddMoney(int amount)
-    {
-        money += amount;
-    }
-
-    public void SubtractMoney(int amount)
-    {
-        money -= amount;
-    }
-
     public void OnMoneyChanged(int oldMoney, int newMoney)
     {
         StartCoroutine(gameDataView.OnMoneyChanged(oldMoney, newMoney));
     }
+
     public void OnDayChanged(int oldDay, int newDay) { }
+
     public void OnTimeChanged(int oldTime, int newTime)
     {
         gameDataView.OnTimeChanged(oldTime, newTime);
     }
+
     public void OnIsDayChanged(bool oldIsDay, bool newIsDay)
     {
         if (isServer)
@@ -328,6 +400,16 @@ public class GameDataController : NetworkBehaviour
             wagon.GetComponent<WagonController>().isInteractable = newIsDay;
         }
     }
-    public void OnIsPausedChanged(bool oldIsPaused, bool newIsPaused) { }
-    
+
+    [ClientRpc]
+    public void SetIsInteractionLocked(bool isLocked)
+    {
+        IsinteractionLocked = isLocked;
+    }
+
+    [ClientRpc]
+    public void SetIsMoveLocked(bool isLocked)
+    {
+        IsMoveLocked = isLocked;
+    }
 }

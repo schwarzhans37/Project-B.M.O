@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 public class InventoryController : NetworkBehaviour
 {
-    [SyncVar]
+    public GameObject inventoryUI;
+    public List<bool> isItemActive;
     public List<GameObject> items;
+    public int selectedItemIndex;
     [SyncVar]
     public float totalWeight;
     public float weightSlowdownFactor => 1 - (totalWeight / 600 > 1 ? 1 : totalWeight / 600);
-    public GameObject inventoryUI;
-    public int selectedItemIndex = 0;
 
     public Sprite normalSprite;
     public Sprite seletedSprite;
@@ -21,6 +21,7 @@ public class InventoryController : NetworkBehaviour
     {
         base.OnValidate();
         
+        isItemActive = new List<bool>(new bool[6]);
         items = new List<GameObject>(new GameObject[6]);
         this.enabled = false;
     }
@@ -51,15 +52,18 @@ public class InventoryController : NetworkBehaviour
             return;
 
         for (int i = 0; i < items.Count; i++)
-            inventoryUI.transform.GetChild(i).GetComponentInChildren<CanvasGroup>().alpha = items[i] != null ? 1 : 0;
+            inventoryUI.transform.GetChild(i).GetComponentInChildren<CanvasGroup>().alpha = isItemActive[i] ? 1 : 0;
         
-        if (Input.GetKeyDown(KeyCode.Q) && items[selectedItemIndex] != null)
+        if (Input.GetKeyDown(KeyCode.Q) && isItemActive[selectedItemIndex])
+        {
             CmdDropItem(selectedItemIndex);
+            isItemActive[selectedItemIndex] = false;
+        }
         
         float scrollValue = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scrollValue) > 0.07f) // 작은 움직임을 무시하는 조건
         {
-            if (scrollValue > 0)
+            if (scrollValue < 0)
             {
                 inventoryUI.transform.GetChild(selectedItemIndex).GetComponent<Image>().sprite = normalSprite;
                 selectedItemIndex = (selectedItemIndex + 1) % 6;
@@ -114,19 +118,22 @@ public class InventoryController : NetworkBehaviour
     public void PickUpItem(GameObject item)
     {
         if (items[selectedItemIndex] != null)
-        {
-            CmdDropItem(selectedItemIndex);
-        }
+            return;
 
         CmdPickUpItem(item, selectedItemIndex);
+        isItemActive[selectedItemIndex] = true;
     }
 
     [Command]
     public void CmdPickUpItem(GameObject item, int index)
     {
         items[index] = item;
-        totalWeight += item.GetComponent<ItemObject>().itemPrice;
-        item.SetActive(false);
+
+        if (items[index] == null)
+            return;
+
+        totalWeight += items[index].GetComponent<ItemObject>().itemPrice;
+        RpcItem(false, items[index]);
     }
 
     [Command]
@@ -134,15 +141,40 @@ public class InventoryController : NetworkBehaviour
     {
         GameObject item = items[index];
         items[index] = null;
+
+        if (items[index] != null)
+            return;
+            
+        isItemActive[index] = false;
         totalWeight -= item.GetComponent<ItemObject>().itemPrice;
         item.transform.position = transform.position + transform.up;
-        item.SetActive(true);
+        RpcItem(true, item);
         item.GetComponent<Rigidbody>().AddForce(transform.forward, ForceMode.Impulse);
+    }
+
+    [ClientRpc]
+    public void RpcItem(bool isActive, GameObject item)
+    {
+        item.GetComponent<Collider>().enabled = isActive;
+        item.GetComponent<Rigidbody>().isKinematic = !isActive;
+        for (int i = 0; i < item.transform.childCount; i++)
+            item.transform.GetChild(i).gameObject.SetActive(isActive);
     }
 
     public void ClearItems()
     {
+        foreach (var item in items)
+            if (item != null) 
+                NetworkServer.Destroy(item);
+
         items = new List<GameObject>(new GameObject[6]);
+        ClearItemsClient(connectionToClient);
         totalWeight = 0;
+    }
+
+    [TargetRpc]
+    public void ClearItemsClient(NetworkConnectionToClient conn)
+    {
+        isItemActive = new List<bool>(new bool[6]);
     }
 }

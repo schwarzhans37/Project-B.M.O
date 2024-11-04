@@ -41,7 +41,7 @@ public class AIGolem : EnemyObject
         lastRangedAttackTime = -rangedAttackCooldown;
 
         stateInterval = 0.5f; // 상태 전환 주기
-        detectionInterval = 0.5f; // 감지 주기
+        detectionInterval = 0.1f; // 감지 주기
 
         patrolSpeed = 1f; // 배회 속도
         chaseSpeed = 3f; // 추적 속도
@@ -72,7 +72,7 @@ public class AIGolem : EnemyObject
         {
             lastMeleeAttackTime = Time.time;
 
-            networkAnimator.animator.SetTrigger("Attack");
+            networkAnimator.SetTrigger("Attack");
 
             yield return base.Attack();
 
@@ -84,7 +84,7 @@ public class AIGolem : EnemyObject
             targetPosition = targetTransform.position + Vector3.up * 2f;
 
             
-            networkAnimator.animator.SetTrigger("rock");
+            networkAnimator.SetTrigger("rock");
             yield return base.Attack();
         }
     }

@@ -13,7 +13,6 @@ public class WagonController : InteractableObject
     {
         base.OnValidate();
         
-        guideText = "출발하기 : [E]";
         holdTime = 3f;
     }
 
@@ -22,57 +21,67 @@ public class WagonController : InteractableObject
         Collider[] items = Physics.OverlapSphere(transform.position, radius)
         .Where(collider => collider.CompareTag("ItemObject")).ToArray();
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"));
-        List<GameObject> boardedPlayers = colliders.Select(collider => collider.gameObject).ToList();
-        List<GameObject> players = GameObject.FindGameObjectsWithTag("Player").ToList();
+        List<GameObject> boardedPlayers = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Player"))
+            .Select(collider => collider.gameObject).ToList();
 
-        if (boardedPlayers.Count != players.Count && gameObject.name == "BasecampWagon")
+        if (boardedPlayers.Count != NetworkServer.connections.Count && gameObject.name == "BasecampWagon")
         {
             StartCoroutine(ShowMessage("모든 플레이어가 웨건에 탑승해야 합니다."));
             yield break;
         }
 
+        if (gameObject.name == "ForestWagon")
+        {
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+            {
+                if (conn.identity == null)
+                    continue;
+
+                if (!boardedPlayers.Contains(conn.identity.gameObject))
+                    conn.identity.GetComponent<PlayerDataController>().isDead = true;
+            }
+        }
+
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsInteractionLocked(true);
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsMoveLocked(true);
+
+        GameObject.Find("GameDataManager").GetComponent<GameDataView>().FadeOutBlackScreen();
+        yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+
         // 아이템을 모두 웨건으로 이동
         foreach (Collider item in items)
+            item.transform.position += wagonPoint.position - transform.position;
+
+        foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
         {
-            item.transform.SetParent(transform, true);
-            Vector3 localPosition = item.transform.localPosition;
-            Quaternion localRotation = item.transform.localRotation;
-            item.transform.SetParent(wagonPoint, true);
-            item.transform.localPosition = localPosition;
-            item.transform.localRotation = localRotation;
-            item.transform.SetParent(null, true);
+            if (conn.identity == null)
+                continue;
+
+            if (boardedPlayers.Contains(conn.identity.gameObject))
+            {
+                while (Vector3.Distance(conn.identity.gameObject.transform.position, wagonPoint.position) > radius * 2
+                    && conn.identity != null)
+                {
+                    MoveToWagon(conn, conn.identity.gameObject);
+                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                    yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+                    yield return new WaitForSeconds(0.1f);
+                }
+            }
         }
 
         if (gameObject.name == "BasecampWagon")
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame(players));
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().StartGame(boardedPlayers));
         else
-            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame(boardedPlayers, players));
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (Collider collider in colliders)
-        {
-            if (collider == null)
-                continue;
-                
-            MoveToWagon(collider.GetComponent<NetworkIdentity>().connectionToClient, collider.gameObject);
-        }
-        
-        yield return null;
+            StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().EndGame());
     }
 
     [TargetRpc]
     void MoveToWagon(NetworkConnectionToClient target, GameObject player)
     {
-        player.transform.SetParent(transform, true);
-        Vector3 localPosition = player.transform.localPosition;
-        Quaternion localRotation = player.transform.localRotation;
-        player.transform.SetParent(wagonPoint, true);
-        player.transform.localPosition = localPosition;
-        player.transform.localRotation = localRotation;
-        player.transform.SetParent(null, true);
+        player.transform.position += wagonPoint.position - transform.position;
         AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
+        NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 
     void OnDrawGizmos()

@@ -19,7 +19,8 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
 
         if (isLocalPlayer)
         {
-            string playerNickname = "Player " + index; // 기본 닉네임 설정
+            string playerNickname = CustomNetworkRoomManager.Nickname != null && CustomNetworkRoomManager.Nickname != ""
+                ? CustomNetworkRoomManager.Nickname : "No Nickname"; // 기본 닉네임 설정
             CmdSetNickname(playerNickname); // 서버에 닉네임 전송
         }
 
@@ -122,6 +123,7 @@ public class CustomNetworkRoomPlayer : NetworkRoomPlayer
                         roomPlayerStatus.transform.Find("Ready").GetComponentInChildren<TMP_Text>().text = "Start Game";
                         roomPlayerStatus.transform.Find("Ready").GetComponent<Button>().onClick.AddListener(() =>
                         {
+                            roomPlayerStatus.transform.Find("Ready").GetComponent<Button>().interactable = false;
                             room.ServerChangeScene(room.GameplayScene);
                         });
                     }

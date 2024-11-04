@@ -19,8 +19,7 @@ public class JoinHostController : MonoBehaviour
 
     void OnValidate()
     {
-        if (joinHostView == null)
-            joinHostView = GetComponent<JoinHostView>();
+        joinHostView = GetComponent<JoinHostView>();
     }
 
     void Start()
@@ -67,7 +66,7 @@ public class JoinHostController : MonoBehaviour
         {
             if (selectedHostInfo == info)
             {
-                joinHostView.ShowConfirmPassword();
+                joinHostView.ShowNicknamePanel();
                 return;
             }
         }
@@ -76,8 +75,9 @@ public class JoinHostController : MonoBehaviour
         lastClickTime = Time.time;
     }
 
-    void HandleJoinHostAttempt()
+    void HandleJoinHostAttempt(string nickname)
     {
+        CustomNetworkRoomManager.Nickname = nickname;
         CustomNetworkRoomManager.singleton.StartClient(selectedHostInfo.uri);
         networkDiscovery.StopDiscovery();
     }
@@ -85,12 +85,16 @@ public class JoinHostController : MonoBehaviour
     public void OnDiscoveredServer(DiscoveryResponse info)
     {
         if (discoveredServers.ContainsKey(info.serverId))
-        {
             return;
-        }
+
+        if (info.currentPlayerCount >= info.maxPlayerCount)
+            return;
+            
+        if (!info.isInRoom)
+            return;
 
         discoveredServers[info.serverId] = info;
-        if (info.roomName.Contains(findHostInput))
+        if (info.roomTitle.Contains(findHostInput))
         {
             joinHostView.AddHost(info);
         }

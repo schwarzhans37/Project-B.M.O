@@ -25,8 +25,8 @@ public class AIGolem : EnemyObject
 
         meleeRange = 3f; // 근접 공격을 선택할 거리
         meleeAttackCooldown = 5f; // 근접 공격 쿨타임
-        rangedAttackRange = 40f; // 원거리 공격을 선택할 거리
-        rangedAttackForce = 40f; // 원거리 공격 힘
+        rangedAttackRange = 30f; // 원거리 공격을 선택할 거리
+        rangedAttackForce = 30f; // 원거리 공격 힘
         rangedAttackDamage = 1000; // 원거리 공격 데미지
         shockwaveRadius = 4f; // 충격파 범위
         shockwaveDamage = 500; // 충격파 데미지
@@ -44,7 +44,7 @@ public class AIGolem : EnemyObject
         detectionInterval = 0.1f; // 감지 주기
 
         patrolSpeed = 1f; // 배회 속도
-        chaseSpeed = 3f; // 추적 속도
+        chaseSpeed = 2f; // 추적 속도
 
         patrolRange = 15f ; // 배회 범위
         patrolWaitTime = 3f; // 배회 대기 시간

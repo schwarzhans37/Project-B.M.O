@@ -28,7 +28,17 @@ public class OutsideDoorController : InteractableObject
     [TargetRpc]
     void MoveToDoor(NetworkConnectionToClient target, GameObject player)
     {
-        player.transform.position = teleportPoint.position;
+        int count = 0;
+        while (Vector3.Distance(player.transform.position, teleportPoint.position) > 10f
+               && count < 1000)
+        {
+            player.transform.position = teleportPoint.position;
+            count++;
+        }
+
+        if (count >= 1000)
+            return;
+
         player.transform.rotation = Quaternion.LookRotation(teleportPoint.GetComponent<OutsideDoorController>().lookDirection);
         
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn = isLightOn;

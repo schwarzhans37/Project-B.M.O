@@ -59,14 +59,9 @@ public class WagonController : InteractableObject
 
             if (boardedPlayers.Contains(conn.identity.gameObject))
             {
-                while (Vector3.Distance(conn.identity.gameObject.transform.position, wagonPoint.position) > radius * 2
-                    && conn.identity != null)
-                {
-                    MoveToWagon(conn, conn.identity.gameObject);
-                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                    yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
-                    yield return new WaitForSeconds(0.1f);
-                }
+                MoveToWagon(conn, conn.identity.gameObject);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
             }
         }
 
@@ -79,7 +74,16 @@ public class WagonController : InteractableObject
     [TargetRpc]
     void MoveToWagon(NetworkConnectionToClient target, GameObject player)
     {
-        player.transform.position += wagonPoint.position - transform.position;
+        Vector3 playerPosition = player.transform.position;
+        int count = 0;
+
+        while (Vector3.Distance(player.transform.position, wagonPoint.position) > radius * 2
+            && count < 1000)
+        {
+            player.transform.position = playerPosition + wagonPoint.position - transform.position;
+            count++;
+        }
+        
         AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
         NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }

@@ -13,50 +13,51 @@ public class EnvironmentalDamage : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!isEnter || !isServer)
+        if (!isEnter
+            || !other.CompareTag("Player"))
             return;
-        
-        if (other.CompareTag("Player"))
-        {
-            other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            PlaySound(other.transform.position);
-        }
+
+        if (NetworkClient.connection.identity != other.GetComponent<NetworkIdentity>())
+            return;
+
+        other.GetComponent<PlayerDataController>().CmdChangeHp(-damage);
+
+        if (environmentalSound != null)
+            AudioSource.PlayClipAtPoint(environmentalSound, other.transform.position);
     }
 
     void OnTriggerStay(Collider other)
     {
-        if (!isStay || !isServer)
+        if (!isStay
+            || !other.CompareTag("Player"))
+            return;
+
+        if (NetworkClient.connection.identity != other.GetComponent<NetworkIdentity>())
             return;
         
         if (Time.time - lastTime < 1f)
             return;
 
-        if (other.CompareTag("Player"))
-        {
-            other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            lastTime = Time.time;
-            PlaySound(other.transform.position);
-        }
+        lastTime = Time.time;
+        other.GetComponent<PlayerDataController>().CmdChangeHp(-damage);
+
+        if (environmentalSound != null)
+            AudioSource.PlayClipAtPoint(environmentalSound, other.transform.position);
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (!isExit || !isServer)
+        if (!isExit
+            || !other.CompareTag("Player"))
             return;
-        
-        if (other.CompareTag("Player"))
-        {
-            other.GetComponent<PlayerDataController>().ChangeHp(-damage);
-            PlaySound(other.transform.position);
-        }
+
+        if (NetworkClient.connection.identity != other.GetComponent<NetworkIdentity>())
+            return;
+
+        other.GetComponent<PlayerDataController>().CmdChangeHp(-damage);
+
+        if (environmentalSound != null)
+            AudioSource.PlayClipAtPoint(environmentalSound, other.transform.position);
     }
 
-    [ClientRpc]
-    void PlaySound(Vector3 other)
-    {
-        if (environmentalSound == null)
-            return;
-            
-        AudioSource.PlayClipAtPoint(environmentalSound, other);
-    }
 }

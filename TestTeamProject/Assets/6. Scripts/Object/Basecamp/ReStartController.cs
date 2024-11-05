@@ -28,9 +28,17 @@ public class ReStartController : InteractableObject
             if (conn.identity == null)
                 continue;
 
-            GameObject.Find("GameDataManager").GetComponent<GameDataController>().MoveToSpawnPoint(conn, conn.identity.gameObject, index);
-            conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-            yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+            int count = 0;
+            while (Vector3.Distance(conn.identity.transform.position, GameObject.Find("GameDataManager").GetComponent<GameDataController>().spawnPoint.transform.GetChild(index).position) > 10f
+                && conn.identity != null
+                && count < 10)
+            {
+                GameObject.Find("GameDataManager").GetComponent<GameDataController>().MoveToSpawnPoint(conn, conn.identity.gameObject, index);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+                yield return new WaitForSeconds(0.1f);
+                count++;
+            }
 
             index++;
         }

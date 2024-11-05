@@ -1020,7 +1020,7 @@ MonoBehaviour:
   attackAngle: 90
   attackRange: 1.5
   attackDamage: 200
-  attackCooldown: 1
+  attackCooldown: 0.8
   viewAngle: 120
   detectionRange: 5
   soundDetectionRange: 20
@@ -1034,13 +1034,11 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 128
-  patrolSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
-  chaseSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
-  meleeAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
+  footstep: {fileID: 8300000, guid: 1300a1f7bbbf3f140aee0da44ba85694, type: 3}
+  meleeAttackSound: {fileID: 8300000, guid: 4080f289213ce9b41993570d399d6b56, type: 3}
   rangedAttackSound: {fileID: 8300000, guid: ad5de75eeb6f27a49a13d399389a8f7b, type: 3}
   networkAnimator: {fileID: 70554504507151920}
   animator: {fileID: 1170350492810089484}
-  footstep: {fileID: 8300000, guid: 1300a1f7bbbf3f140aee0da44ba85694, type: 3}
 --- !u!1 &2623013319242237936
 GameObject:
   m_ObjectHideFlags: 0

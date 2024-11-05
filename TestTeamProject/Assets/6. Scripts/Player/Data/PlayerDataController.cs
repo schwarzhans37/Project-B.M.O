@@ -153,7 +153,8 @@ public class PlayerDataController : NetworkBehaviour
 
         if (newDead)
         {
-            
+            GetComponent<NetworkAnimator>().animator.SetBool("isDead",true);
+            GetComponent<NetworkAnimator>().animator.SetTrigger("dead");
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(true, transform);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
 
@@ -165,6 +166,7 @@ public class PlayerDataController : NetworkBehaviour
         }
         else
         {
+            GetComponent<NetworkAnimator>().animator.SetBool("isDead", false);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(true);
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(false);
         }

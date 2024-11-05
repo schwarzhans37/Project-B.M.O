@@ -8,6 +8,7 @@ public class SalesLocationController : InteractableObject
     public float radius;
 
     public ParticleSystem particle;
+    public AudioClip increase_money_se;
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -38,9 +39,12 @@ public class SalesLocationController : InteractableObject
             // 아이템을 판매하고 돈을 얻음
             totalMoney += collider.GetComponent<ItemObject>().itemPrice;
             NetworkServer.Destroy(collider.gameObject);
+            
         }
 
         GameObject.Find("GameDataManager").GetComponent<GameDataController>().money += totalMoney;
+        AudioSource.PlayClipAtPoint(increase_money_se, transform.position, 0.1f);
+        //coin sound add
 
         isInteractable = true;
     }

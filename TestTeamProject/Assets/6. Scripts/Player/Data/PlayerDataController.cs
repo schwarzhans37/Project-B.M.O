@@ -109,7 +109,7 @@ public class PlayerDataController : NetworkBehaviour
 
         if (stamina <= 0
             && amount < 0)
-            stamina = -300;
+            stamina = -500;
 
         if (staminaBar != null)
             staminaBar.GetComponent<Image>().fillAmount = (float)stamina / 1000;

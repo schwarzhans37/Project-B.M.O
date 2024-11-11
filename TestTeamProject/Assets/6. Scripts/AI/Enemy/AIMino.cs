@@ -19,9 +19,9 @@ public class MinotaurAI : EnemyObject
         base.OnValidate();
 
         dashDistance = 30f; // 대쉬 거리
-        dashSpeedMultiple = 5f; // 대쉬 속도 배수
+        dashSpeedMultiple = 3f; // 대쉬 속도 배수
         dashDamage = 900; // 대쉬 데미지
-        dashCooldown = 20f; // 대쉬 쿨타임
+        dashCooldown = 15f; // 대쉬 쿨타임
     }
 
     public override void Setting()
@@ -46,14 +46,17 @@ public class MinotaurAI : EnemyObject
 
         viewAngle = 120f; // 시야각(0 ~ 360도)
         detectionRange = 15f; // 감지 범위
-        soundDetectionRange = 20f; // 소리 감지 범위
-        timeToChaseLostTarget = 5f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
+        soundDetectionRange = 15f; // 소리 감지 범위
+        timeToChaseLostTarget = 8f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
     public override void UpdateState()
     {
         if (isDashing)
+        {
+            AnimationUpdate();
             return;
+        }
 
         base.UpdateState();
     }
@@ -93,7 +96,7 @@ public class MinotaurAI : EnemyObject
         agent.SetDestination(dashTarget);
         PlayDashSound();
 
-        while (Vector3.Distance(transform.position, dashTarget) > 1f)
+        while (Vector3.Distance(transform.position, dashTarget) > 3f)
         {
             agent.speed += dashSpeedMultiple * Time.deltaTime;
 

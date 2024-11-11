@@ -93,24 +93,22 @@ public class PlayerDataController : NetworkBehaviour
         if (hp > 1000)
             hp = 1000;
 
-        if (hp < 0)
+        if (hp <= 0)
         {
             hp = 0;
             isDead = true;
         }
     }
 
-    public void AdjustStaminaOverTime(float time)
+    public void ChangeStamina(int amount)
     {
-        if (time == 0)
-            return;
+        stamina += amount;
 
-        stamina += (int)(Time.deltaTime * 1000 / time);
-
-        if (stamina > 1000)
+        if (stamina >= 1000)
             stamina = 1000;
 
-        if (stamina < 0 && time < 0)
+        if (stamina <= 0
+            && amount < 0)
             stamina = -300;
 
         if (staminaBar != null)
@@ -153,7 +151,8 @@ public class PlayerDataController : NetworkBehaviour
 
         if (newDead)
         {
-            
+            GetComponent<NetworkAnimator>().animator.SetBool("isDead",true);
+            GetComponent<NetworkAnimator>().animator.SetTrigger("dead");
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(true, transform);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(false);
 
@@ -165,6 +164,7 @@ public class PlayerDataController : NetworkBehaviour
         }
         else
         {
+            GetComponent<NetworkAnimator>().animator.SetBool("isDead", false);
             GetComponent<PlayerCamera>().playerCamera.gameObject.SetActive(true);
             GameObject.Find("PlayerManager").GetComponent<PlayerUIController>().SetDeathCamActive(false);
         }

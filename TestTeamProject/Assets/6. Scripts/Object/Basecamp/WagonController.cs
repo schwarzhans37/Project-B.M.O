@@ -59,9 +59,18 @@ public class WagonController : InteractableObject
 
             if (boardedPlayers.Contains(conn.identity.gameObject))
             {
-                MoveToWagon(conn, conn.identity.gameObject);
-                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+                int count = 0;
+                Vector3 targetPosition = conn.identity.transform.position + wagonPoint.position - transform.position;
+                while (Vector3.Distance(conn.identity.transform.position, wagonPoint.position) > radius * 2
+                    && conn.identity != null
+                    && count < 10)
+                {
+                    MoveToWagon(conn, conn.identity.gameObject, targetPosition);
+                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                    yield return StartCoroutine(GameObject.Find("GameDataManager").GetComponent<GameDataController>().ConfirmClientsComplete(10f));
+                    yield return new WaitForSeconds(0.1f);
+                    count++;
+                }
             }
         }
 
@@ -72,18 +81,9 @@ public class WagonController : InteractableObject
     }
 
     [TargetRpc]
-    void MoveToWagon(NetworkConnectionToClient target, GameObject player)
+    void MoveToWagon(NetworkConnectionToClient target, GameObject player, Vector3 targetPosition)
     {
-        Vector3 playerPosition = player.transform.position;
-        int count = 0;
-
-        while (Vector3.Distance(player.transform.position, wagonPoint.position) > radius * 2
-            && count < 1000)
-        {
-            player.transform.position = playerPosition + wagonPoint.position - transform.position;
-            count++;
-        }
-        
+        player.transform.position = targetPosition;
         AudioSource.PlayClipAtPoint(soundEffect, wagonPoint.position, 0.2f);
         NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }

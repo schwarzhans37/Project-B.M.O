@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -12,7 +11,7 @@ public class InventoryController : NetworkBehaviour
     public int selectedItemIndex;
     [SyncVar]
     public float totalWeight;
-    public float weightSlowdownFactor => 1 - (totalWeight / 1200 > 0.5f ? 0.5f : totalWeight / 1200);
+    public float weightSlowdownFactor => 1 - (totalWeight / 1000 > 0.5f ? 0.5f : totalWeight / 1000);
 
     public Sprite normalSprite;
     public Sprite seletedSprite;

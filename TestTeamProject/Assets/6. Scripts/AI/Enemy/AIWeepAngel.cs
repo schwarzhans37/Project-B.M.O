@@ -110,12 +110,9 @@ public class AIWeepAngel : EnemyObject
     }
 
     [ClientRpc]
-    void RpcFootStep(bool play)
+    void RpcFootStep(bool action)
     {
-        if (play)
-            GetComponent<AudioSource>().volume = 0.2f;
-        else
-            GetComponent<AudioSource>().volume = 0;
+        GetComponent<AudioSource>().volume = action ? 1 : 0;
     }
     
     public override void AnimationUpdate() { }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Mirror;
 
 public class AIWeepAngel : EnemyObject
 {
@@ -31,6 +32,11 @@ public class AIWeepAngel : EnemyObject
 
     public override void UpdateState()
     {
+        if (agent.velocity.magnitude > 0.1f)
+            RpcFootStep(true);
+        else
+            RpcFootStep(false);
+
         if (isPlayerLooking)
             return;
         base.UpdateState();
@@ -87,7 +93,6 @@ public class AIWeepAngel : EnemyObject
         if (isPlayerLooking)
         {
             ResumeMoving();
-            GetComponent<AudioSource>().Play();
         }
         isPlayerLooking = false;
     }
@@ -97,12 +102,20 @@ public class AIWeepAngel : EnemyObject
         // 플레이어가 AI를 바라보고 있을 때 실행할 로직
         if (!agent.isStopped)
         {
-
+            
         }
 
         isPlayerLooking = true;
-        GetComponent<AudioSource>().Stop();
         StopMoving();
+    }
+
+    [ClientRpc]
+    void RpcFootStep(bool play)
+    {
+        if (play)
+            GetComponent<AudioSource>().volume = 0.2f;
+        else
+            GetComponent<AudioSource>().volume = 0;
     }
     
     public override void AnimationUpdate() { }

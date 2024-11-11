@@ -29,6 +29,7 @@ public class SalesLocationController : InteractableObject
             yield break;
         
         isInteractable = false;
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsInteractionLocked(true);
         PlayEffect();
         
         yield return new WaitForSeconds(particle.main.duration);
@@ -39,14 +40,13 @@ public class SalesLocationController : InteractableObject
             // 아이템을 판매하고 돈을 얻음
             totalMoney += collider.GetComponent<ItemObject>().itemPrice;
             NetworkServer.Destroy(collider.gameObject);
-            
         }
 
         GameObject.Find("GameDataManager").GetComponent<GameDataController>().money += totalMoney;
-        AudioSource.PlayClipAtPoint(increase_money_se, transform.position, 0.1f);
-        //coin sound add
+        RpcPlayCoinSound();
 
         isInteractable = true;
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsInteractionLocked(false);
     }
 
     [ClientRpc]
@@ -54,6 +54,12 @@ public class SalesLocationController : InteractableObject
     {
         base.PlayEffect();
         particle.Play();
+    }
+
+    [ClientRpc]
+    public void RpcPlayCoinSound()
+    {
+        AudioSource.PlayClipAtPoint(increase_money_se, transform.position, 0.1f);
     }
 
     void OnDrawGizmos()

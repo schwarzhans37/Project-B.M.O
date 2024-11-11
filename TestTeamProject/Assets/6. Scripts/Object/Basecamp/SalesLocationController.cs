@@ -8,6 +8,7 @@ public class SalesLocationController : InteractableObject
     public float radius;
 
     public ParticleSystem particle;
+    public AudioClip increase_money_se;
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -28,6 +29,7 @@ public class SalesLocationController : InteractableObject
             yield break;
         
         isInteractable = false;
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsInteractionLocked(true);
         PlayEffect();
         
         yield return new WaitForSeconds(particle.main.duration);
@@ -41,8 +43,10 @@ public class SalesLocationController : InteractableObject
         }
 
         GameObject.Find("GameDataManager").GetComponent<GameDataController>().money += totalMoney;
+        RpcPlayCoinSound();
 
         isInteractable = true;
+        GameObject.Find("GameDataManager").GetComponent<GameDataController>().SetIsInteractionLocked(false);
     }
 
     [ClientRpc]
@@ -50,6 +54,12 @@ public class SalesLocationController : InteractableObject
     {
         base.PlayEffect();
         particle.Play();
+    }
+
+    [ClientRpc]
+    public void RpcPlayCoinSound()
+    {
+        AudioSource.PlayClipAtPoint(increase_money_se, transform.position, 0.1f);
     }
 
     void OnDrawGizmos()

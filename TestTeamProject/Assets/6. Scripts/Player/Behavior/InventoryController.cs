@@ -12,7 +12,7 @@ public class InventoryController : NetworkBehaviour
     public int selectedItemIndex;
     [SyncVar]
     public float totalWeight;
-    public float weightSlowdownFactor => 1 - (totalWeight / 600 > 1 ? 1 : totalWeight / 600);
+    public float weightSlowdownFactor => 1 - (totalWeight / 1200 > 0.5f ? 0.5f : totalWeight / 1200);
 
     public Sprite normalSprite;
     public Sprite seletedSprite;

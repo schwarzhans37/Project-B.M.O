@@ -242,11 +242,19 @@ public class GameDataController : NetworkBehaviour
             if (conn.identity.GetComponent<PlayerDataController>().isDead)
             {
                 conn.identity.GetComponent<InventoryController>().ClearItems();
-                
-                MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
-                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-                yield return ConfirmClientsComplete(10f);
 
+                int count = 0;
+                while (Vector3.Distance(conn.identity.transform.position, spawnPoint.transform.GetChild(deathedPlayersCount).position) > 10f
+                    && conn.identity != null
+                    && count < 10)
+                {
+                    MoveToSpawnPoint(conn, conn.identity.gameObject, deathedPlayersCount);
+                    conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                    yield return ConfirmClientsComplete(10f);
+                    yield return new WaitForSeconds(0.1f);
+                    count++;
+                }
+                
                 dailyReportIsDead.Add(true);
                 deathedPlayersCount++;
             }
@@ -332,9 +340,17 @@ public class GameDataController : NetworkBehaviour
             conn.identity.GetComponent<PlayerDataController>().hp = 1000;
             conn.identity.GetComponent<InventoryController>().ClearItems();
 
-            MoveTodeathPoint(conn, conn.identity.gameObject, index);
-            conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
-            yield return ConfirmClientsComplete(10f);
+            int count = 0;
+            while (Vector3.Distance(conn.identity.transform.position, deathPoint.transform.GetChild(index).position) > 10f
+                && conn.identity != null
+                && count < 10)
+            {
+                MoveTodeathPoint(conn, conn.identity.gameObject, index);
+                conn.identity.GetComponent<PlayerDataController>().CmdReportTaskWorking();
+                yield return ConfirmClientsComplete(10f);
+                yield return new WaitForSeconds(0.1f);
+                count++;
+            }
 
             index++;
         }
@@ -348,28 +364,16 @@ public class GameDataController : NetworkBehaviour
     [TargetRpc]
     public void MoveToSpawnPoint(NetworkConnectionToClient target, GameObject player, int index)
     {
-        int count = 0;
-        while (Vector3.Distance(player.transform.position, spawnPoint.transform.GetChild(index).position) > 10f
-            && count < 1000)
-        {
-            player.transform.position = spawnPoint.transform.GetChild(index).position;
-            player.transform.rotation = spawnPoint.transform.GetChild(index).rotation;
-            count++;
-        }
+        player.transform.position = spawnPoint.transform.GetChild(index).position;
+        player.transform.rotation = spawnPoint.transform.GetChild(index).rotation;
         NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 
     [TargetRpc]
     public void MoveTodeathPoint(NetworkConnectionToClient target, GameObject player, int index)
-    {
-        int count = 0;
-        while (Vector3.Distance(player.transform.position, deathPoint.transform.GetChild(index).position) > 10f
-            && count < 1000)
-        {
-            player.transform.position = deathPoint.transform.GetChild(index).position;
-            player.transform.rotation = deathPoint.transform.GetChild(index).rotation;
-            count++;
-        }
+    {            
+        player.transform.position = deathPoint.transform.GetChild(index).position;
+        player.transform.rotation = deathPoint.transform.GetChild(index).rotation;
         NetworkClient.localPlayer.GetComponent<PlayerDataController>().CmdReportTaskComplete();
     }
 

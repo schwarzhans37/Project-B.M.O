@@ -156,12 +156,12 @@ public class PlayerMovementController : NetworkBehaviour
             && gameObject.GetComponent<PlayerDataController>().stamina > 0
             && (horizontal != 0 || vertical != 0))
         {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(-10);
+            gameObject.GetComponent<PlayerDataController>().ChangeStamina(-3);
             moveSpeedMultiplier *= runSpeedMultiplier;
         }
         else
         {
-            gameObject.GetComponent<PlayerDataController>().AdjustStaminaOverTime(5);
+            gameObject.GetComponent<PlayerDataController>().ChangeStamina(6);
         }
 
         // 원하는 지상 속도로 곱셈
@@ -198,14 +198,13 @@ public class PlayerMovementController : NetworkBehaviour
         Torch.transform.GetChild(0).gameObject.SetActive(newTorch);
     }
 
-    [Command]
     void CheckHeal()
     {
         if (gameObject.GetComponent<PlayerDataController>().stamina >= 1000
             && Time.time - lastHealTime > healCooldown)
         {
             lastHealTime = Time.time;
-            gameObject.GetComponent<PlayerDataController>().ChangeHp(heal);
+            gameObject.GetComponent<PlayerDataController>().CmdChangeHp(heal);
         }
     }
 

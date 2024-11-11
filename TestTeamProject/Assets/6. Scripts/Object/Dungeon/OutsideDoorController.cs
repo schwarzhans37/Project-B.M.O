@@ -20,25 +20,23 @@ public class OutsideDoorController : InteractableObject
 
     public override IEnumerator InteractWithObject(GameObject player)
     {
-        MoveToDoor(player.GetComponent<NetworkIdentity>().connectionToClient, player);
+        int count = 0;
+        while (Vector3.Distance(player.transform.position, teleportPoint.position) > 10f
+            && player.GetComponent<NetworkIdentity>() != null
+            && count < 10)
+        {
+            MoveToDoor(player.GetComponent<NetworkIdentity>().connectionToClient, player);
+            yield return new WaitForSeconds(0.1f);
+            count++;
+        }
+
         OnSoundEffect();
-        yield return null;
     }
 
     [TargetRpc]
     void MoveToDoor(NetworkConnectionToClient target, GameObject player)
     {
-        int count = 0;
-        while (Vector3.Distance(player.transform.position, teleportPoint.position) > 10f
-               && count < 1000)
-        {
-            player.transform.position = teleportPoint.position;
-            count++;
-        }
-
-        if (count >= 1000)
-            return;
-
+        player.transform.position = teleportPoint.position;
         player.transform.rotation = Quaternion.LookRotation(teleportPoint.GetComponent<OutsideDoorController>().lookDirection);
         
         GameObject.Find("GameDataManager").GetComponent<LightingManager>().IsDayCycleOn = isLightOn;

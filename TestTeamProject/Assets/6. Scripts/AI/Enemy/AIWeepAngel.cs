@@ -87,6 +87,7 @@ public class AIWeepAngel : EnemyObject
         if (isPlayerLooking)
         {
             ResumeMoving();
+            GetComponent<AudioSource>().Play();
         }
         isPlayerLooking = false;
     }
@@ -100,6 +101,7 @@ public class AIWeepAngel : EnemyObject
         }
 
         isPlayerLooking = true;
+        GetComponent<AudioSource>().Stop();
         StopMoving();
     }
     

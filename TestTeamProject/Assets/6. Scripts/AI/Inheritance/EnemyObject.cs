@@ -380,12 +380,12 @@ public class EnemyObject : NetworkBehaviour
 
     public virtual void PlayMeleeAttackSound()
     {
-        AudioSource.PlayClipAtPoint(meleeAttackSound, transform.position);
+        AudioSource.PlayClipAtPoint(meleeAttackSound, transform.position,0.2f);
     }
 
     public virtual void PlayRangedAttackSound()
     {
-        AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position);
+        AudioSource.PlayClipAtPoint(rangedAttackSound, transform.position,0.2f);
     }
 
     public virtual void AnimationUpdate()

@@ -47,7 +47,7 @@ public class MinotaurAI : EnemyObject
         viewAngle = 120f; // 시야각(0 ~ 360도)
         detectionRange = 15f; // 감지 범위
         soundDetectionRange = 15f; // 소리 감지 범위
-        timeToChaseLostTarget = 8f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
+        timeToChaseLostTarget = 10f; // 추적 범위에서 벗어나 배회로 돌아가는 시간
     }
 
     public override void UpdateState()
@@ -96,9 +96,13 @@ public class MinotaurAI : EnemyObject
         agent.SetDestination(dashTarget);
         PlayDashSound();
 
-        while (Vector3.Distance(transform.position, dashTarget) > 3f)
+        while (agent.remainingDistance > 1f)
         {
             agent.speed += dashSpeedMultiple * Time.deltaTime;
+
+            if (agent.velocity.magnitude < 0.1f
+                && agent.speed > 7f)
+                break;
 
             // 대쉬 도중 플레이어 충돌 확인
             Collider[] players = Physics.OverlapSphere(transform.position, 1f, playerMask);

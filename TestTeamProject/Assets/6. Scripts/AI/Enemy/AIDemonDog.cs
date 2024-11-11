@@ -42,6 +42,7 @@ public class AIDemonDog : EnemyObject
     public override IEnumerator Attack()
     {
         networkAnimator.SetTrigger("Attack");
+        PlayMeleeAttackSound();
         yield return base.Attack();
     }
 

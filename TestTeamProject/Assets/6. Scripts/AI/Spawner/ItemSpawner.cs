@@ -91,7 +91,7 @@ public class ItemSpawner : NetworkBehaviour
     Vector3 FindValidSpawnPosition()
     {
         Vector3 randomPoint = transform.position + Random.insideUnitSphere * spawnRange;
-        randomPoint.y = transform.position.y;
+        randomPoint.y = transform.position.y + Random.Range(-10f, 10f);
 
         if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, navMeshSampleDistance, NavMesh.AllAreas))
         {

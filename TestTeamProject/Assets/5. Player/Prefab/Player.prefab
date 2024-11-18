@@ -1927,6 +1927,7 @@ MonoBehaviour:
   runSpeedMultiplier: 2
   jumpForce: 6
   jumpSpeed: 0
+  jumpCooldown: 1.5
   heal: 100
   healCooldown: 5
   isTorch: 0
@@ -1995,6 +1996,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  inventoryUI: {fileID: 0}
+  isItemActive: 000000000000
   items:
   - {fileID: 0}
   - {fileID: 0}
@@ -2002,9 +2005,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  totalWeight: 0
-  inventoryUI: {fileID: 0}
   selectedItemIndex: 0
+  totalWeight: 0
   normalSprite: {fileID: 21300000, guid: 4f033cdd2b09f9a43b139729d09d002c, type: 3}
   seletedSprite: {fileID: 21300000, guid: 711fb7a2b8e1ff54da609e52c3e729b8, type: 3}
 --- !u!114 &5872262619836083960
@@ -2387,7 +2389,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 50
+  MaxDistance: 100
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -2422,7 +2424,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

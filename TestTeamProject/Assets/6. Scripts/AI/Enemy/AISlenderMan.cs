@@ -20,11 +20,11 @@ public class AISlenderMan : NetworkBehaviour
     public SkinnedMeshRenderer body;
     public Transform head;
 
-    public float deathTime = 30f; // 플레이어가 바라보는 시간이 사망 시간에 도달
+    public float deathTime = 15f; // 플레이어가 바라보는 시간이 사망 시간에 도달
 
-    public float teleportMinDistance = 21f; // 순간이동 후 플레이어와 최소 거리
-    public float teleportMaxDistance = 30f; // 순간이동 후 플레이어와 최대 거리
-    public float deathDistanceProportion = 0.16f; // 사망 거리 비율
+    public float teleportMinDistance = 18f; // 순간이동 후 플레이어와 최소 거리
+    public float teleportMaxDistance = 21f; // 순간이동 후 플레이어와 최대 거리
+    public float deathDistanceProportion = 0.06f; // 사망 거리 비율
     public float teleportCooldown = 2f; // 텔레포트 간 최소 시간 간격
 
     private float lookTime = 0f;
@@ -97,7 +97,7 @@ public class AISlenderMan : NetworkBehaviour
         {
             lookTime += Time.deltaTime;
             
-            if (Time.time - lastLookTime > teleportCooldown * 3f)
+            if (Time.time - lastLookTime > teleportCooldown * 1.5f)
             {
                 lastLookTime = Time.time;
 
@@ -183,18 +183,29 @@ public class AISlenderMan : NetworkBehaviour
     {
         Vector3 teleportPosition;
 
-        // 플레이어의 카메라를 기준으로 순간이동할 랜덤한 위치 찾기
-        Vector3 randomViewportPoint = new Vector3(
-            Random.Range(0.2f, 0.8f), // X 범위
-            Random.Range(0.2f, 0.8f), // Y 범위
-            Random.Range(teleportMinDistance * distanceMultiplier, teleportMaxDistance * distanceMultiplier)
-        );
+        Camera playerCamera = player.GetComponentInChildren<Camera>(true);
 
-        teleportPosition = player.GetComponentInChildren<Camera>(true).ViewportToWorldPoint(randomViewportPoint);
-
-        if (NavMesh.SamplePosition(teleportPosition, out NavMeshHit hit, (teleportMinDistance + teleportMaxDistance) / 2f * distanceMultiplier, NavMesh.AllAreas))
+        for (int attempt = 0; attempt < 10; attempt++) // 최대 10번 시도
         {
-            return hit.position;
+            // 플레이어의 카메라를 기준으로 순간이동할 랜덤한 위치 찾기
+            Vector3 randomViewportPoint = new Vector3(
+                Random.Range(0.2f, 0.8f), // X 범위
+                Random.Range(0.2f, 0.8f), // Y 범위
+                Random.Range(teleportMinDistance * distanceMultiplier, teleportMaxDistance * distanceMultiplier)
+            );
+
+            teleportPosition = playerCamera.ViewportToWorldPoint(randomViewportPoint);
+
+            // NavMesh 위의 유효한 위치 확인
+            if (NavMesh.SamplePosition(teleportPosition, out NavMeshHit hit, (teleportMinDistance + teleportMaxDistance) / 2f * distanceMultiplier, NavMesh.AllAreas))
+            {
+                // 플레이어와 후보 위치 사이에 장애물이 없는지 확인
+                Vector3 direction = hit.position - player.position;
+                if (!Physics.Raycast(player.position, direction.normalized, direction.magnitude, obstacleMask))
+                {
+                    return hit.position; // 장애물이 없으면 해당 위치 반환
+                }
+            }
         }
 
         return player.position + deathDistanceProportion * teleportMinDistance * Vector3.forward;
@@ -227,10 +238,10 @@ public class AISlenderMan : NetworkBehaviour
 
     private IEnumerator TriggerDeath()
     {
+        Teleport(0.06f);
+
         // 사망 로직 구현
         networkAnimator.SetTrigger("Attack");
-        
-        Teleport(0.08f);
 
         float startTime = Time.time;
 
@@ -259,7 +270,7 @@ public class AISlenderMan : NetworkBehaviour
         Vector3 originalPosition = player.position; // 현재 위치 저장
         while (!player.GetComponent<PlayerDataController>().isDead)
         {
-            time += Time.deltaTime / 2;
+            time += Time.deltaTime / 3;
             player.position = originalPosition; // 플레이어 위치 고정
             player.GetComponentInChildren<Camera>(true).transform.LookAt(transform.position + Vector3.up * time); // AI를 바라보도록 카메라 회전
             player.LookAt(transform); // AI를 바라보도록 플레이어 회전

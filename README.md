@@ -6,7 +6,7 @@
 > #### 작품명 : In To The Dark
 
 > #### 개발자
-<img width="739" height="185" alt="image" src="https://github.com/user-attachments/assets/30138970-0160-42fc-97ff-86e66d5859d6" />
+<img width="736" height="184" alt="image" src="https://github.com/user-attachments/assets/23c24922-654a-4fee-b20b-104141961876" />
 
 ***
 

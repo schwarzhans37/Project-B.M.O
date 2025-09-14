@@ -15,5 +15,6 @@
 
 - __모티브__ : Lethal Company(2023)
 <img width="616" height="353" alt="image" src="https://github.com/user-attachments/assets/ee44d3c0-9ba4-41db-97ab-265fb3df044b" />
+
   - Lethal Company : 우주선을 타고 행성에 착륙하여 자원을 회수하기 위해 필드를 돌아다니고, 적대적 개채들을 피해 살아남고 귀환해야하는 협동 게임
 

@@ -22,7 +22,7 @@
   - 게임 엔진 : Unity 2022.3.23f1
   - 멀티플레이 서버 : Mirror API
 
--__멀티플레이 구조__
+- __멀티플레이 구조__
   - 호스트&클라이언트
   <img width="804" height="345" alt="image" src="https://github.com/user-attachments/assets/9d9d2ec6-0333-42d5-a968-788da708411f" />
 

@@ -49,6 +49,7 @@
   <img width="836" height="512" alt="image" src="https://github.com/user-attachments/assets/24a7d213-a743-49b2-8cd7-ee3189c8e4cf" />
 
 - __몬스터__
+  <img width="1149" height="257" alt="image" src="https://github.com/user-attachments/assets/54ceebbd-dcf4-41de-84c7-f29027fa2f52" />
   - 행동 패턴 분류 : 배회(Patrolling), 감지(Detecting), 추적(Chasing), 공격(Attacking)
   - 행동 패턴 설명
     1) 배회 : Raycast 기반, 터레인(지형) 위에서 장애물 및 이동불가 지역을 제외한 전역을 임의로 이동하거나 대기
@@ -56,7 +57,6 @@
     3) 추적 : 감지된 플레이어를 추적해 가까이 접근
     4) 공격 : 공격 사거리에 접근한 플레이어를 향해 공격
   - 몬스터 종류
-  <img width="1149" height="257" alt="image" src="https://github.com/user-attachments/assets/54ceebbd-dcf4-41de-84c7-f29027fa2f52" />
     1) 미노타우로스 : 좁은 전방 시야 및 소리를 통해 플레이어를 인식하고 돌진
     2) 악마의 석상 : 플레이어의 시야에 잡히면 활동이 불가하지만, 시야에서 벗어나면 플레이어를 추적
     3) 눈 없는 개 : 넓은 범위의 소리를 감지해 플레이어를 추적, 소리를 내지 않고 다니는 것이 중요
@@ -69,4 +69,7 @@
   - 사망한 플레이어를 부활하거나, 다음날로 바꾸기 위한 거점이 있음
   - 거점 인근 바위 제단(상점)에 회수해온 물건들을 드랍한 후, 제단과 상호작용 하면 실적치로 전환
   - 베이스캠프 중앙 마차에 모여, 숲으로 이동할 수 있음
+
+> #### 개발 관련 영상 모음
+  - https://www.youtube.com/watch?v=lSKXAWf8lz8&list=PL6im45vRQmypHBF4_stcuy1bG3OOz0pQf
 

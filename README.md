@@ -24,7 +24,7 @@
 
 - __멀티플레이 구조__
   - 호스트 서버 및 리모트 클라이언트 공유
-  <img width="300" height="129" alt="image" src="https://github.com/user-attachments/assets/a3406ffc-e28f-4f3f-af5b-0330a4a5d02a" /><img width="293" height="150" alt="image" src="https://github.com/user-attachments/assets/42f811cc-fd28-4a81-a770-151528071aec" />
+  <img width="600" height="258" alt="image" src="https://github.com/user-attachments/assets/a3406ffc-e28f-4f3f-af5b-0330a4a5d02a" /><img width="586" height="300" alt="image" src="https://github.com/user-attachments/assets/42f811cc-fd28-4a81-a770-151528071aec" />
 
 
 

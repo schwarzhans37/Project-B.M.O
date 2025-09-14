@@ -35,6 +35,19 @@
   - 네트워크 동기화
   <img width="785" height="563" alt="image" src="https://github.com/user-attachments/assets/f825927d-49b5-4b2d-b606-8807dde247cd" />
 
+- __게임 진행__
+  - 베이스 캠프에서 마차를 통해 숲으로 출발
+  <img width="835" height="513" alt="image" src="https://github.com/user-attachments/assets/3065ce45-c085-41df-a41b-357f3855e48d" />
+
+  - 던전 입구 발견 및 입장
+  <img width="836" height="513" alt="image" src="https://github.com/user-attachments/assets/f2c6a7a1-13a9-4ac4-98e3-fe7805b652e0" />
+
+  - 회수물건 발견 및 습득
+  <img width="835" height="512" alt="image" src="https://github.com/user-attachments/assets/d720c9ea-c723-4db6-b5d1-bdd0f15c2068" />
+
+  - 베이스 캠프로 귀환
+  <img width="836" height="512" alt="image" src="https://github.com/user-attachments/assets/24a7d213-a743-49b2-8cd7-ee3189c8e4cf" />
+
 - __몬스터__
   - 행동 패턴 분류 : 배회(Patrolling), 감지(Detecting), 추적(Chasing), 공격(Attacking)
   - 행동 패턴 설명
@@ -51,4 +64,9 @@
     5) 바위 골렘 : 매우 느린 이동속도 대비 강력한 근접 공격, 바위를 던지기도 함
     6) 늪지기 : 넓은 전방시야에 의존, 호수 근처를 지나가는 플레이어를 추적
 
+- __베이스 캠프__
+  - 게임의 시작 지점이자 귀환 장소
+  - 사망한 플레이어를 부활하거나, 다음날로 바꾸기 위한 거점이 있음
+  - 거점 인근 바위 제단(상점)에 회수해온 물건들을 드랍한 후, 제단과 상호작용 하면 실적치로 전환
+  - 베이스캠프 중앙 마차에 모여, 숲으로 이동할 수 있음
 

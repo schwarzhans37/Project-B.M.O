@@ -24,7 +24,11 @@
 
 - __멀티플레이 구조__
   - 호스트 서버 및 리모트 클라이언트 공유
-  <img width="600" height="258" alt="image" src="https://github.com/user-attachments/assets/a3406ffc-e28f-4f3f-af5b-0330a4a5d02a" /><img width="586" height="300" alt="image" src="https://github.com/user-attachments/assets/42f811cc-fd28-4a81-a770-151528071aec" />
+  - 개발 언어 : C#, Mirror API
+  - 핵심 기능 : 리슨 서버 방식, 실시간 동기화
+  - 기능 설명
+     1) 리슨 서버 : 특정 호스트에 서버와 로컬 클라이언트를 생성하고 외부 리모트 클라이언트와 통신
+     2) 실시간 동기화 : 서버에 플레이어를 생성하고 각각의 클라이언트에 공유, 클라이언트에서 변경 사항 발생 시 서버에 변경 사항 전달 및 공유의 형태로 실시간 동기화 구현
 
 
 

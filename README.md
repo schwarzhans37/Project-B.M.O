@@ -24,9 +24,9 @@
 
 -__멀티플레이 구조__
   - 호스트&클라이언트
-  - <img width="804" height="345" alt="image" src="https://github.com/user-attachments/assets/9d9d2ec6-0333-42d5-a968-788da708411f" />
+  <img width="804" height="345" alt="image" src="https://github.com/user-attachments/assets/9d9d2ec6-0333-42d5-a968-788da708411f" />
 
   - 네트워크 동기화
-  - <img width="785" height="563" alt="image" src="https://github.com/user-attachments/assets/dbcac468-56eb-4b95-9827-696bad0de526" />
+  <img width="785" height="563" alt="image" src="https://github.com/user-attachments/assets/dbcac468-56eb-4b95-9827-696bad0de526" />
 
 

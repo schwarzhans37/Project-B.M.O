@@ -35,5 +35,14 @@
   - 네트워크 동기화
   <img width="785" height="563" alt="image" src="https://github.com/user-attachments/assets/f825927d-49b5-4b2d-b606-8807dde247cd" />
 
+- __몬스터__
+  - 행동 패턴 분류 : 배회(Patrolling), 감지(Detecting), 추적(Chasing), 공격(Attacking)
+  - 행동 패턴 설명
+    1) 배회 : 터레인(지형) 위에서 장애물 및 이동불가 지역을 제외한 전역을 임의로 이동하거나 대기
+    2) 감지 : 몬스터 각자의 감지범위를 기반으로, 시야, 소리 등을 통해 플레이어가 주변에 있음일 감지
+    3) 추적 : 감지된 플레이어를 추적해 가까이 접근
+    4) 공격 : 공격 사거리에 접근한 플레이어를 향해 공격
+  - 몬스터 종류
+  <img width="1149" height="257" alt="image" src="https://github.com/user-attachments/assets/54ceebbd-dcf4-41de-84c7-f29027fa2f52" />
 
 

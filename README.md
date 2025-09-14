@@ -23,6 +23,10 @@
   - 멀티플레이 서버 : Mirror API
 
 -__멀티플레이 구조__
-<img width="1012" height="731" alt="image" src="https://github.com/user-attachments/assets/10370dac-651b-48e7-b7ae-01ff565472d9" />
-<img width="1012" height="880" alt="image" src="https://github.com/user-attachments/assets/6f9c8229-e0c3-4d00-9d2b-fd62152d96a0" />
+  - 호스트&클라이언트
+  - <img width="804" height="345" alt="image" src="https://github.com/user-attachments/assets/9d9d2ec6-0333-42d5-a968-788da708411f" />
+
+  - 네트워크 동기화
+  - <img width="785" height="563" alt="image" src="https://github.com/user-attachments/assets/dbcac468-56eb-4b95-9827-696bad0de526" />
+
 

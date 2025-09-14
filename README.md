@@ -18,3 +18,10 @@
 
   - Lethal Company : 우주선을 타고 행성에 착륙하여 자원을 회수하기 위해 필드를 돌아다니고, 적대적 개채들을 피해 살아남고 귀환해야하는 협동 게임
 
+- __개발 환경__
+  - 게임 엔진 : Unity 2022.3.23f1
+  - 멀티플레이 서버 : Mirror API
+
+-__멀티플레이 구조__
+<img width="1098" height="1012" alt="image" src="https://github.com/user-attachments/assets/2b45a0c6-5dab-4e91-9472-5c5919caf294" />
+<img width="1098" height="1012" alt="image" src="https://github.com/user-attachments/assets/b3f60b6a-3ea9-40aa-a702-2896b5a7b2f7" />
